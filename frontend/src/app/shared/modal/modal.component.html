@@ -1,0 +1,13 @@
+<div class="fixed inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm z-50" *ngIf="isOpen">
+    <!-- Contenedor -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 relative animate-fadeIn w-full" [ngClass]="modalWidthClasses"
+        [ngStyle]="modalStyle">
+        <!-- Botón cerrar -->
+        <button (click)="onClose()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">
+            ✕
+        </button>
+
+        <!-- Contenido dinámico -->
+        <ng-content></ng-content>
+    </div>
+</div>

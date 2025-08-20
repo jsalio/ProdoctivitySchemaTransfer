@@ -1,0 +1,9 @@
+[package]
+name="SchemaTransfer"
+version="0.0.1"
+
+[workspace]
+menbers=["packages/*"]
+
+[test]
+coverage = true

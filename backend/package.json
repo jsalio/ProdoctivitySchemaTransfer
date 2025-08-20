@@ -1,0 +1,19 @@
+{
+    "name": "schematransfer",
+    "version": "0.0.1",
+    "description": "Utility for tranfer document schema between prodoctivity's system",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "scripts": {
+        "install:deps": "bun install",
+        "test": "bun test",
+        "build": "bun build",
+        "run_api": "bun run packages/server/src/index.ts"
+    },
+    "devDependencies": {
+        "bun-types": "^1.2.19"
+    }
+}
+   

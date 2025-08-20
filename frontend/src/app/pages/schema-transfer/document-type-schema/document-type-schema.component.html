@@ -1,0 +1,49 @@
+<h2 class="font-semibold text-gray-700 mb-2">Llaves</h2>
+@if(loading()){
+<span>Cargando llaves espere.....</span>
+}
+@else {
+<ul class="space-y-2">
+    @if(documentSchema() !== null){
+    @if(documentSchema().keywords.length === 0){
+        <span>Documento sin llaves asignadas</span>
+    }
+    @for (item of documentSchema().keywords; track $index) {
+    <li>
+        <label class="flex items-center space-x-2 text-gray-400">
+            <!-- <label class="flex items-center space-x-2 text-gray-400">  -->
+            <input type="checkbox">
+            <!-- <input type="checkbox" checked disabled> debe estar asi para elemento que exten -->
+            <span>🔑 {{item.name}}</span>
+            @if(item.require){
+            <span class="ml-2 text-orange-600 text-xs">Requerido</span>
+            }
+            <!-- <span class="ml-2 text-green-600 text-xs">✔️ Ya existe en B</span> -->
+            <!-- //usar si existe en la otra store -->
+        </label>
+    </li>
+    }
+    }
+</ul>
+}
+
+
+<!-- <div class="mt-4 p-3 bg-gray-50 border rounded">
+    <h3 class="font-semibold text-gray-700 mb-2">Mapeo a Sistema B</h3>
+    <div class="space-y-2">
+        <div>
+            <label class="block text-sm text-gray-600">Grupo B</label>
+            <select class="w-full border rounded p-1">
+                <option>Grupo B1</option>
+                <option>Grupo B2</option>
+            </select>
+        </div>
+        <div>
+            <label class="block text-sm text-gray-600">Documento B</label>
+            <select class="w-full border rounded p-1">
+                <option>Factura Destino</option>
+                <option>Contrato Destino</option>
+            </select>
+        </div>
+    </div>
+</div> -->

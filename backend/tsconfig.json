@@ -1,0 +1,35 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": false,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "baseUrl": ".",
+        "types": [
+            "bun-types"
+        ],
+        "paths": {
+            "@schematransfer/core": [
+                "packages/core/src/index.ts"
+            ],
+            "@schematransfer/prodoctivitycloud": [
+                "packages/ProdoctivityCloud/src/index.ts"
+            ],
+            "@schematransfer/prodoctivity5": [
+                "packages/Prodoctivity5/src/index.ts"
+            ],
+        }
+    },
+    "include": [
+        "packages/**/*"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
