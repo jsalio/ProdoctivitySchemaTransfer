@@ -8,4 +8,5 @@ export interface IStore
     getDocumentGroups(credential:Credentials) :Promise<Set<DocumentGroup>>
     getDocumentTypeInGroup(credential: Credentials, documentGroupId: string):Promise<Set<DocumentType>>
     getDocumentTypeSchema(credential: Credentials, documentTypeId: string):Promise<SchemaDocumentType>
+    getStoreName:() => string
 }

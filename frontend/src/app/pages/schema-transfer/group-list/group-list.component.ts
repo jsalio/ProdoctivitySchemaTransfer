@@ -17,18 +17,25 @@ export class GroupListComponent implements OnInit {
   documentGroups = signal<Array<DocumentGroup>>([])
   loading = signal<boolean>(true)
   selectedItem = signal<DocumentGroup | null>(null);
-  selectedDocumetGroup = output<DocumentGroup|null>()
+  selectedDocumetGroup = output<DocumentGroup | null>()
 
   constructor(private readonly localData: LocalDataService, private readonly schemaService: SchemaService) {
 
   }
 
   ngOnInit(): void {
-      const credentialOfcloud = this.localData.getValue<Credentials>("Credentials_V6_Cloud");
+    const credentialOfcloud = this.localData.getValue<Credentials>("Credentials_V6_Cloud");
     if (credentialOfcloud) {
       this.schemaService.getDocumentGruops(credentialOfcloud).subscribe((groupsData) => {
         console.log(groupsData)
         this.documentGroups.set(groupsData.data)
+      })
+    }
+    const credentialsOfFluency =  this.localData.getValue<Credentials>("Credentials_V5_V5");
+    if (credentialsOfFluency) {
+      this.schemaService.getDocumentGruops(credentialsOfFluency).subscribe((groupsData) => {
+        console.log(groupsData)
+        // this.documentGroups.set(groupsData.data)
       })
     }
   }

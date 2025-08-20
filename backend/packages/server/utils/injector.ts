@@ -13,19 +13,24 @@ export const buildContainer = async () => {
     container.register<IStore>('ClodStore', ProdoctivityClodStore)
     container.register<IStore>('FluencyStore', ProdoctivityFluencyStore)
 
+    // injectar los authservices por store
     container.register<AuthService>('AuthServiceCloud', () => {
         const cloudStore = container!.resolve<IStore>('ClodStore')
         return new AuthService(cloudStore);
     }, "singleton")
-
     container.register<AuthService>('AuthServiceFluency', () => {
         const cloudStore = container!.resolve<IStore>('FluencyStore')
         return new AuthService(cloudStore);
     }, "singleton")
 
-    container.register<SchemaService>('SchemaService', () => {
-        const cloudStore = container!.resolve<IStore>('ClodStoreSchema')
+    // injectar las dependencias  de los Schemas service por store
+    container.register<SchemaService>('SchemaCloudService', () => {
+        const cloudStore = container!.resolve<IStore>('ClodStore')
         return new SchemaService(cloudStore);
+    }, "singleton")
+    container.register<SchemaService>('SchemaFluencyService', () => {
+        const fluencyStore = container!.resolve<IStore>('FluencyStore')
+        return new SchemaService(fluencyStore);
     }, "singleton")
     
     return container;

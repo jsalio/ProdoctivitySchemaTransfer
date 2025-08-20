@@ -14,6 +14,7 @@ export class SchemaService extends BaseService {
 
     async GetListOfDocumentGroups(credentials: Credentials) {
         try {
+            console.log(this.store.getStoreName())
             const request = this.buildRequest<Credentials>(credentials)
             let login = new GetDocumentGroups(request, this.store)
             const error = this.checkValidation(login.validate())

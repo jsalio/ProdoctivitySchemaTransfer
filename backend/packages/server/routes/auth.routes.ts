@@ -60,6 +60,7 @@ export const AuthRoutes = (container: DependenceInjectionContainer) => {
         .post('', async ({ body, di, set }) => {
             console.log(JSON.stringify(body))
             const authService = di.resolve<AuthService>((body as any).store === "Cloud" ? 'AuthServiceCloud' : 'AuthServiceFluency');
+            console.log('Store to login:',(body as any)?.store)
             const result = await authService.LoginToStore(body as any);
             set.status = result === "" || result === undefined ? 403 : 200;
             return {

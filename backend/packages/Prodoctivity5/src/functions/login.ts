@@ -11,7 +11,9 @@ export const LoginToProdoctivity = async (credential: Credentials): Promise<stri
         const headers = new Headers();
         //headers.append("Content-Type", "application/json");
         headers.append("x-api-key", credential.serverInformation.apiKey)
-        headers.append("Authorization", `Basic ${btoa(`${credential.username}:${credential.password}`)}`)
+        const basicAuthText=`${credential.username+"@prodoctivity capture"}:${credential.password}`
+        headers.append("Authorization", `Basic ${btoa(basicAuthText)}`);
+        // headers.append("Authorization", `Basic ${btoa(`${credential.username+"@prodoctivity capture"}:${credential.password}`)}`)
 
         const requestOptions: RequestInit = {
             method: "POST",
@@ -20,7 +22,7 @@ export const LoginToProdoctivity = async (credential: Credentials): Promise<stri
             redirect: "follow"
         };
 
-        console.log(JSON.stringify(requestOptions))
+        // console.log(JSON.stringify(requestOptions))
 
         const response = await fetch(`${credential.serverInformation.server}/site/api/v1/auth/session`, requestOptions);
         if (!response.ok) {

@@ -9,6 +9,7 @@ export const ProdoctivityClodStore= ():IStore => {
         login: LoginToProdoctivity,
         getDocumentGroups: GetDocumentGroup,
         getDocumentTypeInGroup:GetDocumentTypeInGroup,
-        getDocumentTypeSchema:GetDocumentTypeStruct
+        getDocumentTypeSchema:GetDocumentTypeStruct,
+        getStoreName:()=> "Prodoctivity Cloud"
     }
 }
