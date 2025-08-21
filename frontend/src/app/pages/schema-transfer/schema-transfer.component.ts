@@ -1,10 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, effect, input, signal } from '@angular/core';
-import { DocumentType, DocumentTypesListComponent } from "./document-types-list/document-types-list.component";
+import {Component, OnInit, signal} from '@angular/core';
+import { DocumentTypesListComponent, SchemaDocumentType } from "./document-types-list/document-types-list.component";
+import { GroupListComponent, SchemaDocumentGroup } from "./group-list/group-list.component";
 
 import { CommonModule } from "@angular/common";
-import { DocumentGroup } from '../../types/contracts/ISchema';
 import { DocumentTypeSchemaComponent } from './document-type-schema/document-type-schema.component';
-import { GroupListComponent } from "./group-list/group-list.component";
 
 @Component({
   selector: 'app-schema-transfer',
@@ -14,19 +13,19 @@ import { GroupListComponent } from "./group-list/group-list.component";
   styleUrl: './schema-transfer.component.css'
 })
 export class SchemaTransferComponent implements OnInit {
-   selectedGroup = signal<DocumentGroup | null>(null);
-   selectedDocumentType= signal<DocumentType| null>(null)
+   selectedGroup = signal<SchemaDocumentGroup | null>(null);
+   selectedDocumentType= signal<SchemaDocumentType| null>(null)
 
 
 
   ngOnInit(): void {
   }
 
-  onSelectDocumentGroup = (group:DocumentGroup) => {
+  onSelectDocumentGroup = (group:SchemaDocumentGroup) => {
       this.selectedGroup.set(group);
   }
 
-  onDocumentTypeSelected = (documentType:DocumentType) =>{
+  onDocumentTypeSelected = (documentType:SchemaDocumentType) =>{
     this.selectedDocumentType.set(documentType)
   }
 }

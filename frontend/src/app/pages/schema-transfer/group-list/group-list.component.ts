@@ -4,7 +4,15 @@ import { CommonModule } from '@angular/common';
 import { Credentials } from '../../../types/models/Credentials';
 import { DocumentGroup } from '../../../types/contracts/ISchema';
 import { LocalDataService } from '../../../services/ui/local-data.service';
+import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
+
+export type SchemaDocumentGroup={
+  groupId: string,
+  groupName: string,
+  documentTypesCounter: number,
+  targetId:string|null
+}
 
 @Component({
   selector: 'app-group-list',
@@ -14,10 +22,29 @@ import { SchemaService } from '../../../services/backend/schema.service';
   styleUrl: './group-list.component.css'
 })
 export class GroupListComponent implements OnInit {
-  documentGroups = signal<Array<DocumentGroup>>([])
+  sourceDocumentGroups = signal<Array<DocumentGroup>>([])
+  targetDocumentGroups=signal<DocumentGroup[]>([])
+  SchemaDocumentGroups=computed(() => {
+    const findInTarget = (name:string):string|null=>{
+      const item = this.targetDocumentGroups().find(x => x.groupName ===name)
+      if (!item){
+        return null
+      }
+      return item.groupId
+    }
+
+    return this.sourceDocumentGroups().map(x=> ({
+      documentTypesCounter:x.documentTypesCounter,
+      groupId:x.groupId,
+      groupName:x.groupName,
+      targetId:findInTarget(x.groupName)
+    }) as SchemaDocumentGroup)
+  })
+  
   loading = signal<boolean>(true)
-  selectedItem = signal<DocumentGroup | null>(null);
-  selectedDocumetGroup = output<DocumentGroup | null>()
+  selectedItem = signal<SchemaDocumentGroup | null>(null);
+  selectedDocumetGroup = output<SchemaDocumentGroup | null>()
+ 
 
   constructor(private readonly localData: LocalDataService, private readonly schemaService: SchemaService) {
 
@@ -26,18 +53,27 @@ export class GroupListComponent implements OnInit {
   ngOnInit(): void {
     const credentialOfcloud = this.localData.getValue<Credentials>("Credentials_V6_Cloud");
     if (credentialOfcloud) {
-      this.schemaService.getDocumentGruops(credentialOfcloud).subscribe((groupsData) => {
-        console.log(groupsData)
-        this.documentGroups.set(groupsData.data)
+      this.executeCall(credentialOfcloud, (response)=> {
+        this.sourceDocumentGroups.set(response.data)
       })
     }
     const credentialsOfFluency =  this.localData.getValue<Credentials>("Credentials_V5_V5");
     if (credentialsOfFluency) {
-      this.schemaService.getDocumentGruops(credentialsOfFluency).subscribe((groupsData) => {
-        console.log(groupsData)
-        // this.documentGroups.set(groupsData.data)
+      this.executeCall(credentialsOfFluency, (response)=> {
+        this.targetDocumentGroups.set(response.data)
       })
     }
+  }
+
+  executeCall = (credentials:Credentials, callback:(response:{data: Array<DocumentGroup>, success:boolean})=> void) => {
+    ObservableHandler.handle(this.schemaService.getDocumentGruops(credentials))
+      .onNext(callback)
+      .onStart(() => this.loading.set(true))
+      .onError((errr) => {
+        console.warn(errr)
+      })
+      .onFinalize(()=>this.loading.set(false))
+      .execute()
   }
 
   // Computed signal que reactivamente calcula las clases para cada item
@@ -49,7 +85,7 @@ export class GroupListComponent implements OnInit {
     // Retorna un Map para lookup eficiente
     const classMap = new Map<string, string>();
 
-    this.documentGroups().forEach(item => {
+    this.sourceDocumentGroups().forEach(item => {
       const isSelected = selected && item.groupName === selected.groupName;
       classMap.set(item.groupName, isSelected ? selectedClass : baseClass);
     });
@@ -58,7 +94,8 @@ export class GroupListComponent implements OnInit {
   });
 
   markItemAsSelected = (groupId: string) => {
-    const selected = this.documentGroups().find(x => x.groupId === groupId);
+    
+    const selected = this.SchemaDocumentGroups().find(x => x.groupId === groupId);
     if (selected) {
       this.selectedItem.set(selected);
       this.selectedDocumetGroup.emit(selected)
@@ -69,4 +106,5 @@ export class GroupListComponent implements OnInit {
   getItemClass = (groupName: string): string => {
     return this.itemClasses().get(groupName) || "p-2 rounded cursor-pointer hover:bg-blue-100";
   }
+  
 }

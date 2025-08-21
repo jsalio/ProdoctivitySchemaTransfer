@@ -8,6 +8,7 @@
         <!-- Documentos -->
         <section class="w-2/5 bg-white border-r overflow-y-auto p-4">
             <app-document-types-list [parentGroup]="selectedGroup()?.groupId"
+                [parentTargetGroup]="selectedGroup()?.targetId"
                 (onDocumentypeSeleted)="onDocumentTypeSelected($event)" />
         </section>
 
