@@ -1,5 +1,5 @@
 <!-- Navbar -->
-<nav class="bg-blue-600 text-white p-4">
+<!-- <nav class="bg-blue-600 text-white p-4">
   <div class="container mx-auto flex justify-between">
     <h1 class="text-xl font-bold">Schema Transfer</h1>
     <div class="space-x-4">
@@ -9,8 +9,33 @@
       <span (click)="openCredentialsModal()">Status : {{getConnectionStatus()}}</span>
     </div>
   </div>
-</nav>
-<router-outlet />
+</nav> -->
+<header class="header">
+  <div class="header-content">
+    <div class="header-left">
+      <div class="logo">
+        <div class="logo-icon">
+          <i data-lucide="file-type"></i>
+        </div>
+        <h1 class="logo-text">Schema Transfer</h1>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-button">Schemas</button>
+      <button class="nav-button">Forms</button>
+      <button class="nav-button">History</button>
+      <div class="status-indicator" (click)="openCredentialsModal()">
+        <div class="status-dot"></div>
+        <span class="status-text">Conectado</span>
+      </div>
+    </nav>
+  </div>
+</header>
+<div class="main-container">
+  <!-- <div class="panel grupos-panel"> -->
+    <router-outlet />
+  <!-- </div> -->
+</div>
 
 <!-- Toast Notification -->
 <div class="fixed bottom-4 right-4 p-4 bg-green-600 text-white rounded-md shadow-lg hidden">

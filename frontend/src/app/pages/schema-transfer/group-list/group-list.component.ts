@@ -33,10 +33,10 @@ export class GroupListComponent implements OnInit {
     }
     const credentialsOfFluency =  this.localData.getValue<Credentials>("Credentials_V5_V5");
     if (credentialsOfFluency) {
-      this.schemaService.getDocumentGruops(credentialsOfFluency).subscribe((groupsData) => {
-        console.log(groupsData)
-        // this.documentGroups.set(groupsData.data)
-      })
+      // this.schemaService.getDocumentGruops(credentialsOfFluency).subscribe((groupsData) => {
+      //   console.log(groupsData)
+      //   // this.documentGroups.set(groupsData.data)
+      // })
     }
   }
 
