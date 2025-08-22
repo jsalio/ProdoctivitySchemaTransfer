@@ -33,8 +33,13 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   // Computed para el estado de carga general
   isLoading = computed(() => this.loadingSource() || this.loadingTarget());
 
+  // Computed para verificar si al menos el schema fuente está listo
+  sourceSchemaReady = computed(() => {
+    return this.sourceDocumentSchema() !== null;
+  });
+
   // Computed para verificar si ambos esquemas están listos
-  schemasReady = computed(() => {
+  bothSchemasReady = computed(() => {
     return this.sourceDocumentSchema() !== null && this.targetDocumentSchema() !== null;
   });
 
@@ -42,13 +47,14 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
     const sourceSchema = this.sourceDocumentSchema();
     const targetSchema = this.targetDocumentSchema();
 
-    // Solo procesar si ambos esquemas están disponibles
-    if (!sourceSchema || !targetSchema) {
+    // Solo necesitamos el esquema fuente para mostrar las llaves
+    if (!sourceSchema) {
       return null;
     }
 
     const isPartOfSchema = (keyName: string): boolean => {
-      if (!targetSchema.keywords) return false;
+      // Si no hay schema target, ninguna llave está sincronizada
+      if (!targetSchema || !targetSchema.keywords) return false;
 
       const keyword = targetSchema.keywords.find(x =>
         x.name?.toLocaleLowerCase() === keyName?.toLocaleLowerCase()
