@@ -43,16 +43,16 @@ export const LoginRequestDoc = (isLogin: boolean, defineParams?: boolean) => ({
 
 
 export const AuthRoutes = (container: DependenceInjectionContainer) => {
-    container.register<AuthService>('AuthServiceCloud', () => {
-        console.log('Run...')
-        const store = container.resolve<IStore>('ClodStore')
-        return new AuthService(store);
-    }, "singleton")
-    container.register<AuthService>('AuthServiceFluency', () => {
-        console.log('Run...')
-        const store = container.resolve<IStore>('FluencyStore')
-        return new AuthService(store);
-    }, "singleton")
+    // container.register<AuthService>('AuthServiceCloud', () => {
+    //     console.log('Run...')
+    //     const store = container.resolve<IStore>('ClodStore')
+    //     return new AuthService(store);
+    // }, "singleton")
+    // container.register<AuthService>('AuthServiceFluency', () => {
+    //     console.log('Run...')
+    //     const store = container.resolve<IStore>('FluencyStore')
+    //     return new AuthService(store);
+    // }, "singleton")
 
 
     const publicRoutes = new Elysia({ prefix: '/auth' })

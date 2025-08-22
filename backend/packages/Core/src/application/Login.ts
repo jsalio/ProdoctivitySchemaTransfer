@@ -3,39 +3,54 @@ import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
 
+/**
+ * Handles user authentication and login operations.
+ * This class is responsible for validating credentials and managing user sessions.
+ */
 export class Login {
+    /**
+     * Creates a new instance of Login
+     * @param request - The request object containing user credentials
+     * @param store - The store interface for authentication operations
+     */
+    constructor(
+        private readonly request: IRequest<Credentials>, 
+        private readonly store: IStore
+    ) {}
 
     /**
-     * 
-     * @param request 
-     * @param store 
+     * Validates the login request by checking the provided credentials
+     * @returns An array of validation errors, if any
      */
-    constructor(private readonly request: IRequest<Credentials>, private readonly store: IStore) {
-
-    }
-
     validate() {
-        let validations = new LoginValidator(this.request.build())
-        let errors = validations.Validate();
+        const validations = new LoginValidator(this.request.build());
+        const errors = validations.Validate();
         return errors;
     }
 
-    async execute(): Promise<{store:string, token:string}> {
-        const request = this.request.build()
+    /**
+     * Executes the login operation
+     * @returns A promise that resolves to an object containing the store information and authentication token
+     */
+    async execute(): Promise<{store: string, token: string}> {
+        const request = this.request.build();
         try {
-            var token = await this.store.login(request)
-            console.log(token)
+            const token = await this.store.login(request);
             
-           return {
-                store: (request.serverInformation.dataBase === "" || !request.serverInformation.dataBase ) ? "Prodoctivity Cloud" : "Prodoctivity V5",
-                token: token
-           }
-        }
-        catch (ex) {
+            // Determine the store type based on the database information
+            const storeType = (!request.serverInformation.dataBase || request.serverInformation.dataBase === "") 
+                ? "Prodoctivity Cloud" 
+                : "Prodoctivity V5";
+            
             return {
-                store:'',
-                token:''
-            }
+                store: storeType,
+                token: token
+            };
+        } catch (ex) {
+            return {
+                store: '',
+                token: ''
+            };
         }
     }
 

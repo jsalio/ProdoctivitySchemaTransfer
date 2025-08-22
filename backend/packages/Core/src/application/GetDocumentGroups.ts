@@ -4,35 +4,49 @@ import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 
+/**
+ * Handles the retrieval of document groups from the system.
+ * This class is responsible for validating the request and fetching document groups from the store.
+ */
 export class GetDocumentGroups {
+    /**
+     * Creates a new instance of GetDocumentGroups
+     * @param request - The request object containing user credentials
+     * @param store - The store interface for data access operations
+     */
+    constructor(
+        private readonly request: IRequest<Credentials>, 
+        private readonly store: IStore
+    ) {}
 
     /**
-     *
+     * Validates the request by checking the provided credentials
+     * @returns An array of validation errors, if any
      */
-    constructor(private readonly request: IRequest<Credentials>, private readonly store: IStore) {
-
-    }
-
     validate() {
-        let validations = new LoginValidator(this.request.build())
-        let errors = validations.Validate();
+        const validations = new LoginValidator(this.request.build());
+        const errors = validations.Validate();
         return errors;
     }
 
-    async execute(): Promise<{message:string, groups:DocumentGroup[]}> {
+    /**
+     * Executes the document groups retrieval operation
+     * @returns A promise that resolves to an object containing the document groups or an error message
+     */
+    async execute(): Promise<{message: string, groups: DocumentGroup[]}> {
         try {
-            const credentials = this.request.build()
-            let groups = await this.store.getDocumentGroups(credentials)
+            const credentials = this.request.build();
+            const groups = await this.store.getDocumentGroups(credentials);
+            
             return {
-                message:'',
+                message: '',
                 groups: Array.from(groups)
             };
-        }
-        catch (ex) {
+        } catch (ex) {
             return {
-                message: "Error occurs",
-                groups:[]
-            }
+                message: 'Error occurred while retrieving document groups',
+                groups: []
+            };
         }
     }
 
