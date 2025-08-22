@@ -31,7 +31,7 @@ export const getDocumentTypes = async (credential: Credentials,id:string): Promi
         const response = await fetch(`${credential.serverInformation.server}/site/api/v2/document-types`, requestOptions);
 
         const body: FluencyDocumentType[] = await response.json();
-        console.log("Document types",JSON.stringify(body, null, 2))
+        //console.log("Document types",JSON.stringify(body, null, 2))
         if (body) {
             return body.filter(x => x.businessLine.id.toString() === id).map(x => ({
                 documentTypeId: x.id.toString(),

@@ -1,5 +1,5 @@
 <h2 class="font-semibold text-gray-700 mb-2">Llaves</h2>
-@if(loading()){
+@if(loadingSource() && loadingTarget()){
 <span>Cargando llaves espere.....</span>
 }
 @else {
@@ -11,7 +11,7 @@
     @for (item of documentSchema().keywords; track $index) {
     <li>
         <label class="flex items-center space-x-2 text-gray-400">
-            <input type="checkbox">
+            <input type="checkbox" [checked]="item.isSync" [disabled]="item.isSync">
             <!-- <input type="checkbox" checked disabled> debe estar asi para elemento que exten -->
             <span class="flex items-center">
                 <!-- 🔑 {{item.name}} -->
@@ -20,7 +20,7 @@
                   </svg>
                   {{item.name}}
             </span>
-            @if(item.require){
+            @if(item.require && !item.isSync){
             <div class="tooltip inline-flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                     class="w-4 h-4 text-orange-600">
@@ -31,14 +31,43 @@
                 <span class="tooltiptext">Requerido</span>
             </div>
             }
-            <!-- <span class="ml-2 text-green-600 text-xs">✔️ Ya existe en B</span> -->
-            <!-- //usar si existe en la otra store -->
+            @if(item.isSync){
+                <div class="tooltip inline-flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5" class="w-4 h-4 text-blue-600">
+                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                      </svg>
+                      <span class="tooltiptext">Sincronizado con el documento</span>
+                </div>
+            }
         </label>
     </li>
     }
     }
 </ul>
 }
+<!-- <app-modal [isOpen]="errorModalOpen()" (close)="onModalHandlerClose()" [size]="'basic'">
+    <h2 class="text-xl font-bold">Error de solicitud</h2>
+    <div class="flex items-center">
+        Fallo al recuperar los datos del sistema {{storeMessageFailured()}}
+    </div>
+</app-modal> -->
+<app-modal [isOpen]="errorModalOpen()" (close)="onModalHandlerClose()" [size]="'basic'">
+    <div class="text-center">
+      <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+        <svg class="h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+        </svg>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 mb-2">Error de Conexión</h2>
+      <p class="text-gray-600">
+        No se pudieron recuperar los datos del sistema 
+        <strong class="text-red-600">{{storeMessageFailured()}}</strong>
+      </p>
+      <p class="text-sm text-gray-500 mt-2">
+        Por favor, verifique su conexión e intente nuevamente.
+      </p>
+    </div>
+  </app-modal>
 
 
 <!-- <div class="mt-4 p-3 bg-gray-50 border rounded">

@@ -52,8 +52,8 @@ export const getDocumentTypeSchema = async (credential: Credentials, documentTyp
                     label: key.humanName,
                     dataType: key.definition.properties.dataType,
                     require: false
-                }))[0]
-            }) as any)
+                }))
+            }) as any)[0]
         }
 
         throw new Error("No token received in response");
