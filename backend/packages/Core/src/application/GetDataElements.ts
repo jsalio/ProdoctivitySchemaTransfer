@@ -1,5 +1,5 @@
 import { Credentials } from "../domain/Credentials";
-import { DataElement } from "../domain/DocumentGroup";
+import { DataElement } from "../domain/DataElement";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
 import { LoginValidator } from "../domain/Validations/LoginValidator";

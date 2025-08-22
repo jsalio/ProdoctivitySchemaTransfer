@@ -6,6 +6,9 @@ export * from "./application/infrastructure/DependencyInjector"
 export * from "./application/Login"
 export * from './domain/ValidationError'
 export * from './domain/DocumentGroup'
+export * from './domain/DocumentType'
+export * from './domain/SchemaDocumentType'
+export * from './domain/DataElement'
 export * from './application/GetDocumentGroups'
 export * from './application/GetDocumentTypesInGroup'
 export * from './application/DocumentTypeSchema'

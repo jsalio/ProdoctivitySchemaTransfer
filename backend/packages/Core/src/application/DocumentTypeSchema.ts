@@ -1,9 +1,8 @@
-import { DocumentType, SchemaDocumentType } from "../domain/DocumentGroup";
-
 import { Credentials } from "../domain/Credentials";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
+import { SchemaDocumentType } from "../domain/SchemaDocumentType";
 
 export class GetDocumentTypeSchema {
 

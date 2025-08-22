@@ -19,7 +19,7 @@ import { SchemaService } from '../../../services/backend/schema.service';
 export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   documentTypeID = input<string>('')
   targetDocumentTypeId = input<string>('')
-  targetSystemDataElements= input<DataElement[]>([])
+  targetSystemDataElements = input<DataElement[]>([])
 
   sourceDocumentSchema = signal<SchemaDocumentType | null>(null)
   loadingSource = signal<boolean>(false)
@@ -64,14 +64,14 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
       return keyword !== undefined;
     }
 
-    const isInTarget = (keyname:string): boolean =>{
-      if (this.targetSystemDataElements().length ===0){
+    const isInTarget = (keyname: string): boolean => {
+      if (this.targetSystemDataElements().length === 0) {
         console.log('No exits 1')
         return false
       }
       let elementInTarget = this.targetSystemDataElements().find(x => x.name.toLocaleLowerCase() === keyname.toLocaleLowerCase())
       debugger
-      if (!elementInTarget){
+      if (!elementInTarget) {
         console.log('No exits 2')
         return false
       }
@@ -87,7 +87,7 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
         label: k.label,
         name: k.name,
         require: k.require,
-        presentInTarget:isInTarget(k.name)
+        presentInTarget: isInTarget(k.name)
       }))
     }
 
@@ -161,12 +161,12 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
 
   private loadSourceSchema(credentials: Credentials, documentTypeId: string): void {
     this.executeCall(
-      credentials, 
-      documentTypeId, 
+      credentials,
+      documentTypeId,
       (response) => {
         this.sourceDocumentSchema.set(response.data);
-      }, 
-      this.loadingSource, 
+      },
+      this.loadingSource,
       () => {
         this.showError('Productivity Cloud (V6)');
       }
@@ -175,12 +175,12 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
 
   private loadTargetSchema(credentials: Credentials, documentTypeId: string): void {
     this.executeCall(
-      credentials, 
-      documentTypeId, 
+      credentials,
+      documentTypeId,
       (response) => {
         this.targetDocumentSchema.set(response.data);
-      }, 
-      this.loadingTarget, 
+      },
+      this.loadingTarget,
       () => {
         this.showError('Productivity Fluency (V5)');
       }
@@ -213,9 +213,5 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   onModalHandlerClose = (): void => {
     this.errorModalOpen.set(false);
     this.storeMessageFailured.set('');
-  }
-
-  keywordIsSync = (name:string) => {
-
   }
 }

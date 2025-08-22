@@ -1,28 +1,14 @@
+/**
+ * Represents a group of related document types in the system.
+ * Used for organizing and categorizing different types of documents.
+ */
 export type DocumentGroup = {
-    groupId: string,
-    groupName: string,
-    documentTypesCounter: number
-}
-
-export interface DocumentType {
-    documentTypeId: string,
-    documentTypeName: string,
-}
-
-export interface SchemaDocumentType{
-    name: string
-    documentTypeId: string
-    keywords: {
-        name: string
-        label: string,
-        dataType: string,
-        require: boolean
-    }
-}
-
-export interface DataElement{
-    id: string,
-    name: string,
-    dataType: string
-    required: string
-}
+    /** Unique identifier for the document group */
+    groupId: string;
+    
+    /** Display name of the document group */
+    groupName: string;
+    
+    /** Number of document types contained within this group */
+    documentTypesCounter: number;
+};
