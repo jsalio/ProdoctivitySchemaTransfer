@@ -42,7 +42,6 @@ export const getDocumentTypeSchema = async (credential: Credentials, documentTyp
         const response = await fetch(`${credential.serverInformation.server}/site/api/v2/document-types`, requestOptions);
 
         const body: FluencyDocumentTypeSchema[] = await response.json();
-        console.log("Document types", JSON.stringify(body, null, 2))
         if (body) {
             return body.filter(x => x.id.toString() === documentTypeId).map(x => ({
                 name: x.name,

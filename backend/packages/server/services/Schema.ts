@@ -1,8 +1,6 @@
-import { Credentials, GetDocumentGroups, GetDocumentTypeSchema, GetDocumentTypesGroups, IStore } from "@schematransfer/core";
+import { Credentials, GetAllDataElemets, GetDocumentGroups, GetDocumentTypeSchema, GetDocumentTypesGroups, IStore } from "@schematransfer/core";
 
 import { BaseService } from "./BaseService";
-
-//import { GetDocumentTypeInGroup } from "packages/ProdoctivityCloud/src/functions/ListDocumentTypeGroups";
 
 export class SchemaService extends BaseService {
     /**
@@ -76,6 +74,27 @@ export class SchemaService extends BaseService {
             return "Error occurs"
         }
 
+    }
+
+    async GetSystemDataElements(credential:Credentials){
+        try {
+            console.log(this.store.getStoreName())
+            const request = this.buildRequest<Credentials>(credential)
+            let login = new GetAllDataElemets(request, this.store)
+            const error = this.checkValidation(login.validate())
+            if (error !== "") {
+                return error
+            }
+            const result = await login.execute()
+            if (result.message !== "") {
+                return result.message
+            }
+            
+            return result.dataElements
+        }
+        catch (err) {
+            return "Error occurs"
+        }
     }
     
 }

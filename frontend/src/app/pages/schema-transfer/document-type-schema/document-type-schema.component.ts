@@ -1,6 +1,7 @@
 import { Component, OnChanges, OnDestroy, Signal, SimpleChanges, WritableSignal, computed, input, signal } from '@angular/core';
 
 import { Credentials } from '../../../types/models/Credentials';
+import { DataElement } from '../../../types/contracts/ISchema';
 import { DocumentTypeKeywordSchema } from '../../../types/models/DocumentTypeKeywordSchema';
 import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ModalComponent } from "../../../shared/modal/modal.component";
@@ -18,11 +19,12 @@ import { SchemaService } from '../../../services/backend/schema.service';
 export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   documentTypeID = input<string>('')
   targetDocumentTypeId = input<string>('')
+  targetSystemDataElements= input<DataElement[]>([])
+
   sourceDocumentSchema = signal<SchemaDocumentType | null>(null)
   loadingSource = signal<boolean>(false)
   loadingTarget = signal<boolean>(false)
   targetDocumentSchema = signal<SchemaDocumentType | null>(null)
-
   errorModalOpen = signal<boolean>(false)
   storeMessageFailured = signal<string>('')
 
@@ -62,6 +64,20 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
       return keyword !== undefined;
     }
 
+    const isInTarget = (keyname:string): boolean =>{
+      if (this.targetSystemDataElements().length ===0){
+        console.log('No exits 1')
+        return false
+      }
+      let elementInTarget = this.targetSystemDataElements().find(x => x.name.toLocaleLowerCase() === keyname.toLocaleLowerCase())
+      debugger
+      if (!elementInTarget){
+        console.log('No exits 2')
+        return false
+      }
+      return true
+    }
+
     const currentSchema: DocumentTypeKeywordSchema = {
       name: sourceSchema.name,
       documentTypeId: sourceSchema.documentTypeId,
@@ -70,7 +86,8 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
         isSync: isPartOfSchema(k.name),
         label: k.label,
         name: k.name,
-        require: k.require
+        require: k.require,
+        presentInTarget:isInTarget(k.name)
       }))
     }
 
@@ -196,5 +213,9 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   onModalHandlerClose = (): void => {
     this.errorModalOpen.set(false);
     this.storeMessageFailured.set('');
+  }
+
+  keywordIsSync = (name:string) => {
+
   }
 }

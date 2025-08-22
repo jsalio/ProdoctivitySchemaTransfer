@@ -19,3 +19,10 @@ export interface SchemaDocumentType{
         require: boolean
     }
 }
+
+export interface DataElement{
+    id: string,
+    name: string,
+    dataType: string
+    required: string
+}

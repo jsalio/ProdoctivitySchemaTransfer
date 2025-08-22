@@ -1,14 +1,74 @@
+// Import the Credentials model, which likely defines the structure for authentication credentials.
 import { Credentials } from "../models/Credentials";
+// Import Observable from RxJS, used for handling asynchronous data streams.
 import { Observable } from "rxjs";
 
+// Defines the structure of a DocumentGroup object, representing a group of documents.
 export type DocumentGroup = {
-    groupId: string,
-    groupName: string,
-    documentTypesCounter: number
+    /** Unique identifier for the document group. */
+    groupId: string;
+    /** Name of the document group. */
+    groupName: string;
+    /** Number of document types within the group. */
+    documentTypesCounter: number;
+};
+
+export interface DataElement{
+    id: string,
+    name: string,
+    dataType: string
+    required: string
 }
 
-export interface IScehma {
-    getDocumentGruops:(credetials:Credentials) => Observable<{data: Array<DocumentGroup>, success:boolean}>
-    getDocumentTypesInGroup:(credentials:Credentials, groupId:string) => Observable<{data: Array<any>, success:boolean}>
-    getDocumentTypeSchema:(credentials:Credentials, documentTypeId:string) => Observable<{data: Array<any>, success:boolean}>
+// Interface defining methods for interacting with document-related data via asynchronous operations.
+export interface ISchema {
+    /**
+     * Retrieves a list of document groups based on provided credentials.
+     * @param credentials - The authentication credentials required for the request.
+     * @returns An Observable emitting an object containing an array of DocumentGroup objects and a success flag.
+     */
+    getDocumentGruops: (credetials: Credentials) => Observable<{
+        /** Array of document groups. */
+        data: Array<DocumentGroup>;
+        /** Indicates whether the request was successful. */
+        success: boolean;
+    }>;
+
+    /**
+     * Retrieves document types within a specific group based on provided credentials and group ID.
+     * @param credentials - The authentication credentials required for the request.
+     * @param groupId - The unique identifier of the document group.
+     * @returns An Observable emitting an object containing an array of document types and a success flag.
+     */
+    getDocumentTypesInGroup: (credentials: Credentials, groupId: string) => Observable<{
+        /** Array of document types within the specified group. */
+        data: Array<any>;
+        /** Indicates whether the request was successful. */
+        success: boolean;
+    }>;
+
+    /**
+     * Retrieves the schema for a specific document type based on provided credentials and document type ID.
+     * @param credentials - The authentication credentials required for the request.
+     * @param documentTypeId - The unique identifier of the document type.
+     * @returns An Observable emitting an object containing the schema data for the document type and a success flag.
+     */
+    getDocumentTypeSchema: (credentials: Credentials, documentTypeId: string) => Observable<{
+        /** Array of schema data for the specified document type. */
+        data: Array<any>;
+        /** Indicates whether the request was successful. */
+        success: boolean;
+    }>;
+
+    /**
+     * Retrieves all data elements based on provided credentials.
+     * @param credentials - The authentication credentials required for the request.
+     * @returns An Observable emitting an object containing an array of all data elements and a success flag.
+     */
+    getAllDataElements: (credetials: Credentials) => Observable<{
+        /** Array of all data elements. */
+        data: Array<DataElement>;
+        /** Indicates whether the request was successful. */
+        success: boolean;
+    }>;
 }

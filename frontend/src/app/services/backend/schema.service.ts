@@ -1,4 +1,4 @@
-import { DocumentGroup, IScehma } from '../../types/contracts/ISchema';
+import { DocumentGroup, ISchema } from '../../types/contracts/ISchema';
 
 import { BaseService } from './BaseService';
 import { Credentials } from '../../types/models/Credentials';
@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class SchemaService extends BaseService implements IScehma {
+export class SchemaService extends BaseService implements ISchema {
 
   constructor(private readonly client:HttpClient) 
   {
@@ -26,5 +26,9 @@ export class SchemaService extends BaseService implements IScehma {
 
   getDocumentTypeSchema (credentials: Credentials, documentTypeId: string): Observable<{ data: any; success: boolean; }>{
     return this.client.post<{data: any, success:boolean}>(`${this.Uri}/document-type/${documentTypeId}`, credentials)
+  }
+
+  getAllDataElements (credetials: Credentials): Observable<{ data: Array<any>; success: boolean; }>{
+    return this.client.post<{data: Array<DocumentGroup>, success:boolean}>(`${this.Uri}/data-elements`, credetials)
   }
 }
