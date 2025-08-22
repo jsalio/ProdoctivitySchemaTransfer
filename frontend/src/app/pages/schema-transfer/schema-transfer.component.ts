@@ -9,6 +9,7 @@ import { DocumentTypeSchemaComponent } from './document-type-schema/document-typ
 import { LocalDataService } from '../../services/ui/local-data.service';
 import { ObservableHandler } from '../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../services/backend/schema.service';
+import { DocumetTypeKeyword } from '../../types/models/DocumentTypeKeywordSchema';
 
 @Component({
   selector: 'app-schema-transfer',
@@ -21,8 +22,8 @@ export class SchemaTransferComponent implements OnInit {
   selectedGroup = signal<SchemaDocumentGroup | null>(null);
   selectedDocumentType = signal<SchemaDocumentType | null>(null)
   loadingDataElements = signal<boolean>(false)
-
   systemTargetDataElements= signal<DataElement[]>([])
+  keywordsSelectedPerDocument = signal<DocumetTypeKeyword[]>([])
   /**
    *
    */
@@ -44,10 +45,28 @@ export class SchemaTransferComponent implements OnInit {
 
   onSelectDocumentGroup = (group: SchemaDocumentGroup) => {
     this.selectedGroup.set(group);
+    this.keywordsSelectedPerDocument.set([])
   }
 
   onDocumentTypeSelected = (documentType: SchemaDocumentType) => {
     this.selectedDocumentType.set(documentType)
+    this.keywordsSelectedPerDocument.set([])
+  }
+
+  addKeyToActions = (event:{isChecked:boolean, keyword:DocumetTypeKeyword}) => {
+    if(event.isChecked){
+      this.keywordsSelectedPerDocument.update(current => [
+        ...current,
+        event.keyword
+      ])
+    }else{
+      this.keywordsSelectedPerDocument.update(current => current.filter(x => x.name === event.keyword.name))
+    }
+    console.log(this.keywordsSelectedPerDocument())
+    const keywordForCreateAndAssign = this.keywordsSelectedPerDocument().filter(x => !x.isSync && !x.presentInTarget)
+    const keywordForOnlyAssign = this.keywordsSelectedPerDocument().filter(x => !x.isSync && x.presentInTarget)
+
+    console.log(keywordForCreateAndAssign,keywordForOnlyAssign)
   }
 
   executeCall = (credentials: Credentials, callback: (response: { data: Array<DataElement>, success: boolean }) => void) => {

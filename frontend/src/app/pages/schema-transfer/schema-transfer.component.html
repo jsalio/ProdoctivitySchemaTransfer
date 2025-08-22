@@ -16,7 +16,7 @@
         <section class="w-2/5 bg-white overflow-y-auto p-4">
             <app-document-type-schema [documentTypeID]="selectedDocumentType()?.documentTypeId"
                 [targetDocumentTypeId]="selectedDocumentType()?.targetDocumentType"
-                [targetSystemDataElements]="systemTargetDataElements()" />
+                [targetSystemDataElements]="systemTargetDataElements()" (onKeySelected)="addKeyToActions($event)" />
         </section>
     </main>
     <footer class="bg-white border-t p-4 flex justify-between items-center">

@@ -1,8 +1,8 @@
-import { Component, OnChanges, OnDestroy, Signal, SimpleChanges, WritableSignal, computed, input, signal } from '@angular/core';
+import { Component, OnChanges, OnDestroy, Signal, SimpleChanges, WritableSignal, computed, input, output, signal } from '@angular/core';
 
 import { Credentials } from '../../../types/models/Credentials';
 import { DataElement } from '../../../types/contracts/ISchema';
-import { DocumentTypeKeywordSchema } from '../../../types/models/DocumentTypeKeywordSchema';
+import { DocumentTypeKeywordSchema, DocumetTypeKeyword } from '../../../types/models/DocumentTypeKeywordSchema';
 import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ModalComponent } from "../../../shared/modal/modal.component";
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
@@ -27,6 +27,8 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   targetDocumentSchema = signal<SchemaDocumentType | null>(null)
   errorModalOpen = signal<boolean>(false)
   storeMessageFailured = signal<string>('')
+
+  onKeySelected = output<{isChecked:boolean, keyword:DocumetTypeKeyword}>()
 
   // Para trackear los valores anteriores y evitar llamadas duplicadas
   private previousSourceId: string | null = null;
@@ -213,5 +215,12 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   onModalHandlerClose = (): void => {
     this.errorModalOpen.set(false);
     this.storeMessageFailured.set('');
+  }
+
+  markKeyword = (event: Event,keyword:DocumetTypeKeyword) => {
+    event.stopPropagation()
+    event.preventDefault()
+    const isChecked = (event.target as HTMLInputElement).checked;
+    this.onKeySelected.emit({isChecked:isChecked, keyword:keyword})
   }
 }
