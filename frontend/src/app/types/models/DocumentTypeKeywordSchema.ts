@@ -11,5 +11,6 @@ export interface DocumetTypeKeyword {
     dataType: string;
     require: boolean;
     isSync: boolean; 
-    presentInTarget:boolean
+    presentInTarget:boolean;
+    targetKeywordId:string;
 }

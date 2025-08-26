@@ -72,12 +72,17 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
         return false
       }
       let elementInTarget = this.targetSystemDataElements().find(x => x.name.toLocaleLowerCase() === keyname.toLocaleLowerCase())
-      debugger
+      
       if (!elementInTarget) {
         console.log('No exits 2')
         return false
       }
       return true
+    }
+
+    const getTargetKeywordId = (keyName: string): string => {
+      const keyword = this.targetSystemDataElements().find(x => x.name.toLocaleLowerCase() === keyName.toLocaleLowerCase())
+      return keyword?.id || "";
     }
 
     const currentSchema: DocumentTypeKeywordSchema = {
@@ -89,7 +94,8 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
         label: k.label,
         name: k.name,
         require: k.require,
-        presentInTarget: isInTarget(k.name)
+        presentInTarget: isInTarget(k.name),
+        targetKeywordId: getTargetKeywordId(k.name),
       }))
     }
 

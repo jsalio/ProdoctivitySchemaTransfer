@@ -13,7 +13,7 @@ export type DocumentGroup = {
     documentTypesCounter: number;
 };
 
-export interface DataElement{
+export interface DataElement {
     id: string,
     name: string,
     dataType: string
@@ -71,4 +71,16 @@ export interface ISchema {
         /** Indicates whether the request was successful. */
         success: boolean;
     }>;
+
+    saveNewDocumentGroup: (credentials: Credentials, groupStruct: { name: string }) => Observable<any>
+    saveNewDocumentType: (credentials: Credentials, documentTypeStruct: { name: string, documentGroupId: string }) => Observable<any>
+    saveNewKeyword: (credentials: Credentials, keywordStruct: { name: string, dataType: string, required: string, label: string }) => Observable<any>
+    saveNewDocumentSchema: (
+        credentials: Credentials,
+        documentSchemaStruct: {
+            name: string,
+            documentTypeId: string,
+            dataElements: Array<number>
+        }
+    ) => Observable<any>
 }

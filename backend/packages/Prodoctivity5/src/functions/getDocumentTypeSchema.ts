@@ -1,5 +1,5 @@
 ///api/business-functions
-import { Credentials, DocumentGroup, DocumentType } from "@schematransfer/core";
+import { Credentials, DocumentGroup, DocumentType, SchemaDocumentType } from "@schematransfer/core";
 
 export type FluencyDocumentTypeSchema = {
     id: number,
@@ -26,7 +26,7 @@ export type FluencyDocumentTypeSchema = {
  * @param credential 
  * @returns 
  */
-export const getDocumentTypeSchema = async (credential: Credentials, documentTypeId: string): Promise<any> => {
+export const getDocumentTypeSchema = async (credential: Credentials, documentTypeId: string): Promise<SchemaDocumentType> => {
     try {
         const headers = new Headers();
         headers.append("x-api-key", credential.serverInformation.apiKey)

@@ -56,6 +56,42 @@ export const SchemaRoutes = (container: DependenceInjectionContainer) => {
                 data: result
             }
         })
+        .post('create-data-element', async ({ body, di, set }) => {
+            const schemaService = di.resolve<SchemaService>((body as any).store === "Cloud" ? 'SchemaCloudService' : 'SchemaFluencyService');
+            const result = await schemaService.CreateDataElement(body as any);
+            set.status = typeof result === 'string' ? 403 : 200;
+            return {
+                success: typeof result === 'string' ? false : true,
+                data: result
+            }
+        })
+        .post('create-document-group', async ({ body, di, set }) => {
+            const schemaService = di.resolve<SchemaService>((body as any).store === "Cloud" ? 'SchemaCloudService' : 'SchemaFluencyService');
+            const result = await schemaService.CreateDocumentGroup(body as any);
+            set.status = typeof result === 'string' ? 403 : 200;
+            return {
+                success: typeof result === 'string' ? false : true,
+                data: result
+            }
+        })
+        .post('create-document-type', async ({ body, di, set }) => {
+            const schemaService = di.resolve<SchemaService>((body as any).store === "Cloud" ? 'SchemaCloudService' : 'SchemaFluencyService');
+            const result = await schemaService.CreateDocumentType(body as any);
+            set.status = typeof result === 'string' ? 403 : 200;
+            return {
+                success: typeof result === 'string' ? false : true,
+                data: result
+            }
+        })
+        .post('assign-data-element', async ({ body, di, set }) => {
+            const schemaService = di.resolve<SchemaService>((body as any).store === "Cloud" ? 'SchemaCloudService' : 'SchemaFluencyService');
+            const result = await schemaService.AssignDataElementToDocumentType(body as any);
+            set.status = typeof result === 'string' ? 403 : 200;
+            return {
+                success: typeof result === 'string' ? false : true,
+                data: result
+            }
+        })
     return new Elysia()
         .use(publicRoutes)
 }

@@ -15,6 +15,10 @@ export class SchemaService extends BaseService implements ISchema {
   {
     super(client, "schema");
   }
+  saveNewDocumentGroup: (credentials: Credentials, groupStruct: { name: string; }) => Observable<any>;
+  saveNewDocumentType: (credentials: Credentials, documentTypeStruct: { name: string; documentGroupId: string; }) => Observable<any>;
+  saveNewKeyword: (credentials: Credentials, keywordStruct: { name: string; dataType: string; required: string; label: string; }) => Observable<any>;
+  saveNewDocumentSchema: (credentials: Credentials, documentSchemaStruct: { name: string; documentTypeId: string; dataElements: Array<number>; }) => Observable<any>;
 
   getDocumentGruops (credetials: Credentials): Observable<{data: Array<DocumentGroup>, success:boolean}>{
     return this.client.post<{data: Array<DocumentGroup>, success:boolean}>(this.Uri, credetials)
