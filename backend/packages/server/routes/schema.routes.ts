@@ -5,15 +5,6 @@ import { LoginRequestDoc } from "./auth.routes";
 import { SchemaService } from "../services/Schema";
 
 export const SchemaRoutes = (container: DependenceInjectionContainer) => {
-    // container.register<SchemaService>('SchemaCloudService', () => {
-    //     const cloudStore = container.resolve<IStore>('ClodStore')
-    //     return new SchemaService(cloudStore);
-    // }, "singleton")
-    // container.register<SchemaService>('SchemaFluencyService', () => {
-    //     const fluencyStore = container!.resolve<IStore>('FluencyStore')
-    //     return new SchemaService(fluencyStore);
-    // }, "singleton")
-
     const publicRoutes = new Elysia({ prefix: '/schema' })
         .decorate('di', container)
         .post('', async ({ body, di, set }) => {

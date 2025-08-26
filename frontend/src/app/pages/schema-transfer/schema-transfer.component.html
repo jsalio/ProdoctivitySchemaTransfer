@@ -99,8 +99,8 @@
                     <div class="pt-4">
                         <button (click)="applyChanges()"
                             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            [disabled]="exeutingActions()">
-                            @if (exeutingActions()) {
+                            [disabled]="executingActions()">
+                            @if (executingActions()) {
                             <span class="inline-flex items-center justify-center">
                                 <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -122,12 +122,63 @@
             }
         </section>
     </main>
-    <!-- <footer class="bg-white border-t p-4 flex justify-between items-center">
-        <span class="text-sm text-gray-500">Revisa antes de transferir</span>
-        <div class="space-x-2">
-            <button class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded shadow"
-                onclick="toggleModal()">Revisar antes de transferir</button>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">Transferir ahora</button>
-        </div>
-    </footer> -->
 </div>
+
+<app-modal [isOpen]="modalProcessOpen()" (close)="handlerModalClose()" [size]="'basic'">
+    <h2 class="text-xl font-bold mb-4">Sincronizando...</h2>
+    <div class="flex flex-col gap-4">
+        <!-- indicador de grupo -->
+        @if(selectedGroup()?.targetId=="" || selectedGroup()?.targetId==null){
+        <div class="flex items-center space-x-2 text-gray-600">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            <span>Procesando grupo...</span>
+        </div>
+        }
+        <!-- indicador de documento -->
+        @if(selectedDocumentType()?.targetDocumentType=="" || selectedDocumentType()?.targetDocumentType==null){
+        <div class="flex items-center space-x-2 text-gray-600">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            <span>Procesando documento...</span>
+        </div>
+        }
+        <!-- indicador de llaves nuevas -->
+        @if(resume()?.keywordsToCreate.length > 0){
+        <div class="flex items-center space-x-2 text-gray-600">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            <span>Procesando llaves nuevas...</span>
+        </div>
+        }
+        <!-- indicador de llaves existentes -->
+        @if(resume()?.keywordsToAssign.length > 0){
+        <div class="flex items-center space-x-2 text-gray-600">
+            <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+            <span>Procesando llaves existentes...</span>
+        </div>
+        }
+        @if(executingActions()){
+        <button type="button" class="mt-4 px-4 py-2 bg-gray-300 text-gray-600 rounded-md cursor-not-allowed" disabled>
+            Procesando...
+        </button>
+        }
+    </div>
+</app-modal>    

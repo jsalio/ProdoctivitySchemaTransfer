@@ -13,4 +13,5 @@ export interface DocumetTypeKeyword {
     isSync: boolean; 
     presentInTarget:boolean;
     targetKeywordId:string;
+    order:number;
 }

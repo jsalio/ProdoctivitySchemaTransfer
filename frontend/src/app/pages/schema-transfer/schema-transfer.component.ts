@@ -13,12 +13,13 @@ import { DocumetTypeKeyword } from '../../types/models/DocumentTypeKeywordSchema
 import { ActionContext, ActionData, ActionOrchestrator, ConditionalActionBuilder } from './ActionBuilder';
 import { TranferResumeService } from '../../services/ui/tranfer-resume.service';
 import { Subscription } from 'rxjs';
+import { ModalComponent } from '../../shared/modal/modal.component';
 
 
 @Component({
   selector: 'app-schema-transfer',
   standalone: true,
-  imports: [CommonModule, GroupListComponent, DocumentTypesListComponent, DocumentTypeSchemaComponent],
+  imports: [CommonModule, GroupListComponent, DocumentTypesListComponent, DocumentTypeSchemaComponent, ModalComponent],
   templateUrl: './schema-transfer.component.html',
   styleUrl: './schema-transfer.component.css'
 })
@@ -28,8 +29,10 @@ export class SchemaTransferComponent implements OnInit {
   loadingDataElements = signal<boolean>(false)
   systemTargetDataElements = signal<DataElement[]>([])
   keywordsSelectedPerDocument = signal<DocumetTypeKeyword[]>([])
-  exeutingActions = signal<boolean>(false)
+  executingActions = signal<boolean>(false)
   resume = signal<ActionData | null>(null)
+
+  modalProcessOpen = signal<boolean>(false)
 
   resumeSubscription: Subscription | null = null;
 
@@ -42,7 +45,7 @@ export class SchemaTransferComponent implements OnInit {
     private readonly localData: LocalDataService, 
     private readonly tranferResumeService: TranferResumeService) {
     // super();
-    this.actionOrchestrator = new ActionOrchestrator(this.schema, this.exeutingActions, this.tranferResumeService);
+    this.actionOrchestrator = new ActionOrchestrator(this.schema, this.executingActions, this.tranferResumeService);
 
   }
 
@@ -143,7 +146,7 @@ export class SchemaTransferComponent implements OnInit {
   /**
    * Método simplificado que ahora delega toda la lógica al orquestrador
    */
-  addKeyToActions = async (event: { isChecked: boolean, keyword: DocumetTypeKeyword }) => {
+  addKeyToActions = async (event: { isChecked: boolean, keyword: DocumetTypeKeyword, order:number }) => {
     // Actualizar lista de keywords seleccionadas
     if (event.isChecked) {
       this.keywordsSelectedPerDocument.update(current => [...current, event.keyword]);
@@ -234,7 +237,7 @@ export class SchemaTransferComponent implements OnInit {
     if (!targetCredentials) return null;
 
     return ConditionalActionBuilder
-      .create(this.schema, this.exeutingActions)
+      .create(this.schema, this.executingActions)
       .buildFromConditions(actionString)
       .execute(targetCredentials, customData || {
         groupData: {},
@@ -245,7 +248,30 @@ export class SchemaTransferComponent implements OnInit {
       });
   }
 
-  applyChanges = () => {}
+  applyChanges = async () => {
+    this.modalProcessOpen.set(true)
+    this.executingActions.set(true)
+
+    const targetCredentials = this.localData.getValue<Credentials>("Credentials_V5_V5");
+    if (!targetCredentials) {
+      console.error('❌ No target credentials available');
+      return;
+    }
+
+    const result = await this.actionOrchestrator.executeActionsFromConditions(
+      targetCredentials,
+      this.keywordsSelectedPerDocument(),
+      this.selectedGroup()!,
+      this.selectedDocumentType()!,
+      true
+    );
+
+    this.handleActionResults(result);
+  }
 
 
+  handlerModalClose = () => {
+    this.modalProcessOpen.set(false);
+    this.executingActions.set(false); 
+  }
 }

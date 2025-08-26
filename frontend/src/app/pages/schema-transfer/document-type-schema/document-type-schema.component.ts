@@ -27,8 +27,9 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   targetDocumentSchema = signal<SchemaDocumentType | null>(null)
   errorModalOpen = signal<boolean>(false)
   storeMessageFailured = signal<string>('')
+  order = signal<number>(0)
 
-  onKeySelected = output<{isChecked:boolean, keyword:DocumetTypeKeyword}>()
+  onKeySelected = output<{ isChecked: boolean, keyword: DocumetTypeKeyword, order: number }>()
 
   // Para trackear los valores anteriores y evitar llamadas duplicadas
   private previousSourceId: string | null = null;
@@ -72,7 +73,7 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
         return false
       }
       let elementInTarget = this.targetSystemDataElements().find(x => x.name.toLocaleLowerCase() === keyname.toLocaleLowerCase())
-      
+
       if (!elementInTarget) {
         console.log('No exits 2')
         return false
@@ -88,8 +89,9 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
     const currentSchema: DocumentTypeKeywordSchema = {
       name: sourceSchema.name,
       documentTypeId: sourceSchema.documentTypeId,
-      keywords: (sourceSchema.keywords || []).map(k => ({
+      keywords: (sourceSchema.keywords || []).map((k, index) => ({
         dataType: k.dataType,
+        order: isPartOfSchema(k.name) ? index + 1 : 0,
         isSync: isPartOfSchema(k.name),
         label: k.label,
         name: k.name,
@@ -98,6 +100,9 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
         targetKeywordId: getTargetKeywordId(k.name),
       }))
     }
+    // currentSchema.keywords.filter(k => k.isSync).forEach(k => {
+    //   this.order.set(this.order() + 1)
+    // })
 
     return currentSchema;
   })
@@ -223,10 +228,17 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
     this.storeMessageFailured.set('');
   }
 
-  markKeyword = (event: Event,keyword:DocumetTypeKeyword) => {
+  markKeyword = (event: Event, keyword: DocumetTypeKeyword) => {
     event.stopPropagation()
     event.preventDefault()
     const isChecked = (event.target as HTMLInputElement).checked;
-    this.onKeySelected.emit({isChecked:isChecked, keyword:keyword})
+    const keyspresentInTarget = this.documentSchema()?.keywords.filter(x => x.presentInTarget).length || 0
+    // if (isChecked) {
+    //   this.order.set(keyspresentInTarget + 1)
+    // } else {
+    //   this.order.set(keyspresentInTarget - 1)
+    // }
+    // console.log(this.order())
+    this.onKeySelected.emit({ isChecked: isChecked, keyword: keyword, order:keyspresentInTarget })
   }
 }
