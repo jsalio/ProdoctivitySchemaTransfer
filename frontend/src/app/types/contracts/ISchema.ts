@@ -2,6 +2,7 @@
 import { Credentials } from "../models/Credentials";
 // Import Observable from RxJS, used for handling asynchronous data streams.
 import { Observable } from "rxjs";
+import { DocumentType } from "../models/SchemaDocumentType";
 
 // Defines the structure of a DocumentGroup object, representing a group of documents.
 export type DocumentGroup = {
@@ -18,6 +19,11 @@ export interface DataElement {
     name: string,
     dataType: string
     required: string
+}
+
+export type Response<T> = {
+    success: boolean,
+    data: T,
 }
 
 // Interface defining methods for interacting with document-related data via asynchronous operations.
@@ -72,15 +78,22 @@ export interface ISchema {
         success: boolean;
     }>;
 
-    saveNewDocumentGroup: (credentials: Credentials, groupStruct: { name: string }) => Observable<any>
-    saveNewDocumentType: (credentials: Credentials, documentTypeStruct: { name: string, documentGroupId: string }) => Observable<any>
+    /**
+     * Creates a new document group based on provided credentials and group structure.
+     * @param credentials - The authentication credentials required for the request.
+     * @param groupStruct - The structure of the document group to be created.
+     * @returns An Observable emitting an object containing the created document group and a success flag.
+     */
+    saveNewDocumentGroup: (credentials: Credentials, groupStruct: { name: string }) => Observable<Response<DocumentGroup>>
+
+    saveNewDocumentType: (credentials: Credentials, documentTypeStruct: { name: string, documentGroupId: string }) => Observable<Response<DocumentType>>
     saveNewKeyword: (credentials: Credentials, keywordStruct: { name: string, dataType: string, required: string, label: string }) => Observable<any>
     saveNewDocumentSchema: (
         credentials: Credentials,
         documentSchemaStruct: {
             name: string,
             documentTypeId: string,
-            dataElements: Array<number>
+            keywordId: string
         }
     ) => Observable<any>
 }

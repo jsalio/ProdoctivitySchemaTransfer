@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal } from '@angular/core';
 import { DocumentTypesListComponent, SchemaDocumentType } from "./document-types-list/document-types-list.component";
 import { GroupListComponent, SchemaDocumentGroup } from "./group-list/group-list.component";
 
@@ -10,16 +10,26 @@ import { LocalDataService } from '../../services/ui/local-data.service';
 import { ObservableHandler } from '../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../services/backend/schema.service';
 import { DocumetTypeKeyword } from '../../types/models/DocumentTypeKeywordSchema';
-import { ActionContext, ActionData, ActionOrchestrator, ConditionalActionBuilder } from './ActionBuilder';
+import { ActionOrchestrator } from './utils/ActionBuilder';
+import { ActionProgress } from './utils/ActionProgress';
+import { ActionData } from './utils/ActionData';
+import { ActionContext } from './utils/ActionContext';
+import { ConditionalActionBuilder } from './utils/ConditionalActionBuilder';
 import { TranferResumeService } from '../../services/ui/tranfer-resume.service';
 import { Subscription } from 'rxjs';
 import { ModalComponent } from '../../shared/modal/modal.component';
+import { ActionProgressService } from './utils/ActionProgress.service';
+import { ProcessingIndicatorComponent } from "../../shared/processing-indicator/processing-indicator.component";
+import { CompleteIndicatorComponent } from "../../shared/complete-indicator/complete-indicator.component";
+import { ErrorIndicatorComponent } from "../../shared/error-indicator/error-indicator.component";
+import { IndicatorComponent } from '../../shared/indicator/indicator.component';
 
+export type stepIndicator = 'processing' | 'completed' | 'error';
 
 @Component({
   selector: 'app-schema-transfer',
   standalone: true,
-  imports: [CommonModule, GroupListComponent, DocumentTypesListComponent, DocumentTypeSchemaComponent, ModalComponent],
+  imports: [CommonModule, GroupListComponent, DocumentTypesListComponent, DocumentTypeSchemaComponent, ModalComponent, IndicatorComponent],
   templateUrl: './schema-transfer.component.html',
   styleUrl: './schema-transfer.component.css'
 })
@@ -37,16 +47,80 @@ export class SchemaTransferComponent implements OnInit {
   resumeSubscription: Subscription | null = null;
 
   private actionOrchestrator: ActionOrchestrator;
+  actionProgress = signal<ActionProgress | null>(null);
+
+  groupStepIndicator = computed<stepIndicator>(() => {
+    const status = this.actionProgress()?.steps.find(x => x.stepName == "Create Document Group")?.status
+    if (status == "completed") {
+      return "completed"
+    } else if (status == "error") {
+      return "error"
+    } else {
+      return "processing"
+    }
+  })
+
+  documentStepIndicator = computed<stepIndicator>(() => {
+    if (this.groupStepIndicator() === "error") {
+      return "error"
+    }
+    const status = this.actionProgress()?.steps.find(x => x.stepName == "Create Document Type")?.status
+    if (status == "completed") {
+      return "completed" 
+    } else if (status == "error") {
+      return "error" 
+    } else {
+      return "processing" 
+    }
+  })
+  keywordsStepIndicator = computed<stepIndicator>(() => {
+    if (this.documentStepIndicator() === "error") {
+      return "error" 
+    }
+    const status = this.actionProgress()?.steps.find(x => x.stepName == "Create Keywords")?.status
+    if (status == "completed") {
+      return "completed"
+    } else if (status == "error") {
+      return "error" 
+    } else {
+      return "processing" 
+    }
+  })
+
+  keywordAssignStepIndicator = computed<stepIndicator>(() => {
+    if (this.keywordsStepIndicator() === "error") {
+      return "error" 
+    }
+    const status = this.actionProgress()?.steps.find(x => x.stepName == "Assign Keywords")?.status
+    if (status == "completed") {
+      return "completed"
+    } else if (status == "error") {
+      return "error" 
+    } else {
+      return "processing" 
+    }
+  })
+
+  isCanceledOrAborted = computed<boolean>(() => {
+    const steps = this.actionProgress()?.steps;
+    if (!steps) return true;
+    
+    return steps.some(step => 
+      step.status === "error"
+    );
+  });
+
   /**
    *
    */
   constructor(
-    private readonly schema: SchemaService, 
-    private readonly localData: LocalDataService, 
-    private readonly tranferResumeService: TranferResumeService) {
+    private readonly schema: SchemaService,
+    private readonly localData: LocalDataService,
+    private readonly tranferResumeService: TranferResumeService,
+    private readonly progressService: ActionProgressService
+  ) {
     // super();
-    this.actionOrchestrator = new ActionOrchestrator(this.schema, this.executingActions, this.tranferResumeService);
-
+    this.actionOrchestrator = new ActionOrchestrator(this.schema, this.executingActions, this.tranferResumeService, this.progressService);
   }
 
 
@@ -54,8 +128,22 @@ export class SchemaTransferComponent implements OnInit {
     const credentialsOfFluency = this.localData.getValue<Credentials>("Credentials_V5_V5");
     if (credentialsOfFluency) {
       this.executeCall(credentialsOfFluency, (response) => {
-        console.log(response)
         this.systemTargetDataElements.set(response.data)
+      })
+      this.progressService.progress$.subscribe((progress) => {
+        // console.log("Report of progress", progress)
+        // if (progress === null) return;
+        // debugger
+        this.actionProgress.set(progress)
+        // const status = progress?.steps.find(x => x.stepName == "Create Document Group")?.status
+        // if (status == "completed") {
+        //   this.groupStepIndicator.set("completed")
+        // } else if (status == "error") {
+        //   this.groupStepIndicator.set("error")
+        // } else {
+        //   this.groupStepIndicator.set("processing")
+        // }
+        // this.documentGroupIndicator()
       })
     }
 
@@ -75,63 +163,6 @@ export class SchemaTransferComponent implements OnInit {
     this.keywordsSelectedPerDocument.set([])
   }
 
-  // addKeyToActions = (event: { isChecked: boolean, keyword: DocumetTypeKeyword }) => {
-  //   if (event.isChecked) {
-  //     this.keywordsSelectedPerDocument.update(current => [
-  //       ...current,
-  //       event.keyword
-  //     ])
-  //   } else {
-  //     this.keywordsSelectedPerDocument.update(current => current.filter(x => x.name === event.keyword.name))
-  //   }
-  //   console.log(this.keywordsSelectedPerDocument())
-  //   const keywordForCreateAndAssign = this.keywordsSelectedPerDocument().filter(x => !x.isSync && !x.presentInTarget)
-  //   const keywordForOnlyAssign = this.keywordsSelectedPerDocument().filter(x => !x.isSync && x.presentInTarget)
-  //   const requiredCreateDocumentType = this.selectedDocumentType().targetDocumentType === null;
-  //   const requiredCreatedDocumentGroup = this.selectedGroup().targetId === null;
-  //   console.log({
-  //     createDocumentGroup: requiredCreatedDocumentGroup,
-  //     createDocumentType: requiredCreateDocumentType,
-  //     keywordForCreateAndAssign,
-  //     keywordForOnlyAssign
-  //   });
-
-  //   const assignKeywordRequest = keywordForOnlyAssign.map(x => ({
-  //     documentTypeId: this.selectedDocumentType().targetDocumentType,
-  //     keywordId: x.targetKeywordId,
-  //     name: x.name,
-  //   }))
-
-  //   const createKeywordRequest = keywordForCreateAndAssign.map(x => ({
-  //     documentTypeId: this.selectedDocumentType().targetDocumentType,
-  //     name: x.name,
-  //     dataType: x.dataType,
-  //     require: x.require,
-  //     label: x.label,
-  //   }))
-
-  //   const createDocumentTypeRequest = () => {
-  //     if (!requiredCreateDocumentType) {
-  //       return null
-  //     }
-  //     return {
-  //       name: this.selectedDocumentType().documentTypeName,
-  //       documentGroupId: this.selectedGroup().targetId,
-  //     }
-  //   }
-
-  //   const createDocumentGroupRequest = () => {
-  //     if (!requiredCreatedDocumentGroup) {
-  //       return null
-  //     }
-  //     return {
-  //       name: this.selectedGroup().groupName,
-  //     }
-  //   }
-
-
-  // }
-
   executeCall = (credentials: Credentials, callback: (response: { data: Array<DataElement>, success: boolean }) => void) => {
     ObservableHandler.handle(this.schema.getAllDataElements(credentials))
       .onNext(callback)
@@ -146,7 +177,7 @@ export class SchemaTransferComponent implements OnInit {
   /**
    * Método simplificado que ahora delega toda la lógica al orquestrador
    */
-  addKeyToActions = async (event: { isChecked: boolean, keyword: DocumetTypeKeyword, order:number }) => {
+  addKeyToActions = async (event: { isChecked: boolean, keyword: DocumetTypeKeyword, order: number }) => {
     // Actualizar lista de keywords seleccionadas
     if (event.isChecked) {
       this.keywordsSelectedPerDocument.update(current => [...current, event.keyword]);
@@ -158,14 +189,14 @@ export class SchemaTransferComponent implements OnInit {
 
     // Solo proceder si hay keywords seleccionadas
     if (this.keywordsSelectedPerDocument().length === 0) {
-      console.log('ℹ️ No keywords selected');
+      //console.log('ℹ️ No keywords selected');
       return;
     }
 
     // Obtener credenciales
     const targetCredentials = this.localData.getValue<Credentials>("Credentials_V5_V5");
     if (!targetCredentials) {
-      console.error('❌ No target credentials available');
+      //console.error('❌ No target credentials available');
       return;
     }
 
@@ -184,7 +215,7 @@ export class SchemaTransferComponent implements OnInit {
       this.handleActionResults(result);
 
     } catch (error) {
-      console.error('💥 Action execution failed:', error);
+      //console.error('💥 Action execution failed:', error);
       this.handleActionError(error);
     }
   }
@@ -195,21 +226,21 @@ export class SchemaTransferComponent implements OnInit {
    */
   private handleActionResults(results: ActionContext) {
     if (results.documentGroupId) {
-      console.log('📁 New group created with ID:', results.documentGroupId);
+      //console.log('📁 New group created with ID:', results.documentGroupId);
       // Actualizar UI si es necesario
     }
 
     if (results.documentTypeId) {
-      console.log('📄 New document type created with ID:', results.documentTypeId);
+      //console.log('📄 New document type created with ID:', results.documentTypeId);
       // Actualizar UI si es necesario
     }
 
     if (results.createdKeywords?.length) {
-      console.log('🏷️ Keywords created:', results.createdKeywords.length);
+      //console.log('🏷️ Keywords created:', results.createdKeywords.length);
     }
 
     if (results.assignedSchemas?.length) {
-      console.log('🔗 Schemas assigned:', results.assignedSchemas.length);
+      //console.log('🔗 Schemas assigned:', results.assignedSchemas.length);
     }
 
     // Aquí puedes actualizar señales, mostrar notificaciones, recargar datos, etc.
@@ -221,7 +252,7 @@ export class SchemaTransferComponent implements OnInit {
   */
   private handleActionError(error: any) {
     // Mostrar notificación de error, log, etc.
-    console.error('Action execution failed:', error);
+    //console.error('Action execution failed:', error);
   }
 
   private refreshDataIfNeeded() {
@@ -229,24 +260,6 @@ export class SchemaTransferComponent implements OnInit {
     // this.ngOnInit(); // O el método específico para recargar
   }
 
-  /**
-   * Método simple para casos específicos (opcional)
-   */
-  executeSpecificAction = async (actionString: string, customData?: any) => {
-    const targetCredentials = this.localData.getValue<Credentials>("Credentials_V5_V5");
-    if (!targetCredentials) return null;
-
-    return ConditionalActionBuilder
-      .create(this.schema, this.executingActions)
-      .buildFromConditions(actionString)
-      .execute(targetCredentials, customData || {
-        groupData: {},
-        typeData: {},
-        keywordsToCreate: [],
-        keywordsToAssign: [],
-        summary: { groupsToCreate: 0, typesToCreate: 0, keywordsToCreate: 0, keywordsToAssign: 0 }
-      });
-  }
 
   applyChanges = async () => {
     this.modalProcessOpen.set(true)
@@ -254,7 +267,7 @@ export class SchemaTransferComponent implements OnInit {
 
     const targetCredentials = this.localData.getValue<Credentials>("Credentials_V5_V5");
     if (!targetCredentials) {
-      console.error('❌ No target credentials available');
+      //console.error('❌ No target credentials available');
       return;
     }
 
@@ -263,15 +276,43 @@ export class SchemaTransferComponent implements OnInit {
       this.keywordsSelectedPerDocument(),
       this.selectedGroup()!,
       this.selectedDocumentType()!,
-      true
+      false,
+      {
+        onStepStart: (step) => {
+          //console.log(`🔄 Starting: ${step.stepName}`);
+        },
+        onStepComplete: (step) => {
+          //console.log(`✅ Completed: ${step.stepName}`);
+        },
+        onStepError: (step) => {
+          //console.log(`❌ Error in: ${step.stepName}`, step.error);
+        },
+        onActionComplete: (progress) => {
+          //console.log(`🏆 All actions completed in ${this.calculateIntervalDiffInSeconds(progress.startTime, progress.endTime)}ms`);
+        },
+        onActionError: (progress) => {
+          //console.log(`💥 Action chain failed`);
+        }
+      }
     );
 
     this.handleActionResults(result);
   }
 
+  calculateIntervalDiffInSeconds = (startTime: Date, endTime: Date) => {
+    const diff = endTime.getTime() - startTime.getTime();
+    return diff / 1000;
+  }
+
 
   handlerModalClose = () => {
     this.modalProcessOpen.set(false);
-    this.executingActions.set(false); 
+    this.executingActions.set(false);
+  }
+
+  hanlderModalCloseForSuccess = () => {
+    this.modalProcessOpen.set(false);
+    this.executingActions.set(false);
+    window.location.reload();
   }
 }

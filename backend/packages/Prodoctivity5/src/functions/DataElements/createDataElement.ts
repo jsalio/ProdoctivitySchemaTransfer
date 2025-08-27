@@ -1,4 +1,7 @@
 import { Credentials, DataElement, Result } from "@schematransfer/core";
+import { generateShortGuid } from "../utils/random-guid";
+import { DataType, GetDataTypeByString, MiddleWareToProdoctivityDictionary } from "../utils/dataType";
+import { getDataElements } from "../getDataElements";
 
 interface CreateDataElementResponse {
     id: number,
@@ -38,16 +41,11 @@ export const createKeyword = async (
     },
     options: KeywordOptions = {}
 ): Promise<Result<DataElement, Error>> => {
+    console.log('request on middleware:', JSON.stringify(createKeywordRequest, null, 2))    
     if (!createKeywordRequest.name?.trim()) {
         return {
             ok: false,
             error: new Error("Keyword name cannot be empty")
-        };
-    }
-    if (!createKeywordRequest.documentTypeId?.trim()) {
-        return {
-            ok: false,
-            error: new Error("Document type ID cannot be empty")
         };
     }
     try {
@@ -60,9 +58,11 @@ export const createKeyword = async (
 
         const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
+        const generateName = createKeywordRequest.name.trim()+generateShortGuid(); //use for debug
+
         const requestBody = {
-            name: createKeywordRequest.name.trim(),
-            required: createKeywordRequest.require,
+            name: generateName,
+            required: false,//createKeywordRequest.require,
             question: createKeywordRequest.name.trim(),
             instructions: createKeywordRequest.name.trim(),
             Definition: createKeywordRequest.name.trim(),
@@ -78,13 +78,14 @@ export const createKeyword = async (
             body: JSON.stringify(requestBody),
             redirect: "follow"
         };
-
+        console.log("Creando llave :",requestBody);
         const response = await fetch(
-            `${credential.serverInformation.server}/site/api/v0.1/dictionary/data-element`,
+            `${credential.serverInformation.server}/site/api/v0.1/dictionary/data-elements`,
             requestOptions
         );
 
         if (!response.ok) {
+            console.log('response:', response)
             let errorMessage = `API request failed with status ${response.status}`;
             try {
                 const errorBody = await response.json();
@@ -98,16 +99,25 @@ export const createKeyword = async (
                 error: new Error(errorMessage)
             };
         }
+        const listOfDataElements = await getDataElements(credential);
 
-        const body: CreateDataElementResponse = await response.json();
+        const dataElement = listOfDataElements.find((x: any) => x.name === generateName);
+
+        if (!dataElement){
+            return {
+                ok: false,
+                error: new Error("Data element not found")
+            };
+        }
+
 
         return {
             ok: true,
             value: { 
-                id: body.id.toString(),
-                name: createKeywordRequest.name.trim(),
-                dataType: createKeywordRequest.dataType,
-                required: createKeywordRequest.require.toString(),
+                id: dataElement.id,
+                name: dataElement.name,
+                dataType: dataElement.dataType,
+                required: dataElement.required,
              }
         };
     }

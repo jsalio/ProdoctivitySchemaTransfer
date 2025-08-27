@@ -1,11 +1,11 @@
-import { Credentials } from "../domain/Credentials";
+import { CreateDocumentGroupRequest } from "../domain/create-group-request";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
 
 export class CreateDocumentGroup {
     constructor(
-        private readonly request: IRequest<{ credentials: Credentials, name: string }>,
+        private readonly request: IRequest<CreateDocumentGroupRequest>,
         private readonly store: IStore
     ) {
     }
@@ -23,11 +23,11 @@ export class CreateDocumentGroup {
         try {
             const request = this.request.build();
             const schema = await this.store.createDocumentGroup(request.credentials, request.name);
-            if(!schema.ok){
+            if (!schema.ok) {
                 return {
                     message: schema.error.message,
                     groups: null
-                };  
+                };
             }
             return {
                 message: '',

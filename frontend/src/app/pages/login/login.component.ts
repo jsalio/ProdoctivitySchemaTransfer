@@ -34,6 +34,6 @@ export class LoginComponent {
       return;
     }
     const credentials = this.form.value as Credentials;
-    console.log('Submitting credentials', credentials);
+    // console.log('Submitting credentials', credentials);
   }
 } 

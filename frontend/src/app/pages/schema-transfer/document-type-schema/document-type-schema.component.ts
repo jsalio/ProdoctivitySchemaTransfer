@@ -69,13 +69,13 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
 
     const isInTarget = (keyname: string): boolean => {
       if (this.targetSystemDataElements().length === 0) {
-        console.log('No exits 1')
+        //console.log('No exits 1')
         return false
       }
       let elementInTarget = this.targetSystemDataElements().find(x => x.name.toLocaleLowerCase() === keyname.toLocaleLowerCase())
 
       if (!elementInTarget) {
-        console.log('No exits 2')
+        //console.log('No exits 2')
         return false
       }
       return true
@@ -135,7 +135,7 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
       this.previousTargetId = currentTargetId;
     }
 
-    console.log('Document type IDs changed - Source:', currentSourceId, 'Target:', currentTargetId);
+    //console.log('Document type IDs changed - Source:', currentSourceId, 'Target:', currentTargetId);
 
     // Cargar esquemas solo si los IDs son válidos
     this.loadSchemasIfValid(currentSourceId, currentTargetId);

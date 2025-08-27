@@ -1,4 +1,5 @@
 import { Credentials, DocumentGroup, Result } from "@schematransfer/core"
+import { generateShortGuid } from "./utils/random-guid";
 
 export interface DocumentGroupOptions {
     defaultWorkflowConfigurationId?: number;
@@ -33,6 +34,7 @@ export const createDocumentGroup = async (
     name: string,
     options: DocumentGroupOptions = {}
 ): Promise<Result<DocumentGroup, Error>> => {
+    // console.log('request:', JSON.stringify({credential, name, options}, null, 2))
     if (!name?.trim()) {
         return {
             ok: false,
@@ -50,9 +52,10 @@ export const createDocumentGroup = async (
 
         const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
+        const shortGuid = generateShortGuid();
         const requestBody = {
-            description: name,
-            name: name.trim(),
+            description: name+shortGuid,
+            name: name.trim()+shortGuid,
             ...mergedOptions
         };
 
@@ -62,13 +65,15 @@ export const createDocumentGroup = async (
             body: JSON.stringify(requestBody),
             redirect: "follow"
         };
-
+        // console.log("requestOptions:", JSON.stringify(requestOptions, null, 2))
         const response = await fetch(
-            `${credential.serverInformation.server}/site/api/v0.1/business-functions`,
+            `${credential.serverInformation.server}/Site/api/v0.1/business-functions`,
             requestOptions
         );
+        // console.log("response:", JSON.stringify(response, null, 2))
 
         if (!response.ok) {
+            // console.log("response not ok")
             let errorMessage = `API request failed with status ${response.status}`;
             try {
                 const errorBody = await response.json();
@@ -82,6 +87,7 @@ export const createDocumentGroup = async (
                 error: new Error(errorMessage)
             };
         }
+        // console.log("proceso completado")
 
         const body: FluencyDocumentGroupResponse = await response.json();
 
@@ -94,6 +100,7 @@ export const createDocumentGroup = async (
             }
         };
     } catch (error) {
+        console.log("error:", JSON.stringify(error, null, 2))
         return {
             ok: false,
             error: error instanceof Error

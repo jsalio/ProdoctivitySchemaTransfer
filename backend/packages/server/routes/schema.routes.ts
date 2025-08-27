@@ -75,6 +75,7 @@ export const SchemaRoutes = (container: DependenceInjectionContainer) => {
             }
         })
         .post('assign-data-element', async ({ body, di, set }) => {
+           
             const schemaService = di.resolve<SchemaService>((body as any).store === "Cloud" ? 'SchemaCloudService' : 'SchemaFluencyService');
             const result = await schemaService.AssignDataElementToDocumentType(body as any);
             set.status = typeof result === 'string' ? 403 : 200;

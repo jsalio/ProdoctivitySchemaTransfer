@@ -1,6 +1,8 @@
-import { AssignDataElement, CreateDataElement, CreateDocumentGroup, CreateDocumentType, Credentials, GetAllDataElemets, GetDocumentGroups, GetDocumentTypeSchema, GetDocumentTypesGroups, IStore } from "@schematransfer/core";
+import { AssignDataElement, AssignDataElementToDocumentRequest, CreateDataElement, CreateDocumentGroup, CreateDocumentGroupRequest, CreateDocumentType, Credentials, GetAllDataElemets, GetDocumentGroups, GetDocumentTypeSchema, GetDocumentTypesGroups, IStore } from "@schematransfer/core";
 
 import { BaseService } from "./BaseService";
+import { CreateDocumentTypeRequest } from "packages/Core/src/domain/Create-document-type-request";
+import { CreateDataElementRequest } from "packages/Core/src/domain/Create-data-element-request";
 
 export class SchemaService extends BaseService {
     /**
@@ -95,10 +97,13 @@ export class SchemaService extends BaseService {
         }
     }
 
-    async CreateDocumentGroup(body:{credential: Credentials, name: string}) {
+    async CreateDocumentGroup(body:CreateDocumentGroupRequest) {
         try {
-            const request = this.buildRequest<{ credentials: Credentials, name: string }>({ credentials: body.credential, name: body.name })
+            const request = this.buildRequest<CreateDocumentGroupRequest>(body)
             let login = new CreateDocumentGroup(request, this.store)
+            // console.log('request:', JSON.stringify(body, null, 2))
+            // console.log('request credentials:', JSON.stringify(request.build().credentials, null, 2))
+            // console.log('request name:', JSON.stringify(request.build().name, null, 2))
             const error = this.checkValidation(login.validate())
             if (error !== "") {
                 return error
@@ -115,13 +120,10 @@ export class SchemaService extends BaseService {
         }
     }
 
-    async CreateDocumentType(body:{credential: Credentials, createDocumentTypeRequest: { name: string, documentGroupId: string }}) {
+    async CreateDocumentType(body:CreateDocumentTypeRequest) {
+        console.log('request:', JSON.stringify(body, null, 2))
         try {
-            const request = this.buildRequest<
-                {
-                    credentials: Credentials,
-                    createDocumentTypeRequest: { name: string, documentGroupId: string }
-                }>({ credentials: body.credential, createDocumentTypeRequest: { name: body.createDocumentTypeRequest.name, documentGroupId: body.createDocumentTypeRequest.documentGroupId } })
+            const request = this.buildRequest<CreateDocumentTypeRequest>(body)
             let login = new CreateDocumentType(request, this.store)
             const error = this.checkValidation(login.validate())
             if (error !== "") {
@@ -139,21 +141,33 @@ export class SchemaService extends BaseService {
         }
     }
 
-    async CreateDataElement(body:{credential: Credentials, createDataElementRequest: { name: string, dataType: string, isRequired: boolean }}) {
+    // async CreateDataElement(body:{credential: Credentials, createDataElementRequest: { name: string, dataType: string, isRequired: boolean }}) {
+    //     try {
+    //         const request = this.buildRequest<
+    //             {
+    //                 credentials: Credentials,
+    //                 createDataElementRequest: { name: string, dataType: string, isRequired: boolean }
+    //             }>({ credentials: body.credential, createDataElementRequest: { name: body.createDataElementRequest.name, dataType: body.createDataElementRequest.dataType, isRequired: body.createDataElementRequest.isRequired } })
+    //         let login = new CreateDataElement(request, this.store)
+    //         const error = this.checkValidation(login.validate())
+    //         if (error !== "") {
+    //             return error
+    //         }
+    //         const result = await login.execute()
+    //         if (result.message !== "") {
+    //             return result.message
+    //         }
+
+    //         return result.documentType
+    //     }
+    //     catch (err) {
+    //         return "Error occurs"
+    //     }
+    // }
+
+    async CreateDataElement(body:CreateDataElementRequest) {
         try {
-            const request = this.buildRequest<
-                {
-                    credentials: Credentials,
-                    createDataElementRequest: { name: string, dataType: string, isRequired: boolean }
-                }>(
-                    {
-                        credentials: body.credential,
-                        createDataElementRequest: {
-                            name: body.createDataElementRequest.name,
-                            dataType: body.createDataElementRequest.dataType,
-                            isRequired: body.createDataElementRequest.isRequired
-                        }
-                    })
+            const request = this.buildRequest<CreateDataElementRequest>(body)
             let login = new CreateDataElement(request, this.store)
             const error = this.checkValidation(login.validate())
             if (error !== "") {
@@ -171,20 +185,10 @@ export class SchemaService extends BaseService {
         }
     }
 
-    async AssignDataElementToDocumentType(body:{credential: Credentials, assignDataElementToDocumentTypeRequest: { documentTypeId: string, dataElement: { name: string, order: number } }}) {
+    async AssignDataElementToDocumentType(body:AssignDataElementToDocumentRequest) {
         try {
-            const request = this.buildRequest<
-                {
-                    credentials: Credentials,
-                    assignDataElementToDocumentTypeRequest: { documentTypeId: string, dataElement: { name: string, order: number } }
-                }>(
-                    {
-                        credentials: body.credential,
-                        assignDataElementToDocumentTypeRequest: {
-                            documentTypeId: body.assignDataElementToDocumentTypeRequest.documentTypeId,
-                            dataElement: body.assignDataElementToDocumentTypeRequest.dataElement
-                        }
-                    })
+            // console.log('Store to login:', JSON.stringify(body, null, 2))
+            const request = this.buildRequest<AssignDataElementToDocumentRequest>(body)
             let login = new AssignDataElement(request, this.store)
             const error = this.checkValidation(login.validate())
             if (error !== "") {

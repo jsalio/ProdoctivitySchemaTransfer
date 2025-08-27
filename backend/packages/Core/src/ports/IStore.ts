@@ -98,7 +98,7 @@ export interface IStore {
      */
     assignDataElementToDocumentType?: (credential: Credentials, assignDataElementToDocumentTypeRequest: {
         documentTypeId: string,
-        dataElement:{
+        dataElement: {
             name: string,
             order: number,
         },

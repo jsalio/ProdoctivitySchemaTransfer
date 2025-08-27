@@ -152,7 +152,7 @@ export class CredentialsComponent {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       this.isLoading.set(false)
-      console.log(this.getFirstInvalidField())
+      //console.log(this.getFirstInvalidField())
       return;
     }
 
@@ -182,7 +182,7 @@ export class CredentialsComponent {
         this.storage.storeValue(key, credentials)
       })
       .onError((err)=>{
-        console.log(err)
+        //console.log(err)
       })
       .execute()
     // this.authService.login(credentials)

@@ -17,3 +17,7 @@ export * from './application/CreateDocumentGroup'
 export * from './application/CreateDocumentType'
 export * from './application/CreateDataElement'
 export * from './application/assignDataElement'
+export * from './domain/create-group-request'
+export * from './domain/Create-data-element-request'
+export * from './domain/asign-data-element-to-document-request'
+

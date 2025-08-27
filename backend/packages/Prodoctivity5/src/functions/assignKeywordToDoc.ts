@@ -11,26 +11,27 @@ export const assignKeywordToDoc = async (credential: Credentials, assignDataElem
         order: number,
     },
 }):Promise<Result<boolean, Error>> => {
-    if (!assignDataElementToDocumentTypeRequest.documentTypeId?.trim()) {
-        return {
-            ok: false,
-            error: new Error("Document type ID cannot be empty")
-        };
-    }
+    console.log('Assign keyword to document type:', JSON.stringify(assignDataElementToDocumentTypeRequest, null, 2))
+    // if (!assignDataElementToDocumentTypeRequest.documentTypeId?.trim()) {
+    //     return {
+    //         ok: false,
+    //         error: new Error("Document type ID cannot be empty")
+    //     };
+    // }
 
-    if (!assignDataElementToDocumentTypeRequest.dataElement.name?.trim()) {
-        return {
-            ok: false,
-            error: new Error("Keyword name cannot be empty")
-        };
-    }
+    // if (!assignDataElementToDocumentTypeRequest.dataElement.name?.trim()) {
+    //     return {
+    //         ok: false,
+    //         error: new Error("Keyword name cannot be empty")
+    //     };
+    // }
 
-    if (!assignDataElementToDocumentTypeRequest.dataElement.order) {
-        return {
-            ok: false,
-            error: new Error("Keyword order cannot be empty")
-        };
-    }
+    // if (!assignDataElementToDocumentTypeRequest.dataElement.order) {
+    //     return {
+    //         ok: false,
+    //         error: new Error("Keyword order cannot be empty")
+    //     };
+    // }
     try{
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -43,16 +44,19 @@ export const assignKeywordToDoc = async (credential: Credentials, assignDataElem
             method: "POST",
             headers,
             body: JSON.stringify({
-                name: assignDataElementToDocumentTypeRequest.dataElement.name.trim(),
-                order: assignDataElementToDocumentTypeRequest.dataElement.order,
+                keyName: assignDataElementToDocumentTypeRequest.dataElement.name.trim(),
+                order: assignDataElementToDocumentTypeRequest.dataElement.order+1,
             }),
             redirect: "follow"
         };
+        console.log('Assign keyword to document type request:', requestOptions)
 
         const response = await fetch(
-            `${credential.serverInformation.server}/site/api/v0.1/dictionary/data-elements/assign-old-schema/${assignDataElementToDocumentTypeRequest.documentTypeId}`,
+            `${credential.serverInformation.server}/Site/api/v0.1/dictionary/data-elements/assign-old-schema/${assignDataElementToDocumentTypeRequest.documentTypeId}`,
             requestOptions
         );
+
+        console.log('Assign keyword to document type response:', response)
 
         if (!response.ok) {
             let errorMessage = `API request failed with status ${response.status}`;
@@ -69,6 +73,7 @@ export const assignKeywordToDoc = async (credential: Credentials, assignDataElem
             };
         }
         let assignResponse:AssignResponse = await response.json();
+        console.log('Assign keyword to document type response:', assignResponse)
         return {
             ok: true,
             value: assignResponse.result === 1 || assignResponse.result === 0

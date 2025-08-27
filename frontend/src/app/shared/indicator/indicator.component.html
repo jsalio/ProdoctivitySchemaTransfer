@@ -1,0 +1,9 @@
+@if(stepIndicator() === 'processing'){
+    <app-processing-indicator labelText="{{labelText()}}" />
+}
+@if(stepIndicator() === 'completed'){
+    <app-complete-indicator labelText="{{labelText()}}" />
+}
+@if(stepIndicator() === 'error'){
+    <app-error-indicator labelText="{{labelText()}}" />
+}
