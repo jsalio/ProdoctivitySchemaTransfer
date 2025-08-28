@@ -1,16 +1,6 @@
 import { Credentials, Result, DocumentType } from "packages/Core/src";
 import { getDocumentTypes } from "./getDocumentTypes";
-import { generateShortGuid } from "./utils/random-guid";
-
-export interface DocumentTypeOptions {
-    status?: string;
-    isTemplate?: boolean;
-    useFullTextSearch?: boolean;
-    icon?: {
-        id?: string
-    },
-    format?: string,
-}
+import { DocumentTypeOptions } from "../types/DocumentTypeOptions";
 
 const DEFAULT_OPTIONS: Required<DocumentTypeOptions> = {
     status: "Active",
@@ -30,7 +20,6 @@ export const createDocumentType = async (
     },
     options: DocumentTypeOptions = {}
 ): Promise<Result<DocumentType, Error>> => {
-    // console.log("Request for document type creation in Prodoctivity Fluency:", JSON.stringify({credential, createDocumentTypeRequest, options}, null, 2))
     if (!createDocumentTypeRequest.name?.trim()) {
         return {
             ok: false,
@@ -46,7 +35,6 @@ export const createDocumentType = async (
     }
 
     try {
-        // console.log ("request for document type creation:", JSON.stringify({credential, createDocumentTypeRequest, options}, null, 2))
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
         headers.append("x-api-key", credential.serverInformation.apiKey);
@@ -55,9 +43,9 @@ export const createDocumentType = async (
         headers.append("Authorization", `Basic ${btoa(basicAuthText)}`);
 
         const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
-        const shortGuid = generateShortGuid();
+        // const shortGuid = generateShortGuid(); //add for debbug
         const requestBody = {
-            name: createDocumentTypeRequest.name.trim()+shortGuid,
+            name: createDocumentTypeRequest.name.trim(),//+shortGuid,
             businessLine:{
                 id: createDocumentTypeRequest.buseinessFunctionId
             },
@@ -94,7 +82,7 @@ export const createDocumentType = async (
         let documentTypes = await getDocumentTypes(credential,createDocumentTypeRequest.buseinessFunctionId)
         let dt:DocumentType|undefined
         documentTypes.forEach((x)=>{
-            if(x.documentTypeName === createDocumentTypeRequest.name+shortGuid){
+            if(x.documentTypeName === createDocumentTypeRequest.name){
                 dt = {
                     documentTypeId: x.documentTypeId,
                     documentTypeName: x.documentTypeName

@@ -1,25 +1,6 @@
 ///api/business-functions
-import { Credentials, DocumentGroup, DocumentType, SchemaDocumentType } from "@schematransfer/core";
-
-export type FluencyDocumentTypeSchema = {
-    id: number,
-    name: string,
-    businessLine: {
-        id: number,
-        name: string
-    },
-    keywords: {
-        name: string,
-        humanName: string,
-        definition: {
-            humanName: string,
-            properties: {
-                name: string,
-                dataType: string
-            }
-        }
-    }[]
-}
+import { Credentials, SchemaDocumentType } from "@schematransfer/core";
+import { FluencyDocumentTypeSchema } from "../types/FluencyDocumentTypeSchema";
 
 /**
  * 

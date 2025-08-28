@@ -1,8 +1,5 @@
 import { Credentials, Result } from "packages/Core/src";
-
-interface AssignResponse {
-    result: number
-}
+import { AssignResponse } from "../types/AssignResponse";
 
 export const assignKeywordToDoc = async (credential: Credentials, assignDataElementToDocumentTypeRequest: {
     documentTypeId: string,
@@ -12,26 +9,6 @@ export const assignKeywordToDoc = async (credential: Credentials, assignDataElem
     },
 }):Promise<Result<boolean, Error>> => {
     console.log('Assign keyword to document type:', JSON.stringify(assignDataElementToDocumentTypeRequest, null, 2))
-    // if (!assignDataElementToDocumentTypeRequest.documentTypeId?.trim()) {
-    //     return {
-    //         ok: false,
-    //         error: new Error("Document type ID cannot be empty")
-    //     };
-    // }
-
-    // if (!assignDataElementToDocumentTypeRequest.dataElement.name?.trim()) {
-    //     return {
-    //         ok: false,
-    //         error: new Error("Keyword name cannot be empty")
-    //     };
-    // }
-
-    // if (!assignDataElementToDocumentTypeRequest.dataElement.order) {
-    //     return {
-    //         ok: false,
-    //         error: new Error("Keyword order cannot be empty")
-    //     };
-    // }
     try{
         const headers = new Headers();
         headers.append("Content-Type", "application/json");

@@ -6,7 +6,7 @@ import { getDocumentTypeSchema } from "./functions/getDocumentTypeSchema"
 import { getDocumentTypes } from "./functions/getDocumentTypes"
 import { createDocumentGroup } from "./functions/createDocumentGroup"
 import { createDocumentType } from "./functions/createDocumentType"
-import { createKeyword } from "./functions/DataElements/createDataElement"
+import { createKeyword } from "./functions/createDataElement"
 import { assignKeywordToDoc } from "./functions/assignKeywordToDoc"
 /**
  * This function returns an implementation of the IStore interface for Prodoctivity Fluency

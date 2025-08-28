@@ -1,9 +1,5 @@
 import { Credentials, DocumentGroup } from "@schematransfer/core";
-
-export type FluencyDocumentGroup = {
-    id: number;
-    description: string;
-};
+import { FluencyDocumentGroup } from "../types/FluencyDocumentGroup";
 
 /**
  * Fetches business functions from the API and returns them as a Set of DocumentGroup objects.

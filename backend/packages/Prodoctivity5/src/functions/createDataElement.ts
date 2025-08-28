@@ -1,23 +1,9 @@
 import { Credentials, DataElement, Result } from "@schematransfer/core";
-import { generateShortGuid } from "../utils/random-guid";
-import { DataType, GetDataTypeByString, MiddleWareToProdoctivityDictionary } from "../utils/dataType";
-import { getDataElements } from "../getDataElements";
+import { GetDataTypeByString, MiddleWareToProdoctivityDictionary } from "./utils/dataType";
+import { getDataElements } from "./getDataElements";
+import { KeywordOptions } from "../types/KeywordOptions";
+import { getSampleValue } from "./utils/getSampleValue";
 
-interface CreateDataElementResponse {
-    id: number,
-    description: string,
-}
-
-interface KeywordOptions {
-    TopicName?: string,
-    CultureLanguageName?: string,
-    unique?: boolean,
-    defaultValue?: {},
-    IsReferenceField?: boolean,
-    NotVisibleOnDocument?: boolean,
-    ReadOnly?: boolean,
-    Autocomplete?: boolean,
-}
 
 const DEFAULT_OPTIONS: Required<KeywordOptions> = {
     TopicName: "General",
@@ -58,7 +44,7 @@ export const createKeyword = async (
 
         const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
-        const generateName = createKeywordRequest.name.trim()+generateShortGuid(); //use for debug
+        const generateName = createKeywordRequest.name.trim()//+generateShortGuid(); //use for debug
 
         const requestBody = {
             name: generateName,
@@ -78,7 +64,7 @@ export const createKeyword = async (
             body: JSON.stringify(requestBody),
             redirect: "follow"
         };
-        console.log("Creando llave :",requestBody);
+
         const response = await fetch(
             `${credential.serverInformation.server}/site/api/v0.1/dictionary/data-elements`,
             requestOptions
@@ -110,7 +96,6 @@ export const createKeyword = async (
             };
         }
 
-
         return {
             ok: true,
             value: { 
@@ -131,19 +116,4 @@ export const createKeyword = async (
     }
 }
 
-function getSampleValue(dataType: DataType) {
-    switch (dataType) {
-        case DataType.Alphanumeric:
-            return "Sample Value";
-        case DataType.Numeric:
-            return 1;
-        case DataType.Decimal:
-            return 1.1;
-        case DataType.Boolean:
-            return true;
-        case DataType.Date:
-            return new Date();
-        case DataType.DateTime:
-            return new Date();
-    }
-}
+

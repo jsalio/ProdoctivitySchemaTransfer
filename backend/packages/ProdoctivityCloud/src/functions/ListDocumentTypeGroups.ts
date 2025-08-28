@@ -1,6 +1,6 @@
 import { Credentials, DocumentType } from "@schematransfer/core";
 
-import { CloudDocumentType } from "./GetDocumentGroups";
+import { CloudDocumentType } from "../types/CloudDocumentType";
 
 export const GetDocumentTypeInGroup = async (credential: Credentials, documentGroupId: string): Promise<Set<any>> => {
     try {

@@ -1,13 +1,5 @@
-import { Credentials, DocumentGroup, DocumentType } from "@schematransfer/core";
-
-export type FluencyDocumentType = {
-    id: number;
-    name: string;
-    businessLine: {
-        id: number;
-        name: string;
-    };
-};
+import { Credentials, DocumentType } from "@schematransfer/core";
+import { FluencyDocumentType } from "../types/FluencyDocumentType"; 
 
 /**
  * Fetches document types from the API and returns those matching the specified business line ID as a Set of DocumentType objects.

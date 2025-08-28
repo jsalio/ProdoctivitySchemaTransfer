@@ -4,13 +4,13 @@ import { Credentials } from '../../types/models/Credentials';
 import { CredentialsComponent } from "../credentials/credentials.component";
 import { LocalDataService } from '../../services/ui/local-data.service';
 import { ModalComponent } from "../modal/modal.component";
-import { RouterOutlet } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { isTokenExpired } from '../utils/token-decoder';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, ModalComponent, CredentialsComponent],
+  imports: [RouterOutlet, ModalComponent, CredentialsComponent, RouterLink],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })

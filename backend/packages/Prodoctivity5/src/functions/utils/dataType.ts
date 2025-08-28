@@ -1,22 +1,5 @@
-export enum DataType {
-    None,
-    Alphanumeric,
-    Numeric,
-    Decimal,
-    Boolean,
-    Date,
-    DateTime
-}
-
-export enum ProductivityTargetDataType {
-    None,
-    Alphanumeric,
-    IntegerNumber,
-    DecimalNumber,
-    Boolean,
-    Date,
-    DateTime
-}
+import { DataType } from "../../types/DataType";
+import { ProductivityTargetDataType } from "../../types/ProductivityTargetDataType";
 
 export const MiddleWareToProdoctivityDictionary: Map<DataType, ProductivityTargetDataType> = new Map([
     [DataType.None, ProductivityTargetDataType.None],
@@ -30,7 +13,7 @@ export const MiddleWareToProdoctivityDictionary: Map<DataType, ProductivityTarge
 
 export const GetDataTypeByString = (dataType: string): DataType => {
     const upperDataType = dataType.toUpperCase();
-    console.log('dataType:', upperDataType)
+    // console.log('dataType:', upperDataType)
     switch (upperDataType) {
         case "NONE":
             return DataType.None;

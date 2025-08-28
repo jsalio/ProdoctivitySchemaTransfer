@@ -1,16 +1,5 @@
 import { Credentials, DocumentGroup } from "packages/Core/src";
-
-export interface CloudDocumentType {
-    documentTypeVersionId: string
-    documentTypeId: string
-    documentGroupId: string
-    documentGroupName: string
-    name: string
-    acceptedMimeTypeList: string[]
-    templateVersionId?: string
-    templateId?: string
-}
-
+import { CloudDocumentType } from "../types/CloudDocumentType";
 
 export const GetDocumentGroup = async (credential: Credentials): Promise<any> => {
     try {

@@ -1,19 +1,7 @@
 import { Credentials, DocumentGroup, Result } from "@schematransfer/core"
-import { generateShortGuid } from "./utils/random-guid";
-
-export interface DocumentGroupOptions {
-    defaultWorkflowConfigurationId?: number;
-    status?: string;
-    comments?: string;
-    type?: string;
-}
-
-export interface FluencyDocumentGroupResponse {
-    id: number;
-    description: string;
-    name: string;
-    status: string;
-}
+// import { generateShortGuid } from "./utils/random-guid";
+import { DocumentGroupOptions } from "../types/DocumentGroupOptions";
+import { FluencyDocumentGroupResponse } from "../types/FluencyDocumentGroupResponse";
 
 const DEFAULT_OPTIONS: Required<DocumentGroupOptions> = {
     defaultWorkflowConfigurationId: 1,
@@ -52,10 +40,9 @@ export const createDocumentGroup = async (
 
         const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
-        const shortGuid = generateShortGuid();
         const requestBody = {
-            description: name+shortGuid,
-            name: name.trim()+shortGuid,
+            description: name,//+shortGuid,
+            name: name.trim(),//+shortGuid,
             ...mergedOptions
         };
 
