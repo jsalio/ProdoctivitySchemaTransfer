@@ -1,5 +1,4 @@
 import { AssignDataElementToDocumentRequest } from "../domain/asign-data-element-to-document-request";
-import { Credentials } from "../domain/Credentials";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";

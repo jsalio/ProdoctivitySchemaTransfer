@@ -3,7 +3,7 @@ import { DataElement } from "../domain/DataElement";
 import { DocumentGroup } from "../domain/DocumentGroup";
 import { DocumentType } from "../domain/DocumentType";
 import { SchemaDocumentType } from "../domain/SchemaDocumentType";
-import { Result } from "./IRequest";
+import { Result } from "./Result";
 
 /**
  * Interface defining methods for interacting with a data store, handling authentication and document-related operations.
@@ -45,8 +45,6 @@ export interface IStore {
      * @returns A Promise resolving to a Set of DataElement objects.
      */
     getDataElements: (credential: Credentials) => Promise<Set<DataElement>>;
-
-
 
     /**
      * Creates a new document group with the specified name.

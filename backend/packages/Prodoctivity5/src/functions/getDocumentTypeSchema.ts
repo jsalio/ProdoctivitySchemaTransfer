@@ -24,16 +24,24 @@ export const getDocumentTypeSchema = async (credential: Credentials, documentTyp
 
         const body: FluencyDocumentTypeSchema[] = await response.json();
         if (body) {
-            return body.filter(x => x.id.toString() === documentTypeId).map(x => ({
-                name: x.name,
-                documentTypeId: x.id,
-                keywords: x.keywords.map(key => ({
+
+            const targetDocumentType = body.filter(x => x.id.toString() === documentTypeId)[0]
+            if (!targetDocumentType) {
+                throw new Error("Document type not found");
+            }
+
+            const documentSchema: SchemaDocumentType = {
+                name: targetDocumentType.name,
+                documentTypeId: targetDocumentType.id.toString(),
+                keywords: targetDocumentType.keywords.map(key => ({
                     name: key.name,
                     label: key.humanName,
                     dataType: key.definition.properties.dataType,
                     require: false
                 }))
-            }) as any)[0]
+            }
+            
+            return documentSchema
         }
 
         throw new Error("No token received in response");
