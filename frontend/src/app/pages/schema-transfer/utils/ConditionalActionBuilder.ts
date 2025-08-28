@@ -130,7 +130,7 @@ export class ConditionalActionBuilder {
         );
 
         console.log('✅ Document Type created:', result);
-        return { documentTypeId: typeId };
+        return { documentGroupId: context.documentGroupId, documentTypeId: typeId };
       } catch (error) {
         console.error('❌ Error creating document type:', error);
         this.progressService.updateStepProgress(
@@ -162,6 +162,7 @@ export class ConditionalActionBuilder {
         );
 
         const createdKeywords = [];
+        let usedDocumentTypeId = null;
 
         for (let i = 0; i < actionData.keywordsToCreate.length; i++) {
           const keywordData = actionData.keywordsToCreate[i];
@@ -169,6 +170,10 @@ export class ConditionalActionBuilder {
             ...keywordData,
             documentTypeId: context.documentTypeId || keywordData.documentTypeId
           };
+
+          if (!usedDocumentTypeId) {
+            usedDocumentTypeId = finalKeywordData.documentTypeId;
+          }
 
           console.log(`Creating keyword ${i + 1}/${keywordCount}: "${keywordData.name}"`);
           this.progressService.updateStepProgress(
@@ -192,7 +197,7 @@ export class ConditionalActionBuilder {
         );
         
         console.log('✅ Keywords created:', createdKeywords);
-        return { createdKeywords };
+        return { createdKeywords, documentGroupId: context.documentGroupId, documentTypeId: context.documentTypeId || usedDocumentTypeId };
       } catch (error) {
         console.error('❌ Error creating keywords:', error);
         this.progressService.updateStepProgress(

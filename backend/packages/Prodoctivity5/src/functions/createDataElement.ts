@@ -45,7 +45,7 @@ export const createKeyword = async (
 
         const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
-        const generateName = createKeywordRequest.name.trim()+generateShortGuid(); //use for debug
+        const generateName = createKeywordRequest.name.trim()//+generateShortGuid(); //use for debug
 
         const requestBody = {
             name: generateName,
