@@ -4,7 +4,6 @@ import { CloudDocumentTypeSchema } from "../types/CloudDocumentTypeSchema";
 export const GetDocumentTypeStruct = async (credential: Credentials, documentTYpeId: string): Promise<SchemaDocumentType> => {
   try {
 
-
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
     headers.append("Authorization", `Bearer ${credential.token}`)
