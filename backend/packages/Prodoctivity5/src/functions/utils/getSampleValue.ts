@@ -15,5 +15,6 @@ export function getSampleValue(dataType: DataType) {
             return new Date();
         case DataType.DateTime:
             return new Date();
+        
     }
 }

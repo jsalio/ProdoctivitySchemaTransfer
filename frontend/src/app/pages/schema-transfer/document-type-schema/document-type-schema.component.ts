@@ -241,4 +241,8 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
     // console.log(this.order())
     this.onKeySelected.emit({ isChecked: isChecked, keyword: keyword, order:keyspresentInTarget })
   }
+
+  fieldIsTypeImage = (field: DocumetTypeKeyword) => {
+    return field.dataType === 'Image'
+  }
 }

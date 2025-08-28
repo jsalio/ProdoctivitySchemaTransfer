@@ -23,12 +23,16 @@ export const GetDataTypeByString = (dataType: string): DataType => {
             return DataType.Numeric;
         case "DECIMAL":
             return DataType.Decimal;
+        case "TIME":
+            return DataType.DateTime;
         case "BOOLEAN":
             return DataType.Boolean;
         case "DATE":
             return DataType.Date;
         case "DATETIME":
             return DataType.DateTime;
+        case "CURRENCY":
+            return DataType.Decimal;
         default:
             return DataType.None;
     }

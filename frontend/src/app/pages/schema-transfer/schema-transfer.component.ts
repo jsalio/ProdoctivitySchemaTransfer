@@ -156,11 +156,13 @@ export class SchemaTransferComponent implements OnInit {
   onSelectDocumentGroup = (group: SchemaDocumentGroup) => {
     this.selectedGroup.set(group);
     this.keywordsSelectedPerDocument.set([])
+    this.resume.set(null)
   }
 
   onDocumentTypeSelected = (documentType: SchemaDocumentType) => {
     this.selectedDocumentType.set(documentType)
     this.keywordsSelectedPerDocument.set([])
+    this.resume.set(null)
   }
 
   executeCall = (credentials: Credentials, callback: (response: { data: Array<DataElement>, success: boolean }) => void) => {

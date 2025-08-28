@@ -87,7 +87,7 @@ export interface ISchema {
     saveNewDocumentGroup: (credentials: Credentials, groupStruct: { name: string }) => Observable<Response<DocumentGroup>>
 
     saveNewDocumentType: (credentials: Credentials, documentTypeStruct: { name: string, documentGroupId: string }) => Observable<Response<DocumentType>>
-    saveNewKeyword: (credentials: Credentials, keywordStruct: { name: string, dataType: string, required: string, label: string }) => Observable<any>
+    saveNewKeyword: (credentials: Credentials, keywordStruct: { name: string, dataType: string, require: string, label: string }) => Observable<any>
     saveNewDocumentSchema: (
         credentials: Credentials,
         documentSchemaStruct: {

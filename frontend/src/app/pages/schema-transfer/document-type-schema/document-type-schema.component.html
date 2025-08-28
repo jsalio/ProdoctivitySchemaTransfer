@@ -48,7 +48,7 @@
                 <input 
                   type="checkbox" 
                   [checked]="item.isSync" 
-                  [disabled]="item.isSync"
+                  [disabled]="item.isSync || fieldIsTypeImage(item)"
                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   [class.opacity-50]="!bothSchemasReady()"
                   (change)="markKeyword($event,item)"

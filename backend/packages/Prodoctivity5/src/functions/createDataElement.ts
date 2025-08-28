@@ -1,9 +1,9 @@
 import { Credentials, DataElement, Result } from "@schematransfer/core";
-import { GetDataTypeByString, MiddleWareToProdoctivityDictionary } from "./utils/dataType";
-import { getDataElements } from "./getDataElements";
 import { KeywordOptions } from "../types/KeywordOptions";
+import { getDataElements } from "./getDataElements";
+import { GetDataTypeByString, MiddleWareToProdoctivityDictionary } from "./utils/dataType";
 import { getSampleValue } from "./utils/getSampleValue";
-import { generateShortGuid } from "./utils/random-guid";
+import { DataType } from "../types/DataType";
 
 
 const DEFAULT_OPTIONS: Required<KeywordOptions> = {
@@ -28,7 +28,7 @@ export const createKeyword = async (
     },
     options: KeywordOptions = {}
 ): Promise<Result<DataElement, Error>> => {
-    console.log('request on middleware:', JSON.stringify(createKeywordRequest, null, 2))    
+    console.log('request on middleware:', JSON.stringify(createKeywordRequest, null, 2))
     if (!createKeywordRequest.name?.trim()) {
         return {
             ok: false,
@@ -49,15 +49,22 @@ export const createKeyword = async (
 
         const requestBody = {
             name: generateName,
-            required: false,//createKeywordRequest.require,
+            required: createKeywordRequest.require,
             question: createKeywordRequest.name.trim(),
             instructions: createKeywordRequest.name.trim(),
             Definition: createKeywordRequest.name.trim(),
             alternativeQuestion: createKeywordRequest.name.trim(),
             dataType: MiddleWareToProdoctivityDictionary.get(GetDataTypeByString(createKeywordRequest.dataType))!,
-            sampleValue:getSampleValue(GetDataTypeByString(createKeywordRequest.dataType)),
+            sampleValue: getSampleValue(GetDataTypeByString(createKeywordRequest.dataType)),
             ...mergedOptions
         };
+
+        if (requestBody.dataType === 0) {
+            return {
+                ok: false,
+                error: new Error("Data type cannot be None")
+            };
+        }
 
         const requestOptions: RequestInit = {
             method: "POST",
@@ -67,7 +74,7 @@ export const createKeyword = async (
         };
 
         console.clear();
-        console.log('request on Core:', JSON.stringify(requestBody, null, 2))   
+        console.log('request on Core:', JSON.stringify(requestBody, null, 2))
         const response = await fetch(
             `${credential.serverInformation.server}/site/api/v0.1/dictionary/data-elements`,
             requestOptions
@@ -92,7 +99,7 @@ export const createKeyword = async (
 
         const dataElement = listOfDataElements.values().find((x: any) => x.name === generateName);
 
-        if (!dataElement){
+        if (!dataElement) {
             return {
                 ok: false,
                 error: new Error("Data element not found")
@@ -101,12 +108,12 @@ export const createKeyword = async (
 
         return {
             ok: true,
-            value: { 
+            value: {
                 id: dataElement.id,
                 name: dataElement.name,
                 dataType: dataElement.dataType,
                 required: dataElement.required,
-             }
+            }
         };
     }
     catch (error) {

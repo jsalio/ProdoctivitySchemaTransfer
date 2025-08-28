@@ -52,13 +52,13 @@ export class SchemaService extends BaseService implements ISchema {
     return this.client.post<Response<DocumentType>>(`${this.Uri}/create-document-type`, body)
   }
 
-  saveNewKeyword(credentials: Credentials, keywordStruct: { name: string; dataType: string; required: string; }) : Observable<Response<DataElement>> {
+  saveNewKeyword(credentials: Credentials, keywordStruct: { name: string; dataType: string; require: string; }) : Observable<Response<DataElement>> {
     const body = {
       credentials,
       createDataElementRequest: {
         name: keywordStruct.name,
         dataType: keywordStruct.dataType,
-        isRequired: keywordStruct.required,
+        isRequired: keywordStruct.require,
       }
     }
     return this.client.post<Response<DataElement>>(`${this.Uri}/create-data-element`, body) 
