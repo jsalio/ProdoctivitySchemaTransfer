@@ -3,6 +3,7 @@ import { GetDataTypeByString, MiddleWareToProdoctivityDictionary } from "./utils
 import { getDataElements } from "./getDataElements";
 import { KeywordOptions } from "../types/KeywordOptions";
 import { getSampleValue } from "./utils/getSampleValue";
+import { generateShortGuid } from "./utils/random-guid";
 
 
 const DEFAULT_OPTIONS: Required<KeywordOptions> = {
@@ -44,7 +45,7 @@ export const createKeyword = async (
 
         const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
-        const generateName = createKeywordRequest.name.trim()//+generateShortGuid(); //use for debug
+        const generateName = createKeywordRequest.name.trim()+generateShortGuid(); //use for debug
 
         const requestBody = {
             name: generateName,
@@ -65,6 +66,8 @@ export const createKeyword = async (
             redirect: "follow"
         };
 
+        console.clear();
+        console.log('request on Core:', JSON.stringify(requestBody, null, 2))   
         const response = await fetch(
             `${credential.serverInformation.server}/site/api/v0.1/dictionary/data-elements`,
             requestOptions
@@ -87,7 +90,7 @@ export const createKeyword = async (
         }
         const listOfDataElements = await getDataElements(credential);
 
-        const dataElement = listOfDataElements.find((x: any) => x.name === generateName);
+        const dataElement = listOfDataElements.values().find((x: any) => x.name === generateName);
 
         if (!dataElement){
             return {

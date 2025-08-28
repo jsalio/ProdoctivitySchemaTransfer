@@ -1,4 +1,4 @@
-import { DependenceInjectionContainer } from "packages/Core/src";
+import { DependenceInjectionContainer } from "@schematransfer/core";
 import { Elysia } from "elysia";
 
 import { AuthService } from "../services/Auth";
