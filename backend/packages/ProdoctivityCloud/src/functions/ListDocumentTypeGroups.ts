@@ -2,7 +2,7 @@ import { Credentials, DocumentType } from "@schematransfer/core";
 
 import { CloudDocumentType } from "../types/CloudDocumentType";
 
-export const GetDocumentTypeInGroup = async (credential: Credentials, documentGroupId: string): Promise<Set<any>> => {
+export const GetDocumentTypeInGroup = async (credential: Credentials, documentGroupId: string): Promise<Set<DocumentType>> => {
     try {
         const filterDocumentTypeByGroupId = (documentTypes: CloudDocumentType[]) => {
             return documentTypes.filter((document) => document.documentGroupId === documentGroupId);

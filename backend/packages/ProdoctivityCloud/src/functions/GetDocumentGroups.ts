@@ -1,7 +1,7 @@
 import { Credentials, DocumentGroup } from "packages/Core/src";
 import { CloudDocumentType } from "../types/CloudDocumentType";
 
-export const GetDocumentGroup = async (credential: Credentials): Promise<any> => {
+export const GetDocumentGroup = async (credential: Credentials): Promise<Set<DocumentGroup>> => {
     try {
 
         const updateInSet = <T>(
