@@ -1,15 +1,25 @@
-<!-- Navbar -->
-<nav class="bg-blue-600 text-white p-4">
-  <div class="container mx-auto flex justify-between">
-    <h1 class="text-xl font-bold">Schema Transfer</h1>
-    <div class="space-x-4">
-      <a [routerLink]="'/schema-transfer'" class="hover:underline">Schemas</a>
-      <a [routerLink]="'/user-transfer'" class="hover:underline">Users</a>
-      <span (click)="openCredentialsModal()">Status : {{getConnectionStatus()}}</span>
+<header class="bg-white border-b border-gray-200 shadow-sm">
+  <div class="px-4 sm:px-6 py-4">
+    <div class="flex items-center justify-between">
+      <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">Schema Transfer</h1>
+      <div class="flex items-center space-x-3 sm:space-x-6 text-sm">
+        <a href="#" [routerLink]="'/schema-transfer'"
+          class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline cursor-pointer">Schemas</a>
+        <!-- <a href="#" [routerLink]="'/user-transfer'"
+          class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline">Users</a> -->
+        <div class="flex items-center space-x-2">
+          <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+          <span (click)="openCredentialsModal()" class="text-gray-600 hidden sm:inline">Status:
+            {{getConnectionStatus()}}</span>
+          <span (click)="openCredentialsModal()" class="text-gray-600 sm:hidden">Conectado</span>
+        </div>
+      </div>
     </div>
   </div>
-</nav>
-<router-outlet />
+</header>
+
+  <router-outlet />
+
 
 <!-- Toast Notification -->
 <div class="fixed bottom-4 right-4 p-4 bg-green-600 text-white rounded-md shadow-lg hidden">

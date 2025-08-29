@@ -1,0 +1,18 @@
+<div class="tooltip inline-flex items-center">
+    @if(iconType() === 'sync') {
+    <app-sync />
+    }
+    @else if(iconType() === 'check') {
+    <app-check/>
+    }
+    @else if(iconType() === 'not-sync') {
+    <app-not-sync/>
+    }
+    @else if(iconType() === 'warn') {
+    <app-warn/>
+    }
+    @else if(iconType() === 'unasign') {
+    <app-unasign/>
+    }
+    <span class="tooltiptext">{{tooltipText()}}</span>
+</div>

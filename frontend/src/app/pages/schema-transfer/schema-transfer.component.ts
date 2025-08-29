@@ -162,6 +162,7 @@ export class SchemaTransferComponent implements OnInit {
   onDocumentTypeSelected = (documentType: SchemaDocumentType) => {
     this.selectedDocumentType.set(documentType)
     this.keywordsSelectedPerDocument.set([])
+    console.log(this.selectedDocumentType())
     this.resume.set(null)
   }
 
@@ -316,5 +317,14 @@ export class SchemaTransferComponent implements OnInit {
     this.modalProcessOpen.set(false);
     this.executingActions.set(false);
     window.location.reload();
+  }
+
+  goToForm = () => {
+    const targetCredentials = this.localData.getValue<Credentials>("Credentials_V5_V5");
+    if (!targetCredentials) {
+      console.error('❌ No target credentials available');
+      return;
+    }
+    window.open(targetCredentials.serverInformation.server+`/Site/ProDoctivity.aspx#/form-designer/${this.selectedDocumentType()?.targetDocumentType}`)
   }
 }
