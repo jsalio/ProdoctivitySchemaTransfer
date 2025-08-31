@@ -17,12 +17,14 @@
             [targetDocumentTypeId]="selectedDocumentType()?.targetDocumentType"
             [targetSystemDataElements]="systemTargetDataElements()" (onKeySelected)="addKeyToActions($event)" />
 
-        @if(selectedDocumentType()?.targetDocumentType !== null && selectedDocumentType()?.targetDocumentType !== "" && resume() === null) {
-            <div class="mt-6 p-6 bg-white rounded-lg shadow-sm border border-gray-200">
-                <button (click)="goToForm()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                    Ver formulario en Fluency
-                </button>
-            </div>
+        @if(selectedDocumentType()?.targetDocumentType !== null && selectedDocumentType()?.targetDocumentType !== "" &&
+        resume() === null) {
+        <div class="mt-6 p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <button (click)="goToForm()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Ver formulario en Fluency
+            </button>
+        </div>
         }
         <!-- Mapeo -->
         @if(resume() !== null) {
