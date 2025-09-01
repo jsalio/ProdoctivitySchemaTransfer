@@ -104,6 +104,7 @@ The frontend is an Angular application with the following structure:
 * ```bun install```: Install dependencies
 * ```bun test```: Run tests
 * ```bun run run_api```: Start the API server
+* ```bun run build:exec```: Compile and create a executable file
 ### Frontend
 * ```ng serve```: Start the development server
 * ```ng build```: Build the application
