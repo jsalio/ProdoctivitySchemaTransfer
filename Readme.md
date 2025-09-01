@@ -2,12 +2,24 @@
 
 ![Capture01](./documentations/snap01.png "Pantalla principal")
 
-This tool allows for the quick and efficient migration of document structures, users, workflows, and permissions between the Prodoctivity Fluency (V5) and Prodoctivity Cloud (V6) systems.
+This tool allows you to quickly and efficiently migrate and update document structures, users, workflows, and permissions between the Prodoctivity Fluency (V5) and Prodoctivity Cloud (V6) systems.
 
-To achieve this, it relies on the APIs of each platform and uses an intermediate standardization system that translates instructions and data types to the corresponding source and destination systems.
+It relies on the APIs of each platform and uses an intermediate validation system that translates instructions and data types to the corresponding source and destination systems.
 
-This ensures that information and configuration remain consistent during the migration, reducing errors, speeding up the process, and facilitating the transition for users to more modern and scalable environments.
+In addition to migration, this solution facilitates data compatibility between versions: it allows information to be adapted from V6 to V5 and vice versa, which is especially useful for integrating systems that are not directly compatible, such as Prodoctivity Capture.
 
+This ensures that information and configuration remain consistent during migration or synchronization processes, reducing errors, speeding up the process, and allowing organizations to adopt more modern environments without losing interoperability with existing systems.
+
+Additionally, the system offers:
+
+
+* Security in data transfer.
+
+* Automatic validation of structures before migration or conversion.
+
+* Detailed reports on the progress and status of processes.
+
+##
 ```
 ProdoctivitySchemaTransfer/
 ├── backend/                 # Backend services and API

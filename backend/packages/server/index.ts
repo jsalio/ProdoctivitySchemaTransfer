@@ -29,7 +29,7 @@ const startApp = async () => {
         }))
         .use(AuthRoutes(container))
         .use(SchemaRoutes(container))
-        .get('/', () => 'Welcome to MyCRM API');
+        .get('/', () => ' Welcome Schematransfer API');
 
     app.listen(3000, () => {
         console.log('🦊 Elysia server running on http://localhost:3000');
