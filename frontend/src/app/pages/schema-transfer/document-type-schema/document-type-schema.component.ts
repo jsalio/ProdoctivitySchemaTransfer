@@ -8,11 +8,12 @@ import { ModalComponent } from "../../../shared/modal/modal.component";
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaDocumentType } from '../../../types/models/SchemaDocumentType';
 import { SchemaService } from '../../../services/backend/schema.service';
+import { IconographyComponent } from "../../../shared/iconography/iconography.component";
 
 @Component({
   selector: 'app-document-type-schema',
   standalone: true,
-  imports: [ModalComponent],
+  imports: [IconographyComponent],
   templateUrl: './document-type-schema.component.html',
   styleUrl: './document-type-schema.component.css'
 })

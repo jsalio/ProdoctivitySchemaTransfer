@@ -1,127 +1,136 @@
-<div class="bg-gray-100 h-screen flex flex-col">
-    <main class="flex flex-1 overflow-hidden">
+<div class="flex flex-col lg:flex-row h-[calc(100vh-73px)]">
 
-        <aside class="w-1/5 bg-white border-r overflow-y-auto p-4">
-            <app-group-list (selectedDocumetGroup)="onSelectDocumentGroup($event)" />
-        </aside>
+    <div
+        class="w-full lg:w-80 xl:w-72 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 overflow-y-auto max-h-64 lg:max-h-none">
+        <app-group-list (selectedDocumetGroup)="onSelectDocumentGroup($event)" />
+    </div>
 
-        <!-- Documentos -->
-        <section class="w-2/5 bg-white border-r overflow-y-auto p-4">
-            <app-document-types-list [parentGroup]="selectedGroup()?.groupId"
-                [parentTargetGroup]="selectedGroup()?.targetId"
-                (onDocumentypeSeleted)="onDocumentTypeSelected($event)" />
-        </section>
+    <div class="flex-1 bg-white overflow-y-auto max-h-64 lg:max-h-none">
+        <app-document-types-list [parentGroup]="selectedGroup()?.groupId"
+            [parentTargetGroup]="selectedGroup()?.targetId" (onDocumentypeSeleted)="onDocumentTypeSelected($event)" />
+    </div>
 
-        <!-- Llaves -->
-        <section class="w-2/5 bg-white overflow-y-auto p-4">
-            <app-document-type-schema [documentTypeID]="selectedDocumentType()?.documentTypeId"
-                [targetDocumentTypeId]="selectedDocumentType()?.targetDocumentType"
-                [targetSystemDataElements]="systemTargetDataElements()" (onKeySelected)="addKeyToActions($event)" />
-            <!-- Mapeo -->
-            @if(resume() !== null) {
-            <div class="mt-6 p-6 bg-white rounded-lg shadow-sm border border-gray-200">
-                <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Resumen de la
-                    Transferencia</h3>
-                <div class="space-y-4">
-                    <!-- Grupo -->
-                    <div class="p-3 bg-blue-50 rounded-md">
-                        <h4 class="font-medium text-blue-700 mb-1">Grupo</h4>
-                        @if(resume()?.groupData) {
-                        <p class="text-gray-700">
-                            <span class="text-green-600">Nuevo: </span>
-                            {{resume()?.groupData?.name}}
-                        </p>
-                        } @else {
-                        <p class="text-gray-700">{{selectedGroup()?.groupName}}</p>
-                        }
-                    </div>
+    <div
+        class="w-full lg:w-96 xl:w-[28rem] 2xl:w-[32rem] bg-white border-t lg:border-t-0 lg:border-l border-gray-200 overflow-y-auto flex-shrink-0">
 
-                    <!-- Documento -->
-                    <div class="p-3 bg-blue-50 rounded-md">
-                        <h4 class="font-medium text-blue-700 mb-1">Documento</h4>
-                        @if(resume()?.typeData) {
-                        <p class="text-gray-700">
-                            <span class="text-green-600">Nuevo: </span>
-                            {{resume()?.typeData?.name}}
-                        </p>
-                        } @else {
-                        <p class="text-gray-700">{{selectedDocumentType()?.documentTypeName}}</p>
-                        }
-                    </div>
+        <app-document-type-schema [documentTypeID]="selectedDocumentType()?.documentTypeId"
+            [targetDocumentTypeId]="selectedDocumentType()?.targetDocumentType"
+            [targetSystemDataElements]="systemTargetDataElements()" (onKeySelected)="addKeyToActions($event)" />
 
-                    <!-- Llaves a crear -->
-                    <div class="p-3 bg-amber-50 rounded-md">
-                        <h4 class="font-medium text-amber-700 mb-2">Llaves a crear</h4>
-                        @if(resume()?.keywordsToCreate.length > 0) {
-                        <ul class="space-y-2">
-                            @for(key of resume()?.keywordsToCreate; track $index) {
-                            <li class="flex items-center text-sm text-gray-700">
-                                <span
-                                    class="inline-flex items-center justify-center w-5 h-5 mr-2 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">+</span>
-                                <span class="font-mono">$ {{key.name}}</span>
-                                <span
-                                    class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">{{key.dataType}}</span>
-                                @if(key.require) {
-                                <span class="ml-2 px-2 py-0.5 bg-red-100 text-red-600 text-xs rounded">Requerido</span>
-                                }
-                            </li>
+        @if(selectedDocumentType()?.targetDocumentType !== null && selectedDocumentType()?.targetDocumentType !== "" &&
+        resume() === null) {
+        <div class="mt-6 p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <button (click)="goToForm()"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Ver formulario en Fluency
+            </button>
+        </div>
+        }
+        <!-- Mapeo -->
+        @if(resume() !== null) {
+        <div class="mt-6 p-6 bg-white rounded-lg shadow-sm border border-gray-200">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">Resumen de la
+                Transferencia</h3>
+            <div class="space-y-4">
+                <!-- Grupo -->
+                <div class="p-3 bg-blue-50 rounded-md">
+                    <h4 class="font-medium text-blue-700 mb-1">Grupo</h4>
+                    @if(resume()?.groupData) {
+                    <p class="text-gray-700">
+                        <span class="text-green-600">Nuevo: </span>
+                        {{resume()?.groupData?.name}}
+                    </p>
+                    } @else {
+                    <p class="text-gray-700">{{selectedGroup()?.groupName}}</p>
+                    }
+                </div>
+
+                <!-- Documento -->
+                <div class="p-3 bg-blue-50 rounded-md">
+                    <h4 class="font-medium text-blue-700 mb-1">Documento</h4>
+                    @if(resume()?.typeData) {
+                    <p class="text-gray-700">
+                        <span class="text-green-600">Nuevo: </span>
+                        {{resume()?.typeData?.name}}
+                    </p>
+                    } @else {
+                    <p class="text-gray-700">{{selectedDocumentType()?.documentTypeName}}</p>
+                    }
+                </div>
+
+                <!-- Llaves a crear -->
+                <div class="p-3 bg-amber-50 rounded-md">
+                    <h4 class="font-medium text-amber-700 mb-2">Llaves a crear</h4>
+                    @if(resume()?.keywordsToCreate.length > 0) {
+                    <ul class="space-y-2">
+                        @for(key of resume()?.keywordsToCreate; track $index) {
+                        <li class="flex items-center text-sm text-gray-700">
+                            <span
+                                class="inline-flex items-center justify-center w-5 h-5 mr-2 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">+</span>
+                            <span class="font-mono">$ {{key.name}}</span>
+                            <span
+                                class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">{{key.dataType}}</span>
+                            @if(key.require) {
+                            <span class="ml-2 px-2 py-0.5 bg-red-100 text-red-600 text-xs rounded">Requerido</span>
                             }
-                        </ul>
-                        } @else {
-                        <p class="text-gray-500 text-sm italic">No se crearán llaves nuevas</p>
+                        </li>
                         }
-                    </div>
+                    </ul>
+                    } @else {
+                    <p class="text-gray-500 text-sm italic">No se crearán llaves nuevas</p>
+                    }
+                </div>
 
-                    <!-- Llaves a asignar -->
-                    <div class="p-3 bg-green-50 rounded-md">
-                        <h4 class="font-medium text-green-700 mb-2">Llaves a asignar</h4>
-                        @if(resume()?.keywordsToAssign.length > 0) {
-                        <ul class="space-y-2">
-                            @for(key of resume()?.keywordsToAssign; track $index) {
-                            <li class="flex items-center text-sm text-gray-700">
-                                <span
-                                    class="inline-flex items-center justify-center w-5 h-5 mr-2 bg-green-100 text-green-700 rounded-full text-xs font-medium">✓</span>
-                                <span class="font-mono"># {{key.name}}</span>
-                                <span
-                                    class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">{{key.dataType}}</span>
-                                @if(key.require) {
-                                <span class="ml-2 px-2 py-0.5 bg-red-100 text-red-600 text-xs rounded">Requerido</span>
-                                }
-                            </li>
+                <!-- Llaves a asignar -->
+                <div class="p-3 bg-green-50 rounded-md">
+                    <h4 class="font-medium text-green-700 mb-2">Llaves a asignar</h4>
+                    @if(resume()?.keywordsToAssign.length > 0) {
+                    <ul class="space-y-2">
+                        @for(key of resume()?.keywordsToAssign; track $index) {
+                        <li class="flex items-center text-sm text-gray-700">
+                            <span
+                                class="inline-flex items-center justify-center w-5 h-5 mr-2 bg-green-100 text-green-700 rounded-full text-xs font-medium">✓</span>
+                            <span class="font-mono"># {{key.name}}</span>
+                            <span
+                                class="ml-2 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded">{{key.dataType}}</span>
+                            @if(key.require) {
+                            <span class="ml-2 px-2 py-0.5 bg-red-100 text-red-600 text-xs rounded">Requerido</span>
                             }
-                        </ul>
-                        } @else {
-                        <p class="text-gray-500 text-sm italic">No se asignarán llaves existentes</p>
+                        </li>
                         }
-                    </div>
+                    </ul>
+                    } @else {
+                    <p class="text-gray-500 text-sm italic">No se asignarán llaves existentes</p>
+                    }
+                </div>
 
-                    <!-- Botón Aplicar -->
-                    <div class="pt-4">
-                        <button (click)="applyChanges()"
-                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                            [disabled]="executingActions()">
-                            @if (executingActions()) {
-                            <span class="inline-flex items-center justify-center">
-                                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                        stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor"
-                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                    </path>
-                                </svg>
-                                Procesando...
-                            </span>
-                            } @else {
-                            Aplicar cambios
-                            }
-                        </button>
-                    </div>
+                <!-- Botón Aplicar -->
+                <div class="pt-4">
+                    <button (click)="applyChanges()"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                        [disabled]="executingActions()">
+                        @if (executingActions()) {
+                        <span class="inline-flex items-center justify-center">
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            Procesando...
+                        </span>
+                        } @else {
+                        Aplicar cambios
+                        }
+                    </button>
                 </div>
             </div>
-            }
-        </section>
-    </main>
+        </div>
+        }
+    </div>
+    <!-- </main> -->
 </div>
 
 <app-modal [isOpen]="modalProcessOpen()" (close)="handlerModalClose()" [size]="'basic'">
@@ -149,16 +158,18 @@
         </button>
         }
         @else{
-            @if(isCanceledOrAborted()){
-                <button type="button" class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md" (click)="handlerModalClose()">
-                    Proceso cancelado
-                </button>
-            }
-            @else {
-                <button type="button" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md" (click)="hanlderModalCloseForSuccess()">
-                    Proceso completado
-                </button>
-            }
+        @if(isCanceledOrAborted()){
+        <button type="button" class="mt-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md"
+            (click)="handlerModalClose()">
+            Proceso cancelado
+        </button>
+        }
+        @else {
+        <button type="button" class="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+            (click)="hanlderModalCloseForSuccess()">
+            Proceso completado
+        </button>
+        }
 
         }
     </div>

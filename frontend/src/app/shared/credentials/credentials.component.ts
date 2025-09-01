@@ -98,7 +98,7 @@ export class CredentialsComponent {
         this.loginForm.setValue(form)
         const isExpired = isTokenExpired(myLocalCredential.token)
         if (isExpired) {
-          alert('Token guardado expirado')
+          // alert('Token guardado expirado')
           this.tokenIsProvide.set(false)
         } else {
           this.tokenIsProvide.set(true)

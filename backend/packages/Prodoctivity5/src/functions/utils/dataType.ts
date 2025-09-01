@@ -8,7 +8,9 @@ export const MiddleWareToProdoctivityDictionary: Map<DataType, ProductivityTarge
     [DataType.Decimal, ProductivityTargetDataType.DecimalNumber],
     [DataType.Boolean, ProductivityTargetDataType.Boolean],
     [DataType.Date, ProductivityTargetDataType.Date],
-    [DataType.DateTime, ProductivityTargetDataType.DateTime]
+    [DataType.DateTime, ProductivityTargetDataType.DateTime],
+    [DataType.Currency, ProductivityTargetDataType.Currency],
+    [DataType.Logical, ProductivityTargetDataType.Boolean]
 ]);
 
 export const GetDataTypeByString = (dataType: string): DataType => {
@@ -33,6 +35,8 @@ export const GetDataTypeByString = (dataType: string): DataType => {
             return DataType.DateTime;
         case "CURRENCY":
             return DataType.Decimal;
+        case "LOGICAL":
+            return DataType.Boolean;
         default:
             return DataType.None;
     }

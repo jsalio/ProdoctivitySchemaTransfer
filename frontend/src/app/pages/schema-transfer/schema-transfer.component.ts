@@ -23,6 +23,7 @@ import { ProcessingIndicatorComponent } from "../../shared/processing-indicator/
 import { CompleteIndicatorComponent } from "../../shared/complete-indicator/complete-indicator.component";
 import { ErrorIndicatorComponent } from "../../shared/error-indicator/error-indicator.component";
 import { IndicatorComponent } from '../../shared/indicator/indicator.component';
+import { ConnectionStatusService } from '../../services/ui/connection-status.service';
 
 export type stepIndicator = 'processing' | 'completed' | 'error';
 
@@ -117,7 +118,8 @@ export class SchemaTransferComponent implements OnInit {
     private readonly schema: SchemaService,
     private readonly localData: LocalDataService,
     private readonly tranferResumeService: TranferResumeService,
-    private readonly progressService: ActionProgressService
+    private readonly progressService: ActionProgressService,
+    private readonly connectionStatusService: ConnectionStatusService
   ) {
     // super();
     this.actionOrchestrator = new ActionOrchestrator(this.schema, this.executingActions, this.tranferResumeService, this.progressService);
@@ -125,6 +127,9 @@ export class SchemaTransferComponent implements OnInit {
 
 
   ngOnInit(): void {
+    this.connectionStatusService.getStatus$().subscribe((status) => {
+      console.log(status)
+    })
     const credentialsOfFluency = this.localData.getValue<Credentials>("Credentials_V5_V5");
     if (credentialsOfFluency) {
       this.executeCall(credentialsOfFluency, (response) => {
@@ -162,6 +167,7 @@ export class SchemaTransferComponent implements OnInit {
   onDocumentTypeSelected = (documentType: SchemaDocumentType) => {
     this.selectedDocumentType.set(documentType)
     this.keywordsSelectedPerDocument.set([])
+    console.log(this.selectedDocumentType())
     this.resume.set(null)
   }
 
@@ -316,5 +322,14 @@ export class SchemaTransferComponent implements OnInit {
     this.modalProcessOpen.set(false);
     this.executingActions.set(false);
     window.location.reload();
+  }
+
+  goToForm = () => {
+    const targetCredentials = this.localData.getValue<Credentials>("Credentials_V5_V5");
+    if (!targetCredentials) {
+      console.error('❌ No target credentials available');
+      return;
+    }
+    window.open(targetCredentials.serverInformation.server+`/Site/ProDoctivity.aspx#/form-designer/${this.selectedDocumentType()?.targetDocumentType}`)
   }
 }

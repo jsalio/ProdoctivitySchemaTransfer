@@ -79,8 +79,8 @@ export class GroupListComponent implements OnInit {
   // Computed signal que reactivamente calcula las clases para cada item
   itemClasses = computed(() => {
     const selected = this.selectedItem();
-    const baseClass = "p-2 rounded cursor-pointer hover:bg-blue-100";
-    const selectedClass = "p-2 bg-gray-100 rounded cursor-pointer hover:bg-blue-100";
+    const baseClass = "flex items-center p-2 lg:p-3 hover:bg-gray-50 transition-colors";
+    const selectedClass = "flex items-center p-2 lg:p-3 rounded-lg bg-blue-50 border border-blue-200 ";
 
     // Retorna un Map para lookup eficiente
     const classMap = new Map<string, string>();
@@ -104,7 +104,7 @@ export class GroupListComponent implements OnInit {
 
   // Método helper para obtener la clase (opcional)
   getItemClass = (groupName: string): string => {
-    return this.itemClasses().get(groupName) || "p-2 rounded cursor-pointer hover:bg-blue-100";
+    return this.itemClasses().get(groupName) || "flex items-center p-2 lg:p-3 hover:bg-gray-50 transition-colors";
   }
   
 }
