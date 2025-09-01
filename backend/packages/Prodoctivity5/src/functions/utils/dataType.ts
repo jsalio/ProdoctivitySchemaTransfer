@@ -34,7 +34,7 @@ export const GetDataTypeByString = (dataType: string): DataType => {
         case "DATETIME":
             return DataType.DateTime;
         case "CURRENCY":
-            return DataType.Currency;
+            return DataType.Decimal;
         case "LOGICAL":
             return DataType.Boolean;
         default:

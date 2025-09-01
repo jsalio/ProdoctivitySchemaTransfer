@@ -7,7 +7,7 @@
           class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline cursor-pointer">Schemas</a>
         <!-- <a href="#" [routerLink]="'/user-transfer'"
           class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline">Users</a> -->
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2 cursor-pointer">
           <div class="w-2 h-2 bg-green-500 rounded-full"></div>
           <span (click)="openCredentialsModal()" class="text-gray-600 hidden sm:inline">Status:
             {{getConnectionStatus()}}</span>
@@ -18,7 +18,7 @@
   </div>
 </header>
 
-  <router-outlet />
+<router-outlet />
 
 
 <!-- Toast Notification -->
