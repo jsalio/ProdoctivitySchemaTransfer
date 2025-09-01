@@ -1,5 +1,7 @@
 # Prodoctivity Schema Transfer
 
+![Capture01](./documentations/snap01.png "Pantalla principal")
+
 A utility for transferring document schemas between different Prodoctivity systems.
 ```
 ProdoctivitySchemaTransfer/
