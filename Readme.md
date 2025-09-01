@@ -2,7 +2,12 @@
 
 ![Capture01](./documentations/snap01.png "Pantalla principal")
 
-A utility for transferring document schemas between different Prodoctivity systems.
+This tool allows for the quick and efficient migration of document structures, users, workflows, and permissions between the Prodoctivity Fluency (V5) and Prodoctivity Cloud (V6) systems.
+
+To achieve this, it relies on the APIs of each platform and uses an intermediate standardization system that translates instructions and data types to the corresponding source and destination systems.
+
+This ensures that information and configuration remain consistent during the migration, reducing errors, speeding up the process, and facilitating the transition for users to more modern and scalable environments.
+
 ```
 ProdoctivitySchemaTransfer/
 ├── backend/                 # Backend services and API
@@ -90,6 +95,30 @@ The frontend is an Angular application with the following structure:
 * ```ng serve```: Start the development server
 * ```ng build```: Build the application
 * ```ng test```: Run tests
+
+## Publish
+
+### Backend
+For publish:
+
+1. Navigate to backend folder:
+    ```bash
+    cd backend
+    ```
+2. Run the command:
+    ``` bash
+    bun run build:exec
+    ```
+### Frontend
+For publish:
+1. Navigate to frontend folder:
+    ```bash
+    cd frontend
+    ```
+2. Run the command:
+    ```bash
+    ng build
+    ```
 
 ## Contributing
 1. Fork the repository
