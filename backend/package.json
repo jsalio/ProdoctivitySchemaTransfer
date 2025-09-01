@@ -10,8 +10,8 @@
         "install:deps": "bun install",
         "test": "bun test",
         "build": "bun build",
-        "run_server": "bun run packages/server/src/index.ts",
-        "build:exec":"bun build packages/server/src/index.ts --compile --outfile server.exe --target bun-windows-x64"
+        "run_server": "bun run packages/server/index.ts",
+        "build:exec":"bun build packages/server/index.ts --compile --outfile SchemaTransfer.exe --target bun-windows-x64"
     },
     "devDependencies": {
         "bun-types": "^1.2.19"

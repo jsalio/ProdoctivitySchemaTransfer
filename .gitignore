@@ -5,6 +5,9 @@
 /tmp
 /out-tsc
 /bazel-out
+/Distributable
+/SchemaTransfer.exe
+**/dist/*
 
 # Node
 **/node_modules
