@@ -64,6 +64,7 @@ ProdoctivitySchemaTransfer/
     ```bash
     bun run run_serve
     ```
+4. open the browser in http://localhost:3000 or http://localhost:3000/swagger for view documentation
 
 ### Frontend Setup
 1. Navigate to the frontend directory:
@@ -121,6 +122,7 @@ For publish:
     ``` bash
     bun run build:exec
     ```
+Note : if required run backend as windows service read [this](/documentations/InstallServiceBackend.MD) guide
 ### Frontend
 For publish:
 1. Navigate to frontend folder:
