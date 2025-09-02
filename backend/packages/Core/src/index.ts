@@ -9,6 +9,7 @@ export * from './application/GetDocumentTypesInGroup'
 export * from "./application/infrastructure/DependencyInjector"
 export * from "./application/Login"
 export * from "./domain/AdditionalInformation"
+export * from './domain/AppCodeError'
 export * from './domain/asign-data-element-to-document-request'
 export * from './domain/Create-data-element-request'
 export * from './domain/create-group-request'
@@ -16,9 +17,11 @@ export * from "./domain/Credentials"
 export * from './domain/DataElement'
 export * from './domain/DocumentGroup'
 export * from './domain/DocumentType'
+export * from "./domain/GetDocumentGroupRequest"
+export * from "./domain/GetDocumentTypeSchemaRequest"
+export * from "./domain/LoginUseCaseResult"
 export * from './domain/SchemaDocumentType'
 export * from './domain/ValidationError'
 export * from "./ports/IRequest"
 export * from "./ports/IStore"
 export * from './ports/Result'
-

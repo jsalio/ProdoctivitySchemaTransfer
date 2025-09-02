@@ -1,12 +1,12 @@
-import { Credentials } from "@schematransfer/core";
+import { CoreResult, Credentials, Result } from "@schematransfer/core";
 
 /**
  * 
  * @param credential 
  * @returns 
  */
-export const LoginToProdoctivity = async (credential: Credentials):Promise<string> => {
-        try {
+export const LoginToProdoctivity = async (credential: Credentials): Promise<Result<string, Error>> => {
+    try {
         const request = {
             username: credential.username,
             password: credential.password,
@@ -25,17 +25,28 @@ export const LoginToProdoctivity = async (credential: Credentials):Promise<strin
 
         const response = await fetch(`${credential.serverInformation.server}/api/login`, requestOptions);
         if (!response.ok) {
-            throw new Error(`Login failed with status ${response.status}: ${response.statusText}`);
+            return {
+                ok:false,
+                error:new Error(`Login failed with status ${response.status}: ${response.statusText}`)
+            }
         }
 
-        const body = await response.json();        
+        const body = await response.json();
         if (response.status === 200 && body.token) {
-            return body.token;
+            return {
+                ok:true,
+                value:body.token
+            };
         }
-        
-        throw new Error("No token received in response");
+
+        return {
+            ok:false,
+            error:new Error("No token received in response")
+        }
     } catch (error) {
-        console.error("Error during login:", error);
-        throw error; // Re-throw para que el llamador maneje el error
+        return {
+            ok:false,
+            error:error instanceof Error ?  error: new Error("Error de llamada.")
+        }
     }
 }

@@ -8,7 +8,7 @@ export const handleGetDataElements = async ({ body, di, set }: ElysiaContext) =>
     logStore(store);
 
     const schemaService = resolveSchemaService(di, store);
-    const result = await schemaService.GetSystemDataElements(body as any);
+    const result = await schemaService.getSystemDataElements(body as any);
 
     return handleServiceResponse(result, set);
 };

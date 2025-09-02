@@ -1,7 +1,10 @@
+import { AppCodeError } from "../domain/AppCodeError";
 import { CreateDocumentGroupRequest } from "../domain/create-group-request";
+import { DocumentGroup } from "../domain/DocumentGroup";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
+import { CoreResult } from "../ports/Result";
 
 export class CreateDocumentGroup {
     constructor(
@@ -16,28 +19,24 @@ export class CreateDocumentGroup {
         return errors;
     }
 
-    async execute() {
-        if (!this.store.createDocumentGroup) {
-            throw new Error("Store does not implement createDocumentGroup method");
-        }
-        try {
-            const request = this.request.build();
-            const schema = await this.store.createDocumentGroup(request.credentials, request.name);
-            if (!schema.ok) {
-                return {
-                    message: schema.error.message,
-                    groups: null
-                };
+    async execute():Promise<CoreResult<DocumentGroup, AppCodeError, Error>> {
+        if (!this.store.createDocumentGroup){
+            return {
+                ok:false,
+                code:AppCodeError.StoreError,
+                error: new Error("Store does not implement createDocumentGroup method")
             }
-            return {
-                message: '',
-                groups: schema.value
-            };
-        } catch (ex) {
-            return {
-                message: 'Error occurred while retrieving document type schema',
-                groups: null
-            };
         }
+        const request = this.request.build();
+        const result = await this.store.createDocumentGroup(request.credentials, request.name);
+        
+        if (!result.ok){
+            return {
+                ok:false,
+                code:AppCodeError.StoreError,
+                error:result.error
+            }
+        }
+        return result
     }
 }

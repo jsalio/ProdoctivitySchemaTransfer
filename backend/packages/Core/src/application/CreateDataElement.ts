@@ -1,7 +1,10 @@
+import { AppCodeError } from "../domain/AppCodeError";
 import { CreateDataElementRequest } from "../domain/Create-data-element-request";
+import { DataElement } from "../domain/DataElement";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
+import { CoreResult } from "../ports/Result";
 
 export class CreateDataElement {
     constructor(
@@ -16,36 +19,30 @@ export class CreateDataElement {
         return errors;
     }
 
-    async execute() {
-        console.log('request on Core:', JSON.stringify(this.request.build(), null, 2))
+    async execute(): Promise<CoreResult<DataElement, AppCodeError, Error>> {
         if (!this.store.createDataElement) {
-            throw new Error("Store does not implement createDataElement method");
-        }
-        try {
-            const request = this.request.build();
-            const result = await this.store.createDataElement(request.credentials, {
-                name: request.createDataElementRequest.name,
-                documentTypeId: "",
-                dataType: request.createDataElementRequest.dataType,
-                require: request.createDataElementRequest.isRequired
-            });
-            if (!result.ok) {
-                console.log('Elements not created on Core:', result.error)
-                return {
-                    message: result.error.message,
-                    dataElement: null
-                };
+            return {
+                ok: false,
+                code: AppCodeError.StoreError,
+                error: new Error("Store does not implement createDataElement method")
             }
-            return {
-                message: '',
-                dataElement: result.value
-            };
-        } catch (ex) {
-            console.log('error on Core:', ex)   
-            return {
-                message: 'Error occurred while creating data element',
-                dataElement: ex
-            };
         }
+
+        const request = this.request.build();
+        const result = await this.store.createDataElement(request.credentials, {
+            name: request.createDataElementRequest.name,
+            documentTypeId: "",
+            dataType: request.createDataElementRequest.dataType,
+            required: request.createDataElementRequest.isRequired
+        });
+
+        if (!result.ok){
+            return{
+                ok:false,
+                code:AppCodeError.StoreError,
+                error:result.error
+            }
+        }
+         return result
     }
 }

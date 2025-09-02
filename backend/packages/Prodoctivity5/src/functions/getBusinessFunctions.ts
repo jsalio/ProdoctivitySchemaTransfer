@@ -1,4 +1,4 @@
-import { Credentials, DocumentGroup } from "@schematransfer/core";
+import { Credentials, DocumentGroup, Result } from "@schematransfer/core";
 import { FluencyDocumentGroup } from "../types/FluencyDocumentGroup";
 
 /**
@@ -7,7 +7,7 @@ import { FluencyDocumentGroup } from "../types/FluencyDocumentGroup";
  * @returns A Promise resolving to a Set of DocumentGroup objects.
  * @throws Error if the API request fails or the response is invalid.
  */
-export const getBusinessFunctions = async (credential: Credentials): Promise<Set<DocumentGroup>> => {
+export const getBusinessFunctions = async (credential: Credentials): Promise<Result<Array<DocumentGroup>, Error>> => {
     try {
         const headers = new Headers();
         headers.append("x-api-key", credential.serverInformation.apiKey);
@@ -27,14 +27,21 @@ export const getBusinessFunctions = async (credential: Credentials): Promise<Set
 
         // Check if the response status is OK
         if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+            //throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+            return {
+                ok:false,
+                error:new Error(`API request failed with status ${response.status}: ${response.statusText}`)
+            }
         }
 
         const body = await response.json();
 
         // Validate that body is an array
         if (!Array.isArray(body)) {
-            throw new Error("Expected an array of FluencyDocumentGroup objects in the response");
+            return {
+                ok:false,
+                error:new Error("Expected an array of FluencyDocumentGroup objects in the response")
+            }
         }
 
         // Validate that each item in the array has the required properties
@@ -47,7 +54,11 @@ export const getBusinessFunctions = async (credential: Credentials): Promise<Set
         );
 
         if (!isValidResponse) {
-            throw new Error("Invalid FluencyDocumentGroup data in response");
+            return {
+                ok:false,
+                error:new Error("Invalid FluencyDocumentGroup data in response")
+            }
+            //throw new Error("Invalid FluencyDocumentGroup data in response");
         }
 
         // Map the response to DocumentGroup objects and convert to Set
@@ -57,7 +68,10 @@ export const getBusinessFunctions = async (credential: Credentials): Promise<Set
             documentTypesCounter: 0,
         }));
 
-        return new Set<DocumentGroup>(documentGroups);
+        return {
+            ok:true,
+            value: documentGroups
+        }
     } catch (error) {
         console.error("Error fetching business functions:", error);
         throw error; // Re-throw to allow the caller to handle the error

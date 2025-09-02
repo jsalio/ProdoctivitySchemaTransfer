@@ -1,208 +1,126 @@
-import { AssignDataElement, AssignDataElementToDocumentRequest, CreateDataElement, CreateDocumentGroup, CreateDocumentGroupRequest, CreateDocumentType, Credentials, GetAllDataElemets, GetDocumentGroups, GetDocumentTypeSchema, GetDocumentTypesGroups, IStore } from "@schematransfer/core";
+import {
+    AppCodeError,
+    AssignDataElement,
+    AssignDataElementToDocumentRequest,
+    CoreResult,
+    CreateDataElement,
+    CreateDocumentGroup,
+    CreateDocumentGroupRequest,
+    CreateDocumentType,
+    Credentials,
+    DataElement,
+    DocumentGroup,
+    DocumentType,
+    GetAllDataElemets,
+    GetDocumentGroupRequest,
+    GetDocumentGroups,
+    GetDocumentTypeSchema,
+    GetDocumentTypeSchemaRequest,
+    GetDocumentTypesGroups,
+    IStore,
+    SchemaDocumentType,
+    ValidationError
+} from "@schematransfer/core";
 
-import { BaseService } from "./BaseService";
-import { CreateDocumentTypeRequest } from "packages/Core/src/domain/Create-document-type-request";
 import { CreateDataElementRequest } from "packages/Core/src/domain/Create-data-element-request";
+import { CreateDocumentTypeRequest } from "packages/Core/src/domain/Create-document-type-request";
+import { BaseService } from "./BaseService";
+
+type UseCase<T = any> = {
+    validate(): ValidationError<Credentials>[];
+    execute(): Promise<CoreResult<T, AppCodeError, Error>>;
+};
 
 export class SchemaService extends BaseService {
-    /**
-     *
-     */
     constructor(private readonly store: IStore) {
         super();
     }
 
-    async GetListOfDocumentGroups(credentials: Credentials) {
+    /**
+     * Ejecuta un caso de uso con manejo de errores estandarizado
+     */
+    private async executeUseCase<T>(useCase: UseCase<T>): Promise<CoreResult<T, AppCodeError, Error>> {
         try {
-            console.log(this.store.getStoreName())
-            const request = this.buildRequest<Credentials>(credentials)
-            let login = new GetDocumentGroups(request, this.store)
-            const error = this.checkValidation(login.validate())
-            if (error !== "") {
-                return error
+            const validationError = this.checkValidation(useCase.validate());
+            if (validationError !== "") {
+                return this.createValidationError(validationError);
             }
-            const result = await login.execute()
-            if (result.message !== "") {
-                return result.message
-            }
-
-            return result.groups
-        }
-        catch (err) {
-            return "Error occurs"
+            return await useCase.execute();
+        } catch (err) {
+            return this.createUnmanagedError(err as Error);
         }
     }
 
-    async GetListDocumentTypesGroup(credential: Credentials, groupId: string) {
-        try {
-            const request = this.buildRequest<{ credentials: Credentials, groupId: string }>({ credentials: credential, groupId: groupId })
-            let login = new GetDocumentTypesGroups(request, this.store)
-            const error = this.checkValidation(login.validate())
-            if (error !== "") {
-                return error
-            }
-            const result = await login.execute()
-            if (result.message !== "") {
-                return result.message
-            }
-
-            return result.groups
-        }
-        catch (err) {
-            return "Error occurs"
-        }
-
+    private createValidationError(error: string): CoreResult<never, AppCodeError, Error> {
+        return {
+            ok: false,
+            code: AppCodeError.ValidationsFailed,
+            error: new Error(error)
+        };
     }
 
-    async GetDocumentTypeSchema(credential: Credentials, documentTypeId: string) {
-        try {
-            const request = this.buildRequest<{ credentials: Credentials, documentTypeId: string }>({ credentials: credential, documentTypeId: documentTypeId })
-            let login = new GetDocumentTypeSchema(request, this.store)
-            const error = this.checkValidation(login.validate())
-            if (error !== "") {
-                return error
-            }
-            const result = await login.execute()
-            if (result.message !== "") {
-                return result.message
-            }
-            // console.log('server data:',result.groups)
-
-            return result.groups
-        }
-        catch (err) {
-            return "Error occurs"
-        }
-
+    private createUnmanagedError(err: Error): CoreResult<never, AppCodeError, Error> {
+        return {
+            ok: false,
+            code: AppCodeError.UnmanagedError,
+            error: new Error(err.message)
+        };
     }
 
-    async GetSystemDataElements(credential: Credentials) {
-        try {
-            console.log(this.store.getStoreName())
-            const request = this.buildRequest<Credentials>(credential)
-            let login = new GetAllDataElemets(request, this.store)
-            const error = this.checkValidation(login.validate())
-            if (error !== "") {
-                return error
-            }
-            const result = await login.execute()
-            if (result.message !== "") {
-                return result.message
-            }
-
-            return result.dataElements
-        }
-        catch (err) {
-            return "Error occurs"
-        }
+    async getListOfDocumentGroups(credentials: Credentials): Promise<CoreResult<Array<DocumentGroup>, AppCodeError, Error>> {
+        console.log(this.store.getStoreName());
+        const request = this.buildRequest<Credentials>(credentials);
+        const useCase = new GetDocumentGroups(request, this.store);
+        return this.executeUseCase(useCase);
     }
 
-    async CreateDocumentGroup(body:CreateDocumentGroupRequest) {
-        try {
-            const request = this.buildRequest<CreateDocumentGroupRequest>(body)
-            let login = new CreateDocumentGroup(request, this.store)
-            // console.log('request:', JSON.stringify(body, null, 2))
-            // console.log('request credentials:', JSON.stringify(request.build().credentials, null, 2))
-            // console.log('request name:', JSON.stringify(request.build().name, null, 2))
-            const error = this.checkValidation(login.validate())
-            if (error !== "") {
-                return error
-            }
-            const result = await login.execute()
-            if (result.message !== "") {
-                return result.message
-            }
-
-            return result.groups
-        }
-        catch (err) {
-            return "Error occurs"
-        }
+    async getListDocumentTypesGroup(
+        credentials: Credentials, 
+        groupId: string
+    ): Promise<CoreResult<DocumentType[], AppCodeError, Error>> {
+        const request = this.buildRequest<GetDocumentGroupRequest>({ credentials, groupId });
+        const useCase = new GetDocumentTypesGroups(request, this.store);
+        return this.executeUseCase(useCase);
     }
 
-    async CreateDocumentType(body:CreateDocumentTypeRequest) {
-        console.log('request:', JSON.stringify(body, null, 2))
-        try {
-            const request = this.buildRequest<CreateDocumentTypeRequest>(body)
-            let login = new CreateDocumentType(request, this.store)
-            const error = this.checkValidation(login.validate())
-            if (error !== "") {
-                return error
-            }
-            const result = await login.execute()
-            if (result.message !== "") {
-                return result.message
-            }
-
-            return result.documentType
-        }
-        catch (err) {
-            return "Error occurs"
-        }
+    async getDocumentTypeSchema(
+        credentials: Credentials, 
+        documentTypeId: string
+    ): Promise<CoreResult<SchemaDocumentType, AppCodeError, Error>> {
+        const request = this.buildRequest<GetDocumentTypeSchemaRequest>({ credentials, documentTypeId });
+        const useCase = new GetDocumentTypeSchema(request, this.store);
+        return this.executeUseCase(useCase);
     }
 
-    // async CreateDataElement(body:{credential: Credentials, createDataElementRequest: { name: string, dataType: string, isRequired: boolean }}) {
-    //     try {
-    //         const request = this.buildRequest<
-    //             {
-    //                 credentials: Credentials,
-    //                 createDataElementRequest: { name: string, dataType: string, isRequired: boolean }
-    //             }>({ credentials: body.credential, createDataElementRequest: { name: body.createDataElementRequest.name, dataType: body.createDataElementRequest.dataType, isRequired: body.createDataElementRequest.isRequired } })
-    //         let login = new CreateDataElement(request, this.store)
-    //         const error = this.checkValidation(login.validate())
-    //         if (error !== "") {
-    //             return error
-    //         }
-    //         const result = await login.execute()
-    //         if (result.message !== "") {
-    //             return result.message
-    //         }
-
-    //         return result.documentType
-    //     }
-    //     catch (err) {
-    //         return "Error occurs"
-    //     }
-    // }
-
-    async CreateDataElement(body:CreateDataElementRequest) {
-        try {
-            const request = this.buildRequest<CreateDataElementRequest>(body)
-            let login = new CreateDataElement(request, this.store)
-            const error = this.checkValidation(login.validate())
-            if (error !== "") {
-                return error
-            }
-            const result = await login.execute()
-            if (result.message !== "") {
-                return result.message
-            }
-
-            return result.dataElement
-        }
-        catch (err) {
-            return "Error occurs"
-        }
+    async getSystemDataElements(credentials: Credentials): Promise<CoreResult<Array<DataElement>, AppCodeError, Error>> {
+        const request = this.buildRequest<Credentials>(credentials);
+        const useCase = new GetAllDataElemets(request, this.store);
+        return this.executeUseCase(useCase);
     }
 
-    async AssignDataElementToDocumentType(body:AssignDataElementToDocumentRequest) {
-        try {
-            // console.log('Store to login:', JSON.stringify(body, null, 2))
-            const request = this.buildRequest<AssignDataElementToDocumentRequest>(body)
-            let login = new AssignDataElement(request, this.store)
-            const error = this.checkValidation(login.validate())
-            if (error !== "") {
-                return error
-            }
-            const result = await login.execute()
-            if (result.message !== "") {
-                return result.message
-            }
+    async createDocumentGroup(body: CreateDocumentGroupRequest): Promise<CoreResult<DocumentGroup, AppCodeError, Error>> {
+        const request = this.buildRequest<CreateDocumentGroupRequest>(body);
+        const useCase = new CreateDocumentGroup(request, this.store);
+        return this.executeUseCase(useCase);
+    }
 
-            return result.assignment
-        }
-        catch (err) {
-            return "Error occurs"
-        }
+    async createDocumentType(body: CreateDocumentTypeRequest): Promise<CoreResult<DocumentType, AppCodeError, Error>> {
+        const request = this.buildRequest<CreateDocumentTypeRequest>(body);
+        const useCase = new CreateDocumentType(request, this.store);
+        return this.executeUseCase(useCase);
+    }
+
+    async createDataElement(body: CreateDataElementRequest): Promise<CoreResult<DataElement, AppCodeError, Error>> {
+        const request = this.buildRequest<CreateDataElementRequest>(body);
+        const useCase = new CreateDataElement(request, this.store);
+        return this.executeUseCase(useCase);
+    }
+
+    async assignDataElementToDocumentType(
+        body: AssignDataElementToDocumentRequest
+    ): Promise<CoreResult<boolean, AppCodeError, Error>> {
+        const request = this.buildRequest<AssignDataElementToDocumentRequest>(body);
+        const useCase = new AssignDataElement(request, this.store);
+        return this.executeUseCase(useCase);
     }
 }

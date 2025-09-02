@@ -1,3 +1,4 @@
+import { AppCodeError, CoreResult } from "packages/Core/src";
 import { ElysiaContext } from "../types/ElysiaContext";
 import { ServiceResponse } from "../types/ServiceResponse";
 import { HTTP_STATUS } from "./HTTP_STATUS";
@@ -5,14 +6,22 @@ import { HTTP_STATUS } from "./HTTP_STATUS";
 
 
 export const handleServiceResponse = <T>(
-    result: T,
+    result: CoreResult<T,AppCodeError, Error>,
     set: ElysiaContext['set']
 ): ServiceResponse<T> => {
-    const isError = typeof result === 'string';
-    set.status = isError ? HTTP_STATUS.FORBIDDEN : HTTP_STATUS.OK;
 
+    if (!result.ok){
+        const statusCode = result.code === AppCodeError.UnmanagedError ? HTTP_STATUS.FORBIDDEN: 400
+        set.status= statusCode
+        return{
+            success:false,
+            data:undefined,
+            error:result.error
+        }
+    }
     return {
-        success: !isError,
-        data: result
+        success:true,
+        data: result.value,
+        error:undefined
     };
 };

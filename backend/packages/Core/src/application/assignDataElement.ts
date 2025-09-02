@@ -1,7 +1,12 @@
+import { AppCodeError } from "../domain/AppCodeError";
 import { AssignDataElementToDocumentRequest } from "../domain/asign-data-element-to-document-request";
+import { Credentials } from "../domain/Credentials";
+import { ValidationError } from "../domain/ValidationError";
+import { IUseCase } from "../domain/IUseCase";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
+import { CoreResult } from "../ports/Result";
 
 export class AssignDataElement {
     constructor(
@@ -10,44 +15,36 @@ export class AssignDataElement {
     ) {
     }
 
-    validate() {
+    validate():ValidationError<Credentials>[] {
         const validations = new LoginValidator(this.request.build().credentials);
         const errors = validations.Validate();
         return errors;
     }
 
-    async execute() {
+    async execute(): Promise<CoreResult<boolean, AppCodeError, Error>> {
         if (!this.store.assignDataElementToDocumentType) {
-            throw new Error("Store does not implement assignDataElementToDocumentType method");
-        }
-        console.log('Store to assign:', JSON.stringify(this.request.build(), null, 2))
-        try {
-            const request = this.request.build();
-            const result = await this.store.assignDataElementToDocumentType(request.credentials, {
-                documentTypeId: request.assignDataElementToDocumentRequest.documentTypeId,
-                dataElement: {
-                    name: request.assignDataElementToDocumentRequest.dataElement.name,
-                    order: request.assignDataElementToDocumentRequest.dataElement.order
-                }
-            });
-            if(!result.ok){
-                console.log('Assignment not created on Core:', result.error)
-                return {
-                    message: result.error.message,
-                    assignment: null
-                };  
+            return {
+                ok: false,
+                code: AppCodeError.StoreError,
+                error: new Error("Store does not implement assignDataElementToDocumentType method")
             }
-            console.log('Assignment result:', JSON.stringify(result, null, 2))
-            return {
-                message: '',
-                assignment: result.value
-            };
-        } catch (ex) {
-            console.log('Error assigning data element:', ex)
-            return {
-                message: 'Error occurred while assigning data element',
-                assignment: ex
-            };
         }
+        const request = this.request.build();
+        const result = await this.store.assignDataElementToDocumentType(request.credentials, {
+            documentTypeId: request.assignDataElementToDocumentRequest.documentTypeId,
+            dataElement: {
+                name: request.assignDataElementToDocumentRequest.dataElement.name,
+                order: request.assignDataElementToDocumentRequest.dataElement.order
+            }
+        });
+
+        if (!result.ok){
+            return {
+                ok:false,
+                code:AppCodeError.StoreError,
+                error: result.error
+            }
+        }
+        return result
     }
 }

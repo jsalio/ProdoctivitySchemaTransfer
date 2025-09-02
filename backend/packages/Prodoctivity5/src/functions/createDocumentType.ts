@@ -16,7 +16,7 @@ export const createDocumentType = async (
     credential: Credentials,
     createDocumentTypeRequest:{
         name: string,
-        buseinessFunctionId: string,
+        businessFunctionId: string,
     },
     options: DocumentTypeOptions = {}
 ): Promise<Result<DocumentType, Error>> => {
@@ -27,7 +27,7 @@ export const createDocumentType = async (
         };
     }
 
-    if (!createDocumentTypeRequest.buseinessFunctionId?.trim()) {
+    if (!createDocumentTypeRequest.businessFunctionId?.trim()) {
         return {
             ok: false,
             error: new Error("Business function ID cannot be empty")
@@ -47,7 +47,7 @@ export const createDocumentType = async (
         const requestBody = {
             name: createDocumentTypeRequest.name.trim(),//+shortGuid,
             businessLine:{
-                id: createDocumentTypeRequest.buseinessFunctionId
+                id: createDocumentTypeRequest.businessFunctionId
             },
             ...mergedOptions
         };
@@ -79,9 +79,15 @@ export const createDocumentType = async (
             };
         }
         await response.json();
-        let documentTypes = await getDocumentTypes(credential,createDocumentTypeRequest.buseinessFunctionId)
+        let documentTypes = await getDocumentTypes(credential,createDocumentTypeRequest.businessFunctionId)
+        if (!documentTypes.ok){
+            return {
+                ok:false,
+                error:new Error("Not determinated if document type is created")
+            }
+        }
         let dt:DocumentType|undefined
-        documentTypes.forEach((x)=>{
+        documentTypes.value.forEach((x)=>{
             if(x.documentTypeName === createDocumentTypeRequest.name){
                 dt = {
                     documentTypeId: x.documentTypeId,

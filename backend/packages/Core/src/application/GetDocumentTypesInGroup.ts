@@ -3,6 +3,9 @@ import { DocumentType } from "../domain/DocumentType";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
+import { CoreResult } from "../ports/Result";
+import { AppCodeError } from "../domain/AppCodeError";
+import { GetDocumentGroupRequest } from "../domain/GetDocumentGroupRequest";
 
 /**
  * Handles the retrieval of document types within a specific group.
@@ -15,9 +18,9 @@ export class GetDocumentTypesGroups {
      * @param store - The store interface for data access operations
      */
     constructor(
-        private readonly request: IRequest<{credentials: Credentials, groupId: string}>, 
+        private readonly request: IRequest<GetDocumentGroupRequest>,
         private readonly store: IStore
-    ) {}
+    ) { }
 
     /**
      * Validates the request by checking the provided credentials
@@ -33,20 +36,21 @@ export class GetDocumentTypesGroups {
      * Executes the document types retrieval operation for the specified group
      * @returns A promise that resolves to an object containing the document types or an error message
      */
-    async execute(): Promise<{message: string, groups: DocumentType[]}> {
-        try {
-            const request = this.request.build();
-            const groups = await this.store.getDocumentTypeInGroup(request.credentials, request.groupId);
-            
+    async execute(): Promise<CoreResult<DocumentType[], AppCodeError, Error>> {
+        const request = this.request.build();
+        const result = await this.store.getDocumentTypeInGroup(request.credentials, request.groupId);
+
+        if (!result.ok) {
             return {
-                message: '',
-                groups: Array.from(groups)
-            };
-        } catch (ex) {
-            return {
-                message: 'Error occurred while retrieving document types for the group',
-                groups: []
-            };
+                ok: false,
+                code: AppCodeError.StoreError,
+                error: result.error
+            }
+        }
+
+        return {
+            ok: true,
+            value: Array.from(result.value)
         }
     }
 }

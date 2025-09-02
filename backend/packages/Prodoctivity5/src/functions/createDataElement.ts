@@ -24,11 +24,11 @@ export const createKeyword = async (
         name: string,
         documentTypeId: string,
         dataType: string,
-        require: boolean,
+        required: boolean,
     },
     options: KeywordOptions = {}
 ): Promise<Result<DataElement, Error>> => {
-    console.log('request on middleware:', JSON.stringify(createKeywordRequest, null, 2))
+    //console.log('request on middleware:', JSON.stringify(createKeywordRequest, null, 2))
     if (!createKeywordRequest.name?.trim()) {
         return {
             ok: false,
@@ -49,7 +49,7 @@ export const createKeyword = async (
 
         const requestBody = {
             name: generateName,
-            required: createKeywordRequest.require,
+            required: createKeywordRequest.required,
             question: createKeywordRequest.name.trim(),
             instructions: createKeywordRequest.name.trim(),
             Definition: createKeywordRequest.name.trim(),
@@ -74,14 +74,14 @@ export const createKeyword = async (
         };
 
         console.clear();
-        console.log('request on Core:', JSON.stringify(requestBody, null, 2))
+        // console.log('request on Core:', JSON.stringify(requestBody, null, 2))
         const response = await fetch(
             `${credential.serverInformation.server}/site/api/v0.1/dictionary/data-elements`,
             requestOptions
         );
 
         if (!response.ok) {
-            console.log('response:', response)
+            // console.log('response:', response)
             let errorMessage = `API request failed with status ${response.status}`;
             try {
                 const errorBody = await response.json();
@@ -97,7 +97,13 @@ export const createKeyword = async (
         }
         const listOfDataElements = await getDataElements(credential);
 
-        const dataElement = listOfDataElements.values().find((x: any) => x.name === generateName);
+        if (!listOfDataElements.ok){
+            return {
+                ok:false,
+                error: new Error("Can determinate if data element is created")
+            }
+        }
+        const dataElement = listOfDataElements.value.values().find((x: any) => x.name === generateName);
 
         if (!dataElement) {
             return {

@@ -11,7 +11,7 @@ export const handleGetDocumentTypesGroup = async ({ body, di, set, params }: Ely
 
     const { store } = body;
     const schemaService = resolveSchemaService(di, store);
-    const result = await schemaService.GetListDocumentTypesGroup(body as any, params.id);
+    const result = await schemaService.getListDocumentTypesGroup(body as any, params.id);
 
     return handleServiceResponse(result, set);
 };

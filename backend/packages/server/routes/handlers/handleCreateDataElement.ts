@@ -5,7 +5,7 @@ import { resolveSchemaService } from "../utils/resolveSchemaService";
 export const handleCreateDataElement = async ({ body, di, set }: ElysiaContext) => {
     const { store } = body;
     const schemaService = resolveSchemaService(di, store);
-    const result = await schemaService.CreateDataElement(body as any);
+    const result = await schemaService.createDataElement(body as any);
 
     return handleServiceResponse(result, set);
 };

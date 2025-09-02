@@ -1,7 +1,10 @@
+import { AppCodeError } from "../domain/AppCodeError";
 import { CreateDocumentTypeRequest } from "../domain/Create-document-type-request";
+import { DocumentType } from "../domain/DocumentType";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
+import { CoreResult } from "../ports/Result";
 
 export class CreateDocumentType {
     constructor(
@@ -16,32 +19,26 @@ export class CreateDocumentType {
         return errors;
     }
 
-    async execute() {
+    async execute(): Promise<CoreResult<DocumentType, AppCodeError, Error>> {
         if (!this.store.createDocumentType) {
-            throw new Error("Store does not implement createDocumentType method");
-        }
-        try {
-            const request = this.request.build();
-
-            const result = await this.store.createDocumentType(request.credentials, {
-                name: request.createDocumentTypeRequest.name,
-                buseinessFunctionId: request.createDocumentTypeRequest.documentGroupId
-            });
-            if(!result.ok){
-                return {
-                    message: result.error.message,
-                    documentType: null
-                };  
+            return {
+                ok: false,
+                code: AppCodeError.StoreError,
+                error: new Error("Store does not implement createDocumentType method")
             }
-            return {
-                message: '',
-                documentType: result.value
-            };
-        } catch (ex) {
-            return {
-                message: 'Error occurred while creating document type',
-                documentType: null
-            };
         }
+        const request = this.request.build();
+        const result = await this.store.createDocumentType(request.credentials, {
+            name: request.createDocumentTypeRequest.name,
+            businessFunctionId: request.createDocumentTypeRequest.documentGroupId
+        });
+        if (!result.ok) {
+            return {
+                ok: false,
+                code: AppCodeError.StoreError,
+                error: result.error
+            }
+        }
+        return result;
     }
 }
