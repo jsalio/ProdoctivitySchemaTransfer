@@ -33,6 +33,7 @@ export class CreateDocumentType {
             businessFunctionId: request.createDocumentTypeRequest.documentGroupId
         });
         if (!result.ok) {
+            //console.log("Error :",result.error.message)
             return {
                 ok: false,
                 code: AppCodeError.StoreError,

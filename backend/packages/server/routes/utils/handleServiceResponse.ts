@@ -3,8 +3,6 @@ import { ElysiaContext } from "../types/ElysiaContext";
 import { ServiceResponse } from "../types/ServiceResponse";
 import { HTTP_STATUS } from "./HTTP_STATUS";
 
-
-
 export const handleServiceResponse = <T>(
     result: CoreResult<T,AppCodeError, Error>,
     set: ElysiaContext['set']
@@ -16,7 +14,7 @@ export const handleServiceResponse = <T>(
         return{
             success:false,
             data:undefined,
-            error:result.error
+            error:result.error.message
         }
     }
     return {

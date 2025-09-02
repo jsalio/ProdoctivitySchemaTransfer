@@ -38,7 +38,6 @@ export const getDocumentTypeSchema = async (credential: Credentials, documentTyp
                     ok: false,
                     error: new Error("Document type not found")
                 }
-                //throw new Error("Document type not found");
             }
 
             const documentSchema: SchemaDocumentType = {
