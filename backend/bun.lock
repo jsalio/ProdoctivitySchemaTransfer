@@ -25,6 +25,15 @@
         "@schematransfer/core": "0.0.1",
       },
     },
+    "packages/Test": {
+      "name": "@schematransfer/test",
+      "version": "0.0.1",
+      "dependencies": {
+        "@schematransfer/core": "0.0.1",
+        "@schematransfer/prodoctivity5": "0.0.1",
+        "@schematransfer/prodoctivitycloud": "0.0.1",
+      },
+    },
     "packages/server": {
       "name": "@schematransfer/server",
       "version": "0.0.1",
@@ -61,6 +70,8 @@
     "@schematransfer/prodoctivitycloud": ["@schematransfer/prodoctivitycloud@workspace:packages/ProdoctivityCloud"],
 
     "@schematransfer/server": ["@schematransfer/server@workspace:packages/server"],
+
+    "@schematransfer/test": ["@schematransfer/test@workspace:packages/Test"],
 
     "@sinclair/typebox": ["@sinclair/typebox@0.34.38", "", {}, "sha512-HpkxMmc2XmZKhvaKIZZThlHmx1L0I/V1hWK1NubtlFnr6ZqdiOpV72TKudZUNQjZNsyDBay72qFEhEvb+bcwcA=="],
 

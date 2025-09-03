@@ -1,0 +1,10 @@
+{
+    "name": "@schematransfer/test",
+    "version": "0.0.1",
+    "private":true,
+    "dependencies": {
+        "@schematransfer/core": "0.0.1",
+        "@schematransfer/prodoctivitycloud": "0.0.1",
+        "@schematransfer/prodoctivity5":"0.0.1"
+    }
+}

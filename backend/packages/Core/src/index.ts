@@ -25,3 +25,4 @@ export * from './domain/ValidationError'
 export * from "./ports/IRequest"
 export * from "./ports/IStore"
 export * from './ports/Result'
+export * from './domain/Create-document-type-request'
