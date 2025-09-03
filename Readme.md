@@ -108,7 +108,7 @@ The frontend is an Angular application with the following structure:
 ### Frontend
 * ```ng serve```: Start the development server
 * ```ng build```: Build the application
-* ```ng test```: Run tests
+* ```ng test```: Run tests and coverage
 
 ## Publish
 
