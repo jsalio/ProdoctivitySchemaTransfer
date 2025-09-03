@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Backend",
+            "type": "bun",
+            "request": "launch",
+            "program": "${workspaceFolder}/backend/packages/server/index.ts",
+            "cwd": "${workspaceFolder}/backend",
+            "watchMode": true,
+            "args": [],
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "Debug frontend (Launch on edge)",
+            "type": "msedge",
+            "request": "launch",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}/frontend",
+            "sourceMaps": true,
+            "sourceMapPathOverrides": {
+                "webpack:///./*": "${webRoot}/*"
+            }
+        },
+        {
+            "name": "Debug Angular 18 Project (Attach)",
+            "type": "msedge",
+            "request": "attach",
+            "port": 9222,  // Puerto de inspección de Chrome
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}/frontend"
+          }
+    ]
+}
