@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
-import { LayoutComponent } from "./shared/layout/layout.component";
-import { LoginComponent } from './pages/login/login.component';
-import { ModalComponent } from './shared/modal/modal.component';
 import { RouterOutlet } from '@angular/router';
+import { LayoutComponent } from './shared/layout/layout.component';
 
 @Component({
   selector: 'app-root',
