@@ -1,4 +1,3 @@
-
 export interface Input {
   controlType: string;
   controlSize: string;

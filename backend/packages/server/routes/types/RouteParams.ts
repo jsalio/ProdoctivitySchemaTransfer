@@ -1,4 +1,3 @@
-
 export interface RouteParams {
-    id: string;
+  id: string;
 }

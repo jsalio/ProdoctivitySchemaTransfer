@@ -1,5 +1,4 @@
-
 export type FluencyDocumentGroup = {
-    id: number;
-    description: string;
+  id: number;
+  description: string;
 };

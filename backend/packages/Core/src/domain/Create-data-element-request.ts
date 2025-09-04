@@ -1,4 +1,4 @@
-import { Credentials } from "./Credentials";
+import { Credentials } from './Credentials';
 
 /**
  * Request object for creating a data element.
@@ -8,26 +8,26 @@ import { Credentials } from "./Credentials";
  * @property {string} createDataElementRequest.dataType - The data type of the data element.
  * @property {boolean} createDataElementRequest.isRequired - Whether the data element is required.
  */
-export type CreateDataElementRequest = { 
+export type CreateDataElementRequest = {
+  /**
+   * The authentication credentials for the Prodoctivity API.
+   */
+  credentials: Credentials;
+  /**
+   * The request object for creating a data element.
+   */
+  createDataElementRequest: {
     /**
-     * The authentication credentials for the Prodoctivity API.
+     * The name of the data element.
      */
-    credentials: Credentials, 
+    name: string;
     /**
-     * The request object for creating a data element.
+     * The data type of the data element.
      */
-    createDataElementRequest: { 
-        /**
-         * The name of the data element.
-         */
-        name: string,
-        /**
-         * The data type of the data element.
-         */
-        dataType: string, 
-        /**
-         * Whether the data element is required.
-         */
-        isRequired: boolean
-    } 
-}
+    dataType: string;
+    /**
+     * Whether the data element is required.
+     */
+    isRequired: boolean;
+  };
+};

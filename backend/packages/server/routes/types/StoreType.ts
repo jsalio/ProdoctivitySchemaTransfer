@@ -1,3 +1,3 @@
 // Tipos y interfaces
 
-export type StoreType = "Cloud" | "Fluency";
+export type StoreType = 'Cloud' | 'Fluency';

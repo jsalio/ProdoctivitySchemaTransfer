@@ -1,5 +1,4 @@
-import { CultureAssociation } from "./CultureAssociation";
-
+import { CultureAssociation } from './CultureAssociation';
 
 export interface OutputFormat {
   cultureAssociations: CultureAssociation[];

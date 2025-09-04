@@ -1,5 +1,5 @@
-import { Input } from "./Input";
-import { Output } from "./Output";
+import { Input } from './Input';
+import { Output } from './Output';
 
 export interface FluencyDataElement {
   id: number;
@@ -26,5 +26,3 @@ export interface FluencyDataElement {
   sequenceId: number;
   oldSequenceId: number;
 }
-
-

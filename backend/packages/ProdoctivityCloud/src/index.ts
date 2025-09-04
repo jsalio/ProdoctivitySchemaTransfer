@@ -1,1 +1,1 @@
-export * from './CloudStore'
+export * from './CloudStore';

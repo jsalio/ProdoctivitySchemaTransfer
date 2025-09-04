@@ -1,4 +1,4 @@
-import { Credentials } from "./Credentials";
+import { Credentials } from './Credentials';
 
 /**
  * Request object for creating a document type.
@@ -8,21 +8,21 @@ import { Credentials } from "./Credentials";
  * @property {string} createDocumentTypeRequest.documentGroupId - The ID of the document group to which the document type belongs.
  */
 export type CreateDocumentTypeRequest = {
+  /**
+   * Authentication credentials for the Prodoctivity API.
+   */
+  credentials: Credentials;
+  /**
+   * Request object for creating a document type.
+   */
+  createDocumentTypeRequest: {
     /**
-     * Authentication credentials for the Prodoctivity API.
+     * Name of the document type.
      */
-    credentials: Credentials,
+    name: string;
     /**
-     * Request object for creating a document type.
+     * ID of the document group to which the document type belongs.
      */
-    createDocumentTypeRequest: {
-        /**
-         * Name of the document type.
-         */
-        name: string,
-        /**
-         * ID of the document group to which the document type belongs.
-         */
-        documentGroupId: string
-    }
-}
+    documentGroupId: string;
+  };
+};
