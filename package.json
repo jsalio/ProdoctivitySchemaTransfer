@@ -1,0 +1,13 @@
+{
+  "name": "prodoctivityschematansfer",
+  "version": "1.0.0",
+  "scripts": {
+    "format:backend": "cd backend && bun run format",
+    "format:frontend": "cd frontend && npm run format",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.6"
+  }
+}
