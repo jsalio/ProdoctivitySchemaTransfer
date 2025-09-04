@@ -1,3 +1,25 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
+
+echo "🚀 Running tests..."
+
+# Run backend tests
+echo "🔧 Testing backend..."
+cd backend && bun test
+if [ $? -ne 0 ]; then
+  echo "❌ Backend tests failed"
+  exit 1
+fi
+
+# Run frontend tests
+echo "🖥️  Testing frontend..."
+cd ../frontend && npm run test:headless
+if [ $? -ne 0 ]; then
+  echo "❌ Frontend tests failed"
+  exit 1
+fi
+
+echo "✅ All tests passed!"
+
 bunx lint-staged
+
