@@ -7,7 +7,7 @@ import { ObservableHandler } from '../utils/Obserbable-handler';
 import { ReactiveFormsModule } from '@angular/forms';
 import { effect } from '@angular/core';
 import { finalize } from 'rxjs';
-import { isTokenExpired } from '../../shared/utils/token-decoder'
+import { isTokenExpired } from '../utils/token-decoder'
 
 export type Credentials = {
   username: string;

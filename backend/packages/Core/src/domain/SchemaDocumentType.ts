@@ -1,3 +1,5 @@
+import { SchemaKeyword } from "./SchemaKeyword";
+
 /**
  * Defines the schema for a document type, including its structure
  * and the metadata fields (keywords) that documents of this type should contain.
@@ -11,18 +13,4 @@ export interface SchemaDocumentType {
     
     /** Collection of metadata fields (keywords) for this document type */
     keywords: SchemaKeyword[];
-}
-
-export interface SchemaKeyword {
-    /** Internal name of the keyword (used in code) */
-    name: string;
-        
-    /** Display label for the keyword (shown in UI) */
-    label: string;
-    
-    /** Data type of the keyword value (e.g., 'string', 'number', 'date') */
-    dataType: string;
-    
-    /** Whether this keyword is required for documents of this type */
-    require: boolean;
 }

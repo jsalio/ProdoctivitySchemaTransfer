@@ -3,6 +3,9 @@ import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { SchemaDocumentType } from "../domain/SchemaDocumentType";
+import { CoreResult } from "../ports/Result";
+import { AppCodeError } from "../domain/AppCodeError";
+import { GetDocumentTypeSchemaRequest } from "../domain/GetDocumentTypeSchemaRequest";
 
 /**
  * Handles the retrieval of a document type schema based on the provided credentials and document type ID.
@@ -15,7 +18,7 @@ export class GetDocumentTypeSchema {
      * @param store - The store interface for data access operations
      */
     constructor(
-        private readonly request: IRequest<{credentials: Credentials, documentTypeId: string}>, 
+        private readonly request: IRequest<GetDocumentTypeSchemaRequest>, 
         private readonly store: IStore
     ) {
 
@@ -35,20 +38,17 @@ export class GetDocumentTypeSchema {
      * Executes the document type schema retrieval operation
      * @returns A promise that resolves to an object containing the schema or an error message
      */
-    async execute(): Promise<{message: string, groups: SchemaDocumentType}> {
-        try {
-            const request = this.request.build();
-            const schema = await this.store.getDocumentTypeSchema(request.credentials, request.documentTypeId);
-            
+    async execute(): Promise<CoreResult<SchemaDocumentType,AppCodeError,Error>> {
+        const request = this.request.build();
+        const result = await this.store.getDocumentTypeSchema(request.credentials, request.documentTypeId);
+
+        if (!result.ok){
             return {
-                message: '',
-                groups: schema
-            };
-        } catch (ex) {
-            return {
-                message: 'Error occurred while retrieving document type schema',
-                groups: {} as any
-            };
+                ok:false,
+                code:AppCodeError.StoreError,
+                error:result.error
+            }
         }
+        return result
     }
 }

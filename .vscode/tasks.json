@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "ng serve",
+        "type": "shell",
+        "command": "ng serve",
+        "group": "build",
+        "presentation": { "panel": "dedicated" },
+        "options": { "cwd": "${workspaceFolder}/frontend" }
+      }
+    ]
+  }

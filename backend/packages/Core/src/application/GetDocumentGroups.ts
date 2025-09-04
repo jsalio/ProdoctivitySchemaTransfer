@@ -3,6 +3,8 @@ import { DocumentGroup } from "../domain/DocumentGroup";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
+import { CoreResult } from "../ports/Result";
+import { AppCodeError } from "../domain/AppCodeError";
 
 /**
  * Handles the retrieval of document groups from the system.
@@ -15,9 +17,9 @@ export class GetDocumentGroups {
      * @param store - The store interface for data access operations
      */
     constructor(
-        private readonly request: IRequest<Credentials>, 
+        private readonly request: IRequest<Credentials>,
         private readonly store: IStore
-    ) {}
+    ) { }
 
     /**
      * Validates the request by checking the provided credentials
@@ -33,20 +35,21 @@ export class GetDocumentGroups {
      * Executes the document groups retrieval operation
      * @returns A promise that resolves to an object containing the document groups or an error message
      */
-    async execute(): Promise<{message: string, groups: DocumentGroup[]}> {
-        try {
-            const credentials = this.request.build();
-            const groups = await this.store.getDocumentGroups(credentials);
-            
+    async execute(): Promise<CoreResult<Array<DocumentGroup>, AppCodeError, Error>> {
+        const credentials = this.request.build();
+        const result = await this.store.getDocumentGroups(credentials);
+        // console.log("Core :",JSON.stringify(result.))
+        if (!result.ok){
             return {
-                message: '',
-                groups: Array.from(groups)
-            };
-        } catch (ex) {
-            return {
-                message: 'Error occurred while retrieving document groups',
-                groups: []
-            };
+                ok:false,
+                code:AppCodeError.StoreError,
+                error:result.error
+            }
+        }
+        console.log("Core :",JSON.stringify(result.value.values))
+        return {
+            ok:true,
+            value:result.value
         }
     }
 

@@ -1,5 +1,5 @@
 ///api/business-functions
-import { Credentials, SchemaDocumentType } from "@schematransfer/core";
+import { Credentials, Result, SchemaDocumentType } from "@schematransfer/core";
 import { FluencyDocumentTypeSchema } from "../types/FluencyDocumentTypeSchema";
 
 /**
@@ -7,7 +7,7 @@ import { FluencyDocumentTypeSchema } from "../types/FluencyDocumentTypeSchema";
  * @param credential 
  * @returns 
  */
-export const getDocumentTypeSchema = async (credential: Credentials, documentTypeId: string): Promise<SchemaDocumentType> => {
+export const getDocumentTypeSchema = async (credential: Credentials, documentTypeId: string): Promise<Result<SchemaDocumentType, Error>> => {
     try {
         const headers = new Headers();
         headers.append("x-api-key", credential.serverInformation.apiKey)
@@ -21,13 +21,23 @@ export const getDocumentTypeSchema = async (credential: Credentials, documentTyp
         };
 
         const response = await fetch(`${credential.serverInformation.server}/site/api/v2/document-types`, requestOptions);
+        console.log("Here ", response.status)
+        if (response.status <= 200 && response.status >= 299) {
+            return {
+                ok: false,
+                error: new Error("Invalid response")
+            }
+        }
 
         const body: FluencyDocumentTypeSchema[] = await response.json();
         if (body) {
 
             const targetDocumentType = body.filter(x => x.id.toString() === documentTypeId)[0]
             if (!targetDocumentType) {
-                throw new Error("Document type not found");
+                return {
+                    ok: false,
+                    error: new Error("Document type not found")
+                }
             }
 
             const documentSchema: SchemaDocumentType = {
@@ -40,11 +50,16 @@ export const getDocumentTypeSchema = async (credential: Credentials, documentTyp
                     require: false
                 }))
             }
-            
-            return documentSchema
-        }
 
-        throw new Error("No token received in response");
+            return {
+                ok: true,
+                value: documentSchema
+            }
+        }
+        return {
+            ok:false,
+            error: new Error("Invalid body response")
+        }
     } catch (error) {
         console.error("Error during login:", error);
         throw error; // Re-throw para que el llamador maneje el error

@@ -1,4 +1,4 @@
-import { Credentials, DocumentType } from "@schematransfer/core";
+import { Credentials, DocumentType, Result } from "@schematransfer/core";
 import { FluencyDocumentType } from "../types/FluencyDocumentType"; 
 
 /**
@@ -8,7 +8,7 @@ import { FluencyDocumentType } from "../types/FluencyDocumentType";
  * @returns A Promise resolving to a Set of DocumentType objects.
  * @throws Error if the API request fails or the response is invalid.
  */
-export const getDocumentTypes = async (credential: Credentials, id: string): Promise<Set<DocumentType>> => {
+export const getDocumentTypes = async (credential: Credentials, id: string): Promise<Result<Array<DocumentType>, Error>> => {
     try {
         const headers = new Headers();
         headers.append("x-api-key", credential.serverInformation.apiKey);
@@ -28,14 +28,21 @@ export const getDocumentTypes = async (credential: Credentials, id: string): Pro
 
         // Check if the response status is OK
         if (!response.ok) {
-            throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
+            return {
+                ok:false,
+                error:new Error(`API request failed with status ${response.status}: ${response.statusText}`)
+            }
+            //throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
         }
 
         const body = await response.json();
 
         // Validate that body is an array
         if (!Array.isArray(body)) {
-            throw new Error("Expected an array of FluencyDocumentType objects in the response");
+            return {
+                ok:false,
+                error:new Error("Expected an array of FluencyDocumentType objects in the response")
+            }
         }
 
         // Validate that each item in the array has the required properties
@@ -52,7 +59,11 @@ export const getDocumentTypes = async (credential: Credentials, id: string): Pro
         );
 
         if (!isValidResponse) {
-            throw new Error("Invalid FluencyDocumentType data in response");
+            return {
+                ok:false,
+                error:new Error("Invalid FluencyDocumentType data in response")
+            }
+            
         }
 
         // Filter and map the response to DocumentType objects, then convert to Set
@@ -63,7 +74,10 @@ export const getDocumentTypes = async (credential: Credentials, id: string): Pro
                 documentTypeName: x.name,
             }));
 
-        return new Set<DocumentType>(documentTypes);
+        return {
+            ok:true,
+            value:documentTypes
+        };
     } catch (error) {
         console.error("Error fetching document types:", error);
         throw error; // Re-throw to allow the caller to handle the error

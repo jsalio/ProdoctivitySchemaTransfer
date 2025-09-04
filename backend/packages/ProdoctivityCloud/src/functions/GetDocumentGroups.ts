@@ -1,7 +1,7 @@
-import { Credentials, DocumentGroup } from "packages/Core/src";
+import { Credentials, DocumentGroup, Result } from "packages/Core/src";
 import { CloudDocumentType } from "../types/CloudDocumentType";
 
-export const GetDocumentGroup = async (credential: Credentials): Promise<Set<DocumentGroup>> => {
+export const GetDocumentGroup = async (credential: Credentials): Promise<Result<Array<DocumentGroup>, Error>> => {
     try {
 
         const updateInSet = <T>(
@@ -21,28 +21,66 @@ export const GetDocumentGroup = async (credential: Credentials): Promise<Set<Doc
             return false
         }
 
-        const groupData = (documentTypes: CloudDocumentType[]) => {
+        const groupData = (documentTypes: CloudDocumentType[]):Array<DocumentGroup> => {
             let documentGroup: Set<DocumentGroup> = new Set<DocumentGroup>()
-
-            documentTypes.forEach((document) => {
+            console.log("Starting groupData with", documentTypes.length, "documents");
+        
+            documentTypes.forEach((document, index) => {
+                console.log(`Document ${index}:`, {
+                    name: document.name,
+                    groupId: document.documentGroupId,
+                    groupName: document.documentGroupName
+                });
+                
                 const updated = updateInSet(
                     documentGroup,
-                    (item) => item.groupId === document.documentGroupId,
-                    (item) => item.documentTypesCounter++
+                    (item) => {
+                        console.log("Comparing:", item.groupId, "===", document.documentGroupId);
+                        return item.groupId === document.documentGroupId;
+                    },
+                    (item) => {
+                        console.log("Updating counter for group:", item.groupId);
+                        item.documentTypesCounter++;
+                    }
                 );
-
+        
+                console.log("Was updated?", updated);
+                
                 if (!updated) {
-                    documentGroup.add({
+                    const newGroup = {
                         groupId: document.documentGroupId,
                         groupName: document.documentGroupName,
                         documentTypesCounter: 1
-                    });
+                    };
+                    console.log("Adding new group:", newGroup);
+                    documentGroup.add(newGroup);
+                    console.log("Set size now:", documentGroup.size);
                 }
             });
-            return documentGroup;
+            
+            //console.log("Final set:", Array.from(documentGroup));
+            // console.log(documentGroup)
+            return Array.from(documentGroup.values());
+            // let documentGroup: Set<DocumentGroup> = new Set<DocumentGroup>()
+
+            // documentTypes.forEach((document) => {
+            //     console.log("enter here ", document.name)
+            //     const updated = updateInSet(
+            //         documentGroup,
+            //         (item) => item.groupId === document.documentGroupId,
+            //         (item) => item.documentTypesCounter++
+            //     );
+
+            //     if (!updated) {
+            //         documentGroup.add({
+            //             groupId: document.documentGroupId,
+            //             groupName: document.documentGroupName,
+            //             documentTypesCounter: 1
+            //         });
+            //     }
+            // });
+            // return documentGroup;
         }
-
-
 
         const headers = new Headers();
         headers.append("Content-Type", "application/json");
@@ -51,28 +89,40 @@ export const GetDocumentGroup = async (credential: Credentials): Promise<Set<Doc
         const requestOptions: RequestInit = {
             method: "GET",
             headers: headers,
-            //body: JSON.stringify(request),
             redirect: "follow"
         };
 
         const response = await fetch(`${credential.serverInformation.server}/api/document-types/all`, requestOptions);
         if (!response.ok) {
-            throw new Error(`Login failed with status ${response.status}: ${response.statusText}`);
+            return {
+                ok: false,
+                error: new Error(`Login failed with status ${response.status}: ${response.statusText}`)
+            }
         }
 
-        const body:{documentTypes: CloudDocumentType[]} = await response.json();
+        const body: { documentTypes: CloudDocumentType[] } = await response.json();
+        //console.log("Cloud response :", JSON.stringify(groupData(body.documentTypes)))
 
         if (response.status === 200) {
-            return groupData(body.documentTypes);
+            const response:Result<Array<DocumentGroup>, Error> = {
+                ok: true,
+                value: groupData(body.documentTypes)
+            }
+            // console.log(response)
+            // console.log("Is here")
+            // console.log("Cloud response translation:", JSON.stringify(response))
+            return response
         }
-
-        return new Set<DocumentGroup>();
+        return {
+            ok: false,
+            error: new Error("No document type returned")
+        }
     } catch (error) {
-        console.error("Error during login:", error);
-        throw error; // Re-throw para que el llamador maneje el error
+        return {
+            ok: false,
+            error: error as Error
+        }
     }
-
-
 
 }
 

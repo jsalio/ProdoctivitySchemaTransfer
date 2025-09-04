@@ -1,3 +1,4 @@
+
 /**
  * Represents a validation error for a specific field in a type.
  * 

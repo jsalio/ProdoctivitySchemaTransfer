@@ -5,13 +5,13 @@ import { resolveSchemaService } from "../utils/resolveSchemaService";
 
 export const handleGetDocumentTypeSchema = async ({ body, di, set, params }: ElysiaContext) => {
     if (!params?.id) {
-        set.status = HTTP_STATUS.FORBIDDEN;
+        set.status = 400;
         return { success: false, data: 'Document type ID is required' };
     }
 
     const { store } = body;
     const schemaService = resolveSchemaService(di, store);
-    const result = await schemaService.GetDocumentTypeSchema(body as any, params.id);
+    const result = await schemaService.getDocumentTypeSchema(body as any, params.id);
 
     return handleServiceResponse(result, set);
 };

@@ -1,51 +1,66 @@
+import { AppCodeError } from "../domain/AppCodeError";
 import { CreateDataElementRequest } from "../domain/Create-data-element-request";
+import { DataElement } from "../domain/DataElement";
 import { LoginValidator } from "../domain/Validations/LoginValidator";
 import { IRequest } from "../ports/IRequest";
 import { IStore } from "../ports/IStore";
+import { CoreResult } from "../ports/Result";
 
+/**
+ * Use case for creating a new data element in the system.
+ * Handles validation and execution of the data element creation process.
+ */
 export class CreateDataElement {
+    /**
+     * Creates an instance of CreateDataElement.
+     * @param request - The request containing data element creation details and credentials.
+     * @param store - The storage interface for persisting data elements.
+     */
     constructor(
         private readonly request: IRequest<CreateDataElementRequest>,
         private readonly store: IStore
     ) {
     }
 
+    /**
+     * Validates the request credentials.
+     * @returns An array of validation errors, or an empty array if validation passes.
+     */
     validate() {
         const validations = new LoginValidator(this.request.build().credentials);
         const errors = validations.Validate();
         return errors;
     }
 
-    async execute() {
-        console.log('request on Core:', JSON.stringify(this.request.build(), null, 2))
+    /**
+     * Executes the data element creation process.
+     * @returns A promise that resolves to a CoreResult containing the created DataElement on success,
+     *          or an error if the operation fails.
+     */
+    async execute(): Promise<CoreResult<DataElement, AppCodeError, Error>> {
         if (!this.store.createDataElement) {
-            throw new Error("Store does not implement createDataElement method");
-        }
-        try {
-            const request = this.request.build();
-            const result = await this.store.createDataElement(request.credentials, {
-                name: request.createDataElementRequest.name,
-                documentTypeId: "",
-                dataType: request.createDataElementRequest.dataType,
-                require: request.createDataElementRequest.isRequired
-            });
-            if (!result.ok) {
-                console.log('Elements not created on Core:', result.error)
-                return {
-                    message: result.error.message,
-                    dataElement: null
-                };
+            return {
+                ok: false,
+                code: AppCodeError.StoreError,
+                error: new Error("Store does not implement createDataElement method")
             }
-            return {
-                message: '',
-                dataElement: result.value
-            };
-        } catch (ex) {
-            console.log('error on Core:', ex)   
-            return {
-                message: 'Error occurred while creating data element',
-                dataElement: ex
-            };
         }
+
+        const request = this.request.build();
+        const result = await this.store.createDataElement(request.credentials, {
+            name: request.createDataElementRequest.name,
+            documentTypeId: "",
+            dataType: request.createDataElementRequest.dataType,
+            required: request.createDataElementRequest.isRequired
+        });
+
+        if (!result.ok) {
+            return {
+                ok: false,
+                code: AppCodeError.StoreError,
+                error: result.error
+            }
+        }
+        return result;
     }
 }
