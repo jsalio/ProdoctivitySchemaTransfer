@@ -6,7 +6,7 @@ FRONTEND_DIR="$PROJECT_ROOT/frontend"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 DIST_DIR="$FRONTEND_DIR/dist"
 DISTRIBUTABLE_DIR="$PROJECT_ROOT/Distributable"
-BACKEND_TARGET="$DISTRIBUTABLE_DIR/app-schema/browser/backend"
+BACKEND_TARGET="$DISTRIBUTABLE_DIR/sample/browser/backend"
 
 cd ../..
 echo "Directory: $PROJECT_ROOT"

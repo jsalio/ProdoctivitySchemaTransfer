@@ -4,7 +4,7 @@ $FrontendDir = Join-Path $ProjectRoot "frontend"
 $BackendDir = Join-Path $ProjectRoot "backend"
 $DistDir = Join-Path $FrontendDir "dist"
 $DistributableDir = Join-Path $ProjectRoot "Distributable"
-$BackendTarget = Join-Path $DistributableDir "app-schema\browser\backend"
+$BackendTarget = Join-Path $DistributableDir "sample\browser\backend"
 
 Write-Output "🔍 Verificando compilación del frontend..."
 
