@@ -5,8 +5,8 @@ import { Component, input, Input } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './processing-indicator.component.html',
-  styleUrl: './processing-indicator.component.css'
+  styleUrl: './processing-indicator.component.css',
 })
 export class ProcessingIndicatorComponent {
-  labelText = input<string>("")
+  labelText = input<string>('');
 }

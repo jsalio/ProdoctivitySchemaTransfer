@@ -17,16 +17,15 @@ import { ActionProgressService } from './ActionProgress.service';
  * Orquestador principal que analiza condiciones y ejecuta acciones
  */
 export class ActionOrchestrator {
-
   constructor(
     private schema: SchemaService,
     private executingActions: WritableSignal<boolean>,
     private resumeService: TranferResumeService,
-    private progressService: ActionProgressService
-  ) { 
+    private progressService: ActionProgressService,
+  ) {
     // Suscribirse al progreso para debug
-    this.progressService.progress$.subscribe(progress => {
-      console.log("🎭 Orchestrator - Progress update:", progress);
+    this.progressService.progress$.subscribe((progress) => {
+      console.log('🎭 Orchestrator - Progress update:', progress);
     });
   }
 
@@ -46,12 +45,15 @@ export class ActionOrchestrator {
     selectedGroup: SchemaDocumentGroup,
     selectedDocumentType: SchemaDocumentType,
     DRY: boolean = false,
-    progressCallback?: ProgressCallback
+    progressCallback?: ProgressCallback,
   ): Promise<ActionContext> {
-
     try {
       // 1. Analizar condiciones
-      const conditions = this.analyzeConditions(selectedKeywords, selectedGroup, selectedDocumentType);
+      const conditions = this.analyzeConditions(
+        selectedKeywords,
+        selectedGroup,
+        selectedDocumentType,
+      );
 
       // 2. Construir string de acciones
       const actionString = ActionStringBuilder.build(conditions);
@@ -65,7 +67,12 @@ export class ActionOrchestrator {
       this.progressService.initializeProgress(actionString);
 
       // 4. Preparar datos para las acciones
-      const actionData = this.prepareActionData(selectedKeywords, selectedGroup, selectedDocumentType, conditions);
+      const actionData = this.prepareActionData(
+        selectedKeywords,
+        selectedGroup,
+        selectedDocumentType,
+        conditions,
+      );
 
       console.log(`🎯 Executing action plan: ${actionString}`);
       console.log('📊 Action summary:', actionData.summary);
@@ -78,16 +85,18 @@ export class ActionOrchestrator {
       }
 
       // 5. Ejecutar acciones
-      const result = await ConditionalActionBuilder
-        .create(this.schema, this.executingActions, this.progressService)
+      const result = await ConditionalActionBuilder.create(
+        this.schema,
+        this.executingActions,
+        this.progressService,
+      )
         .buildFromConditions(actionString)
         .execute(credentials, actionData, progressCallback);
 
       console.log('🏆 Action execution completed:', result);
       this.progressService.completeProgress();
-      
-      return result;
 
+      return result;
     } catch (error) {
       console.error('💥 Error in action orchestrator:', error);
       this.progressService.failProgress(error);
@@ -101,19 +110,23 @@ export class ActionOrchestrator {
   private analyzeConditions(
     selectedKeywords: DocumetTypeKeyword[],
     selectedGroup: SchemaDocumentGroup,
-    selectedDocumentType: SchemaDocumentType
+    selectedDocumentType: SchemaDocumentType,
   ): ActionConditions {
-
-    const keywordForCreateAndAssign = selectedKeywords.filter(x => !x.isSync && !x.presentInTarget);
-    const keywordForOnlyAssign = selectedKeywords.filter(x => !x.isSync && x.presentInTarget);
-    const requiredCreateDocumentType = selectedDocumentType?.targetDocumentType === null || selectedDocumentType?.targetDocumentType === "";
-    const requiredCreatedDocumentGroup = selectedGroup?.targetId === null || selectedGroup?.targetId === "";
+    const keywordForCreateAndAssign = selectedKeywords.filter(
+      (x) => !x.isSync && !x.presentInTarget,
+    );
+    const keywordForOnlyAssign = selectedKeywords.filter((x) => !x.isSync && x.presentInTarget);
+    const requiredCreateDocumentType =
+      selectedDocumentType?.targetDocumentType === null ||
+      selectedDocumentType?.targetDocumentType === '';
+    const requiredCreatedDocumentGroup =
+      selectedGroup?.targetId === null || selectedGroup?.targetId === '';
 
     const conditions: ActionConditions = {
       needsGroup: requiredCreatedDocumentGroup,
       needsType: requiredCreateDocumentType,
       needsCreateKeywords: keywordForCreateAndAssign.length > 0,
-      needsAssignKeywords: keywordForOnlyAssign.length > 0 || keywordForCreateAndAssign.length > 0
+      needsAssignKeywords: keywordForOnlyAssign.length > 0 || keywordForCreateAndAssign.length > 0,
     };
 
     console.log('🔍 Analyzed conditions:', conditions);
@@ -127,23 +140,28 @@ export class ActionOrchestrator {
     selectedKeywords: DocumetTypeKeyword[],
     selectedGroup: SchemaDocumentGroup,
     selectedDocumentType: SchemaDocumentType,
-    conditions: ActionConditions
+    conditions: ActionConditions,
   ): ActionData {
-
-    const keywordForCreateAndAssign = selectedKeywords.filter(x => !x.isSync && !x.presentInTarget);
-    const keywordForOnlyAssign = selectedKeywords.filter(x => !x.isSync && x.presentInTarget);
+    const keywordForCreateAndAssign = selectedKeywords.filter(
+      (x) => !x.isSync && !x.presentInTarget,
+    );
+    const keywordForOnlyAssign = selectedKeywords.filter((x) => !x.isSync && x.presentInTarget);
 
     const actionData: ActionData = {
-      groupData: conditions.needsGroup ? {
-        name: selectedGroup.groupName,
-      } : undefined,
+      groupData: conditions.needsGroup
+        ? {
+            name: selectedGroup.groupName,
+          }
+        : undefined,
 
-      typeData: conditions.needsType ? {
-        name: selectedDocumentType.documentTypeName,
-        documentGroupId: selectedGroup.targetId,
-      } : undefined,
+      typeData: conditions.needsType
+        ? {
+            name: selectedDocumentType.documentTypeName,
+            documentGroupId: selectedGroup.targetId,
+          }
+        : undefined,
 
-      keywordsToCreate: keywordForCreateAndAssign.map(x => ({
+      keywordsToCreate: keywordForCreateAndAssign.map((x) => ({
         documentTypeId: selectedDocumentType.targetDocumentType,
         name: x.name,
         dataType: x.dataType,
@@ -151,7 +169,7 @@ export class ActionOrchestrator {
         label: x.label,
       })),
 
-      keywordsToAssign: keywordForOnlyAssign.map(x => ({
+      keywordsToAssign: keywordForOnlyAssign.map((x) => ({
         documentTypeId: selectedDocumentType.targetDocumentType,
         keywordId: x.targetKeywordId,
         name: x.name,
@@ -161,8 +179,8 @@ export class ActionOrchestrator {
         groupsToCreate: conditions.needsGroup ? 1 : 0,
         typesToCreate: conditions.needsType ? 1 : 0,
         keywordsToCreate: keywordForCreateAndAssign.length,
-        keywordsToAssign: keywordForOnlyAssign.length
-      }
+        keywordsToAssign: keywordForOnlyAssign.length,
+      },
     };
 
     console.log('📋 Prepared action data:', actionData);

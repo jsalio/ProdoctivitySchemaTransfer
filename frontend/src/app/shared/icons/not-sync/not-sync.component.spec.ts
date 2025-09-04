@@ -8,9 +8,8 @@ describe('NotSyncComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [NotSyncComponent]
-    })
-    .compileComponents();
+      imports: [NotSyncComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(NotSyncComponent);
     component = fixture.componentInstance;

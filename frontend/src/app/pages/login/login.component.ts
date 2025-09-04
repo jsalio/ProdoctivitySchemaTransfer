@@ -9,7 +9,7 @@ import { Credentials } from '../../types/models/Credentials';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrl: './login.component.css',
 })
 export class LoginComponent {
   private readonly formBuilder = inject(FormBuilder);
@@ -22,10 +22,10 @@ export class LoginComponent {
       apiKey: ['', Validators.required],
       apiSecret: ['', Validators.required],
       organization: ['', Validators.required],
-      dataBase: ['', Validators.required]
+      dataBase: ['', Validators.required],
     }),
     store: [''],
-    token: ['']
+    token: [''],
   });
 
   onSubmit(): void {
@@ -36,4 +36,4 @@ export class LoginComponent {
     const credentials = this.form.value as Credentials;
     // console.log('Submitting credentials', credentials);
   }
-} 
+}

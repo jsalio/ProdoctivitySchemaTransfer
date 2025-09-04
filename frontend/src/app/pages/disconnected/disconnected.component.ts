@@ -7,14 +7,16 @@ import { LayoutService } from '../../services/ui/layout.service';
   standalone: true,
   imports: [],
   templateUrl: './disconnected.component.html',
-  styleUrl: './disconnected.component.css'
+  styleUrl: './disconnected.component.css',
 })
 export class DisconnectedComponent {
-  constructor(private router: Router, private readonly layoutService:LayoutService) {}
-  
+  constructor(
+    private router: Router,
+    private readonly layoutService: LayoutService,
+  ) {}
 
   navigateToLogin() {
     // this.router.navigate(['/login']);
-    this.layoutService.openLayoutModal()
+    this.layoutService.openLayoutModal();
   }
 }

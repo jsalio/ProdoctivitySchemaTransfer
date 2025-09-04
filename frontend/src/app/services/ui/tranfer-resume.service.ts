@@ -5,19 +5,16 @@ import { ActionContext } from '../../pages/schema-transfer/utils/ActionContext';
 import { ActionProgress } from '../../pages/schema-transfer/utils/ActionProgress';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TranferResumeService {
+  constructor() {}
 
-  constructor() { }
-
-  private resume = new  Subject<ActionData>;
+  private resume = new Subject<ActionData>();
   private progressSubject = new BehaviorSubject<ActionProgress | null>(null);
   public progress$ = this.progressSubject.asObservable();
 
-
   public resumeData() {
-
     return this.resume.asObservable();
   }
 
@@ -25,7 +22,7 @@ export class TranferResumeService {
     this.resume.next(resume);
   }
 
-  public emitProgress(progress: ActionProgress| null) {
+  public emitProgress(progress: ActionProgress | null) {
     this.progressSubject.next(progress);
   }
 

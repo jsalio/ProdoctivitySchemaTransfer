@@ -1,4 +1,3 @@
-
 export interface ActionConditions {
   needsGroup: boolean;
   needsType: boolean;

@@ -7,7 +7,7 @@ import { LayoutComponent } from './shared/layout/layout.component';
   standalone: true,
   imports: [RouterOutlet, LayoutComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   title = 'AppSchema';

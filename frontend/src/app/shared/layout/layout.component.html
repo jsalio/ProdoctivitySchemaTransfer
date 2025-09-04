@@ -3,14 +3,19 @@
     <div class="flex items-center justify-between">
       <h1 class="text-xl sm:text-2xl font-semibold text-gray-900">Prodoctivity Migrator</h1>
       <div class="flex items-center space-x-3 sm:space-x-6 text-sm">
-        <a href="#" [routerLink]="'/schema-transfer'"
-          class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline cursor-pointer">Estructura Documental</a>
+        <a
+          href="#"
+          [routerLink]="'/schema-transfer'"
+          class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline cursor-pointer"
+          >Estructura Documental</a
+        >
         <!-- <a href="#" [routerLink]="'/user-transfer'"
           class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline">Users</a> -->
         <div class="flex items-center space-x-2 cursor-pointer">
           <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-          <span (click)="openCredentialsModal()" class="text-gray-600 hidden sm:inline">Status:
-            {{getConnectionStatus()}}</span>
+          <span (click)="openCredentialsModal()" class="text-gray-600 hidden sm:inline"
+            >Status: {{ getConnectionStatus() }}</span
+          >
           <span (click)="openCredentialsModal()" class="text-gray-600 sm:hidden">Conectado</span>
         </div>
       </div>
@@ -20,13 +25,17 @@
 
 <router-outlet />
 
-
 <!-- Toast Notification -->
 <div class="fixed bottom-4 right-4 p-4 bg-green-600 text-white rounded-md shadow-lg hidden">
   Transfer completed successfully!
 </div>
 
-<app-modal [isOpen]="isCredentialOpen" (close)="closeCredentialsModal()" [size]="'medium'" [customWidth]="'50%'">
+<app-modal
+  [isOpen]="isCredentialOpen"
+  (close)="closeCredentialsModal()"
+  [size]="'medium'"
+  [customWidth]="'50%'"
+>
   <h2 class="text-xl font-bold mb-4">Credenciales del sistema</h2>
   <div class="flex flex-col md:flex-row gap-4">
     <div class="w-full md:w-1/2">

@@ -8,9 +8,8 @@ describe('CompleteIndicatorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CompleteIndicatorComponent]
-    })
-    .compileComponents();
+      imports: [CompleteIndicatorComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CompleteIndicatorComponent);
     component = fixture.componentInstance;

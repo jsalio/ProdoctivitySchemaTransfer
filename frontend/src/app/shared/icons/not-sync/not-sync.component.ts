@@ -5,8 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './not-sync.component.html',
-  styleUrl: './not-sync.component.css'
+  styleUrl: './not-sync.component.css',
 })
-export class NotSyncComponent {
-
-}
+export class NotSyncComponent {}

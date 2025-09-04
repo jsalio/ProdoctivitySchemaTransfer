@@ -1,4 +1,3 @@
-
 export interface ActionData {
   groupData?: any;
   typeData?: any;

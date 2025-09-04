@@ -6,18 +6,17 @@ import { ProgressCallback } from './ProgressCallback';
 import { ActionStringBuilder } from './ActionStringBuilder';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ActionProgressService {
-  
   private progressSubject = new BehaviorSubject<ActionProgress | null>(null);
   public progress$ = this.progressSubject.asObservable();
-  
+
   private currentProgress: ActionProgress | null = null;
 
   constructor() {
     // Debug subscription para verificar que se emiten los datos
-    this.progress$.subscribe(progress => {
+    this.progress$.subscribe((progress) => {
       console.log('🔄 Progress Service - New progress:', progress);
     });
   }
@@ -27,7 +26,7 @@ export class ActionProgressService {
    */
   initializeProgress(actionString: string): void {
     const steps = this.createStepsFromActionString(actionString);
-    
+
     this.currentProgress = {
       actionString,
       description: ActionStringBuilder.getDescription(actionString),
@@ -35,7 +34,7 @@ export class ActionProgressService {
       totalSteps: steps.length,
       steps,
       status: 'initializing',
-      startTime: new Date()
+      startTime: new Date(),
     };
 
     console.log('🚀 Progress Service - Initializing progress:', this.currentProgress);
@@ -46,12 +45,12 @@ export class ActionProgressService {
    * Actualiza el progreso de un paso específico
    */
   updateStepProgress(
-    stepIndex: number, 
-    status: StepProgress['status'], 
-    message: string, 
-    data?: any, 
+    stepIndex: number,
+    status: StepProgress['status'],
+    message: string,
+    data?: any,
     error?: any,
-    progressCallback?: ProgressCallback
+    progressCallback?: ProgressCallback,
   ): void {
     if (!this.currentProgress) {
       console.warn('⚠️ No current progress to update');
@@ -73,7 +72,7 @@ export class ActionProgressService {
 
     // Actualizar progreso general
     this.currentProgress.currentStep = status === 'completed' ? stepIndex + 1 : stepIndex;
-    
+
     // Actualizar estado general basado en el progreso de los pasos
     if (status === 'error') {
       this.currentProgress.status = 'error';
@@ -85,8 +84,10 @@ export class ActionProgressService {
       this.currentProgress.status = 'running';
     }
 
-    console.log(`📊 Progress Service - Step ${stepIndex + 1}/${this.currentProgress.totalSteps}: ${status} - ${message}`);
-    
+    console.log(
+      `📊 Progress Service - Step ${stepIndex + 1}/${this.currentProgress.totalSteps}: ${status} - ${message}`,
+    );
+
     // Emitir el progreso actualizado
     this.progressSubject.next({ ...this.currentProgress });
 
@@ -143,10 +144,10 @@ export class ActionProgressService {
   private createStepsFromActionString(actionString: string): StepProgress[] {
     const actions = actionString.split('_');
     const stepDescriptions = {
-      'CDG': 'Create Document Group',
-      'CDT': 'Create Document Type', 
-      'CDK': 'Create Keywords',
-      'ADK': 'Assign Keywords'
+      CDG: 'Create Document Group',
+      CDT: 'Create Document Type',
+      CDK: 'Create Keywords',
+      ADK: 'Assign Keywords',
     };
 
     return actions.map((action, index) => ({
@@ -156,14 +157,18 @@ export class ActionProgressService {
       message: 'Waiting to start...',
       timestamp: new Date(),
       stepIndex: index,
-      totalSteps: actions.length
+      totalSteps: actions.length,
     }));
   }
 
   /**
    * Dispara los callbacks apropiados
    */
-  private triggerCallbacks(step: StepProgress, progress: ActionProgress, progressCallback?: ProgressCallback): void {
+  private triggerCallbacks(
+    step: StepProgress,
+    progress: ActionProgress,
+    progressCallback?: ProgressCallback,
+  ): void {
     if (!progressCallback) return;
 
     switch (step.status) {

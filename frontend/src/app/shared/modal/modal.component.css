@@ -1,14 +1,14 @@
 @keyframes fadeIn {
-    from {
-      opacity: 0.5;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 0.5;
-      transform: scale(1);
-    }
+  from {
+    opacity: 0.5;
+    transform: scale(0.95);
   }
-  
-  .animate-fadeIn {
-    animation: fadeIn 0.2s ease-out;
+  to {
+    opacity: 0.5;
+    transform: scale(1);
   }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}

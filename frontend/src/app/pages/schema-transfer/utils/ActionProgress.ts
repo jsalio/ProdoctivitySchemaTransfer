@@ -1,6 +1,5 @@
 import { StepProgress } from './StepProgress';
 
-
 export interface ActionProgress {
   actionString: string;
   description: string;

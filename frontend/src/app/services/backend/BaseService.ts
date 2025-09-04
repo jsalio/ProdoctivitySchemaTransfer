@@ -5,8 +5,10 @@ export class BaseService {
   /**
    *
    */
-  constructor(private readonly CLIENT: HttpClient, private readonly resource: string) {
-  }
+  constructor(
+    private readonly CLIENT: HttpClient,
+    private readonly resource: string,
+  ) {}
 
   get Uri() {
     return `${environment.backendApi}/${this.resource}`;

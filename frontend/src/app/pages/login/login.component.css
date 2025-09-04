@@ -14,6 +14,6 @@ label {
   gap: 4px;
 }
 
-button[type="submit"] {
+button[type='submit'] {
   justify-self: start;
-} 
+}

@@ -3,37 +3,170 @@
     <legend>Account</legend>
 
     <label for="username">Username</label>
-    <input id="username" type="text" formControlName="username" placeholder="Enter your username" autocomplete="username" autocapitalize="none" spellcheck="false" [attr.aria-invalid]="form.get('username')?.touched && form.get('username')?.invalid ? 'true' : null" aria-describedby="username-error" />
-    <div id="username-error" *ngIf="form.get('username')?.touched && form.get('username')?.invalid">Username is required</div>
+    <input
+      id="username"
+      type="text"
+      formControlName="username"
+      placeholder="Enter your username"
+      autocomplete="username"
+      autocapitalize="none"
+      spellcheck="false"
+      [attr.aria-invalid]="
+        form.get('username')?.touched && form.get('username')?.invalid ? 'true' : null
+      "
+      aria-describedby="username-error"
+    />
+    <div id="username-error" *ngIf="form.get('username')?.touched && form.get('username')?.invalid">
+      Username is required
+    </div>
 
     <label for="password">Password</label>
-    <input id="password" type="password" formControlName="password" placeholder="Enter your password" autocomplete="current-password" [attr.aria-invalid]="form.get('password')?.touched && form.get('password')?.invalid ? 'true' : null" aria-describedby="password-error" />
-    <div id="password-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">Password is required</div>
+    <input
+      id="password"
+      type="password"
+      formControlName="password"
+      placeholder="Enter your password"
+      autocomplete="current-password"
+      [attr.aria-invalid]="
+        form.get('password')?.touched && form.get('password')?.invalid ? 'true' : null
+      "
+      aria-describedby="password-error"
+    />
+    <div id="password-error" *ngIf="form.get('password')?.touched && form.get('password')?.invalid">
+      Password is required
+    </div>
   </fieldset>
 
   <fieldset formGroupName="serverInformation">
     <legend>Server Information</legend>
 
     <label for="server">Server</label>
-    <input id="server" type="url" inputmode="url" formControlName="server" placeholder="https://your.server.com" autocapitalize="none" spellcheck="false" [attr.aria-invalid]="form.get('serverInformation.server')?.touched && form.get('serverInformation.server')?.invalid ? 'true' : null" aria-describedby="server-error" />
-    <div id="server-error" *ngIf="form.get('serverInformation.server')?.touched && form.get('serverInformation.server')?.invalid">Server is required</div>
+    <input
+      id="server"
+      type="url"
+      inputmode="url"
+      formControlName="server"
+      placeholder="https://your.server.com"
+      autocapitalize="none"
+      spellcheck="false"
+      [attr.aria-invalid]="
+        form.get('serverInformation.server')?.touched &&
+        form.get('serverInformation.server')?.invalid
+          ? 'true'
+          : null
+      "
+      aria-describedby="server-error"
+    />
+    <div
+      id="server-error"
+      *ngIf="
+        form.get('serverInformation.server')?.touched &&
+        form.get('serverInformation.server')?.invalid
+      "
+    >
+      Server is required
+    </div>
 
     <label for="apiKey">API Key</label>
-    <input id="apiKey" type="text" formControlName="apiKey" placeholder="Enter your API key" autocomplete="off" autocapitalize="none" spellcheck="false" [attr.aria-invalid]="form.get('serverInformation.apiKey')?.touched && form.get('serverInformation.apiKey')?.invalid ? 'true' : null" aria-describedby="apiKey-error" />
-    <div id="apiKey-error" *ngIf="form.get('serverInformation.apiKey')?.touched && form.get('serverInformation.apiKey')?.invalid">API Key is required</div>
+    <input
+      id="apiKey"
+      type="text"
+      formControlName="apiKey"
+      placeholder="Enter your API key"
+      autocomplete="off"
+      autocapitalize="none"
+      spellcheck="false"
+      [attr.aria-invalid]="
+        form.get('serverInformation.apiKey')?.touched &&
+        form.get('serverInformation.apiKey')?.invalid
+          ? 'true'
+          : null
+      "
+      aria-describedby="apiKey-error"
+    />
+    <div
+      id="apiKey-error"
+      *ngIf="
+        form.get('serverInformation.apiKey')?.touched &&
+        form.get('serverInformation.apiKey')?.invalid
+      "
+    >
+      API Key is required
+    </div>
 
     <label for="apiSecret">API Secret</label>
-    <input id="apiSecret" type="password" formControlName="apiSecret" placeholder="Enter your API secret" autocomplete="off" [attr.aria-invalid]="form.get('serverInformation.apiSecret')?.touched && form.get('serverInformation.apiSecret')?.invalid ? 'true' : null" aria-describedby="apiSecret-error" />
-    <div id="apiSecret-error" *ngIf="form.get('serverInformation.apiSecret')?.touched && form.get('serverInformation.apiSecret')?.invalid">API Secret is required</div>
+    <input
+      id="apiSecret"
+      type="password"
+      formControlName="apiSecret"
+      placeholder="Enter your API secret"
+      autocomplete="off"
+      [attr.aria-invalid]="
+        form.get('serverInformation.apiSecret')?.touched &&
+        form.get('serverInformation.apiSecret')?.invalid
+          ? 'true'
+          : null
+      "
+      aria-describedby="apiSecret-error"
+    />
+    <div
+      id="apiSecret-error"
+      *ngIf="
+        form.get('serverInformation.apiSecret')?.touched &&
+        form.get('serverInformation.apiSecret')?.invalid
+      "
+    >
+      API Secret is required
+    </div>
 
     <label for="organization">Organization</label>
-    <input id="organization" type="text" formControlName="organization" placeholder="Enter your organization" [attr.aria-invalid]="form.get('serverInformation.organization')?.touched && form.get('serverInformation.organization')?.invalid ? 'true' : null" aria-describedby="organization-error" />
-    <div id="organization-error" *ngIf="form.get('serverInformation.organization')?.touched && form.get('serverInformation.organization')?.invalid">Organization is required</div>
+    <input
+      id="organization"
+      type="text"
+      formControlName="organization"
+      placeholder="Enter your organization"
+      [attr.aria-invalid]="
+        form.get('serverInformation.organization')?.touched &&
+        form.get('serverInformation.organization')?.invalid
+          ? 'true'
+          : null
+      "
+      aria-describedby="organization-error"
+    />
+    <div
+      id="organization-error"
+      *ngIf="
+        form.get('serverInformation.organization')?.touched &&
+        form.get('serverInformation.organization')?.invalid
+      "
+    >
+      Organization is required
+    </div>
 
     <label for="dataBase">Database</label>
-    <input id="dataBase" type="text" formControlName="dataBase" placeholder="Enter the database name" [attr.aria-invalid]="form.get('serverInformation.dataBase')?.touched && form.get('serverInformation.dataBase')?.invalid ? 'true' : null" aria-describedby="dataBase-error" />
-    <div id="dataBase-error" *ngIf="form.get('serverInformation.dataBase')?.touched && form.get('serverInformation.dataBase')?.invalid">Database is required</div>
+    <input
+      id="dataBase"
+      type="text"
+      formControlName="dataBase"
+      placeholder="Enter the database name"
+      [attr.aria-invalid]="
+        form.get('serverInformation.dataBase')?.touched &&
+        form.get('serverInformation.dataBase')?.invalid
+          ? 'true'
+          : null
+      "
+      aria-describedby="dataBase-error"
+    />
+    <div
+      id="dataBase-error"
+      *ngIf="
+        form.get('serverInformation.dataBase')?.touched &&
+        form.get('serverInformation.dataBase')?.invalid
+      "
+    >
+      Database is required
+    </div>
   </fieldset>
 
   <button type="submit" [disabled]="form.invalid">Login</button>
-</form> 
+</form>

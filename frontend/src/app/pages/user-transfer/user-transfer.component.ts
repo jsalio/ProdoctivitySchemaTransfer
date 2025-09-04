@@ -5,8 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './user-transfer.component.html',
-  styleUrl: './user-transfer.component.css'
+  styleUrl: './user-transfer.component.css',
 })
-export class UserTransferComponent {
-
-}
+export class UserTransferComponent {}

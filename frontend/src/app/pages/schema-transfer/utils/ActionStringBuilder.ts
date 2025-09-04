@@ -41,15 +41,15 @@ export class ActionStringBuilder {
    */
   static getDescription(actionString: string): string {
     const descriptions = {
-      'CDG': 'Create Group',
-      'CDT': 'Create Type',
-      'CDK': 'Create Keywords',
-      'ADK': 'Assign Keywords'
+      CDG: 'Create Group',
+      CDT: 'Create Type',
+      CDK: 'Create Keywords',
+      ADK: 'Assign Keywords',
     };
 
     return actionString
       .split('_')
-      .map(action => descriptions[action] || action)
+      .map((action) => descriptions[action] || action)
       .join(' → ');
   }
 }
