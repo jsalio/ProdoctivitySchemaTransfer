@@ -8,9 +8,8 @@ describe('DisconnectedComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DisconnectedComponent]
-    })
-    .compileComponents();
+      imports: [DisconnectedComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DisconnectedComponent);
     component = fixture.componentInstance;

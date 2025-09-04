@@ -1,5 +1,4 @@
-import { CultureLanguage } from "./CultureLanguage";
-
+import { CultureLanguage } from './CultureLanguage';
 
 export interface CultureAssociation {
   cultureLanguage?: CultureLanguage;

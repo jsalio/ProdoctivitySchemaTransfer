@@ -1,20 +1,24 @@
 <div class="p-4 lg:p-6">
-    <h2 class="text-lg font-medium text-gray-900 mb-4">Grupos</h2>
-    <div class="space-y-2">
-        @for (item of SchemaDocumentGroups(); track $index) {
-        <div [ngClass]="getItemClass(item.groupName)" (click)="markItemAsSelected(item.groupId)" class="cursor-pointer">
-            <div class="w-4 h-4 lg:w-5 lg:h-5 text-amber-500 mr-2 lg:mr-3">📁</div>
-            <span class="text-sm font-medium text-gray-900 min-w-0 flex-1">{{item.groupName}}s</span>
-            @if(item.targetId !== null){
-            <div class="ml-auto flex items-center flex-shrink-0">
-                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                <span class="text-xs text-green-600 hidden sm:inline">Sincronizado</span>
-            </div>
-            }
-        </div>
+  <h2 class="text-lg font-medium text-gray-900 mb-4">Grupos</h2>
+  <div class="space-y-2">
+    @for (item of SchemaDocumentGroups(); track $index) {
+      <div
+        [ngClass]="getItemClass(item.groupName)"
+        (click)="markItemAsSelected(item.groupId)"
+        class="cursor-pointer"
+      >
+        <div class="w-4 h-4 lg:w-5 lg:h-5 text-amber-500 mr-2 lg:mr-3">📁</div>
+        <span class="text-sm font-medium text-gray-900 min-w-0 flex-1">{{ item.groupName }}s</span>
+        @if (item.targetId !== null) {
+          <div class="ml-auto flex items-center flex-shrink-0">
+            <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+            <span class="text-xs text-green-600 hidden sm:inline">Sincronizado</span>
+          </div>
         }
-        @if(SchemaDocumentGroups().length === 0){
-        esperando...
-        }
-    </div>
+      </div>
+    }
+    @if (SchemaDocumentGroups().length === 0) {
+      esperando...
+    }
+  </div>
 </div>

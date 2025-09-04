@@ -1,0 +1,25 @@
+# Dependencias
+node_modules
+
+# Build output
+dist
+build
+tmp
+out-tsc
+
+# Archivos de lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Configuración de Angular/TS que no requiere formateo
+.angular
+.idea
+.vscode
+
+# Archivos de entorno
+*.env
+*.local
+
+# Otros
+coverage

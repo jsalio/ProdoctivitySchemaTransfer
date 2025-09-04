@@ -1,6 +1,5 @@
-import { Country } from "./Country";
-import { Language } from "./Language";
-
+import { Country } from './Country';
+import { Language } from './Language';
 
 export interface CultureLanguage {
   country: Country;

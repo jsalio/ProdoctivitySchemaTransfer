@@ -1,4 +1,4 @@
-import { DocumentType } from "./DocumentType";
+import { DocumentType } from './DocumentType';
 
 /**
  * Represents the complete schema definition for a cloud document type,
@@ -9,5 +9,3 @@ export interface CloudDocumentTypeSchema {
   /** The document type definition containing all schema details */
   documentType: DocumentType;
 }
-
-

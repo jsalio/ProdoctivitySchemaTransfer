@@ -1,7 +1,6 @@
 import { StepProgress } from './StepProgress';
 import { ActionProgress } from './ActionProgress';
 
-
 export interface ProgressCallback {
   onStepStart?: (step: StepProgress) => void;
   onStepComplete?: (step: StepProgress) => void;

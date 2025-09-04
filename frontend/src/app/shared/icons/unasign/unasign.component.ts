@@ -5,8 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './unasign.component.html',
-  styleUrl: './unasign.component.css'
+  styleUrl: './unasign.component.css',
 })
-export class UnasignComponent {
-
-}
+export class UnasignComponent {}

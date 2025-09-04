@@ -1,7 +1,6 @@
-import { StoreType } from "./StoreType";
-
+import { StoreType } from './StoreType';
 
 export interface BaseRequestBody {
-    store?: StoreType;
-    [key: string]: unknown;
+  store?: StoreType;
+  [key: string]: unknown;
 }

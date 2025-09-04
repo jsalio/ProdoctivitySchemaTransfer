@@ -5,8 +5,6 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [],
   templateUrl: './await-indicator.component.html',
-  styleUrl: './await-indicator.component.css'
+  styleUrl: './await-indicator.component.css',
 })
-export class AwaitIndicatorComponent {
-
-}
+export class AwaitIndicatorComponent {}

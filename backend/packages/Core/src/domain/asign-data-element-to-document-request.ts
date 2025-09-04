@@ -1,4 +1,4 @@
-import { Credentials } from "./Credentials"
+import { Credentials } from './Credentials';
 
 /**
  * Request object for assigning a data element to a document type.
@@ -10,13 +10,12 @@ import { Credentials } from "./Credentials"
  * @property {number} assignDataElementToDocumentRequest.dataElement.order - The order of the data element.
  */
 export type AssignDataElementToDocumentRequest = {
-   credentials: Credentials,
-   assignDataElementToDocumentRequest:
-   {
-      documentTypeId: string,
-      dataElement: {
-         name: string,
-         order: number
-      }
-   }
-}
+  credentials: Credentials;
+  assignDataElementToDocumentRequest: {
+    documentTypeId: string;
+    dataElement: {
+      name: string;
+      order: number;
+    };
+  };
+};

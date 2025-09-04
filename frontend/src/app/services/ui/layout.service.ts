@@ -2,20 +2,18 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class LayoutService {
+  private layoutModalInteractions = new Subject<void>();
 
-  private layoutModalInteractions = new Subject<void>()
-
-  constructor() { }
-
+  constructor() {}
 
   openLayoutModal = () => {
-    this.layoutModalInteractions.next()
-  }
+    this.layoutModalInteractions.next();
+  };
 
   onLayoutEmit = () => {
-    return this.layoutModalInteractions
-  }
+    return this.layoutModalInteractions;
+  };
 }

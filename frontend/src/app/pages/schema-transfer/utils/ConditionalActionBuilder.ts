@@ -10,19 +10,25 @@ import { SchemaService } from '../../../services/backend/schema.service';
  * Constructor de acciones condicionales que ejecuta pasos basados en datos
  */
 export class ConditionalActionBuilder {
-  private steps: Array<(credentials: Credentials, context: ActionContext, actionData: ActionData) => Promise<Partial<ActionContext>>> = [];
+  private steps: Array<
+    (
+      credentials: Credentials,
+      context: ActionContext,
+      actionData: ActionData,
+    ) => Promise<Partial<ActionContext>>
+  > = [];
   private stepCodes: string[] = [];
 
   constructor(
     private schema: SchemaService,
     private executingActions: any,
-    private progressService: ActionProgressService
-  ) { }
+    private progressService: ActionProgressService,
+  ) {}
 
   static create(
     schema: SchemaService,
     executingActions: any,
-    progressService: ActionProgressService
+    progressService: ActionProgressService,
   ): ConditionalActionBuilder {
     return new ConditionalActionBuilder(schema, executingActions, progressService);
   }
@@ -34,7 +40,7 @@ export class ConditionalActionBuilder {
     const actions = actionString.split('_');
     this.stepCodes = actions;
 
-    actions.forEach(action => {
+    actions.forEach((action) => {
       switch (action) {
         case 'CDG':
           this.createGroup();
@@ -62,34 +68,33 @@ export class ConditionalActionBuilder {
       try {
         console.log('🏗️ Creating Document Group:', actionData.groupData);
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'running', 
-          'Creating document group...', 
-          { groupData: actionData.groupData }
+          stepIndex,
+          'running',
+          'Creating document group...',
+          { groupData: actionData.groupData },
         );
 
         const result = await ObservableHandler.handle(
-          this.schema.saveNewDocumentGroup(credentials, actionData.groupData)
+          this.schema.saveNewDocumentGroup(credentials, actionData.groupData),
         ).executeAsyncClean();
 
         const groupId = result.data.groupId;
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'completed', 
-          `Document group created successfully (ID: ${groupId})`, 
-          { result, groupId }
+          stepIndex,
+          'completed',
+          `Document group created successfully (ID: ${groupId})`,
+          { result, groupId },
         );
 
         return { documentGroupId: groupId };
-      }
-      catch (error) {
+      } catch (error) {
         console.error('❌ Error creating document group:', error);
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'error', 
-          'Error creating document group', 
-          undefined, 
-          error
+          stepIndex,
+          'error',
+          'Error creating document group',
+          undefined,
+          error,
         );
         throw error;
       }
@@ -101,32 +106,28 @@ export class ConditionalActionBuilder {
     const stepIndex = this.steps.length;
 
     this.steps.push(async (credentials, context, actionData) => {
-
-      console.log('context -> actions data:', context,actionData)
+      console.log('context -> actions data:', context, actionData);
       const typeData = {
         ...actionData.typeData,
-        documentGroupId: context.documentGroupId || actionData.typeData?.documentGroupId
+        documentGroupId: context.documentGroupId || actionData.typeData?.documentGroupId,
       };
 
       try {
         console.log('📄 Creating Document Type:', typeData);
-        this.progressService.updateStepProgress(
-          stepIndex, 
-          'running', 
-          'Creating document type...', 
-          { typeData }
-        );
+        this.progressService.updateStepProgress(stepIndex, 'running', 'Creating document type...', {
+          typeData,
+        });
 
         const result = await ObservableHandler.handle(
-          this.schema.saveNewDocumentType(credentials, typeData)
+          this.schema.saveNewDocumentType(credentials, typeData),
         ).executeAsyncClean();
 
         const typeId = result.data.documentTypeId;
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'completed', 
-          `Document type created successfully (ID: ${typeId})`, 
-          { result, typeId }
+          stepIndex,
+          'completed',
+          `Document type created successfully (ID: ${typeId})`,
+          { result, typeId },
         );
 
         console.log('✅ Document Type created:', result);
@@ -134,11 +135,11 @@ export class ConditionalActionBuilder {
       } catch (error) {
         console.error('❌ Error creating document type:', error);
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'error', 
-          `Failed to create document type: ${error.message}`, 
-          null, 
-          error
+          stepIndex,
+          'error',
+          `Failed to create document type: ${error.message}`,
+          null,
+          error,
         );
         throw error;
       }
@@ -151,14 +152,14 @@ export class ConditionalActionBuilder {
 
     this.steps.push(async (credentials, context, actionData) => {
       const keywordCount = actionData.keywordsToCreate.length;
-      
+
       try {
         console.log(`🏷️ Creating ${keywordCount} keywords...`);
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'running', 
-          `Creating ${keywordCount} keywords...`, 
-          { keywordCount }
+          stepIndex,
+          'running',
+          `Creating ${keywordCount} keywords...`,
+          { keywordCount },
         );
 
         const createdKeywords = [];
@@ -168,7 +169,7 @@ export class ConditionalActionBuilder {
           const keywordData = actionData.keywordsToCreate[i];
           const finalKeywordData = {
             ...keywordData,
-            documentTypeId: context.documentTypeId || keywordData.documentTypeId
+            documentTypeId: context.documentTypeId || keywordData.documentTypeId,
           };
 
           if (!usedDocumentTypeId) {
@@ -177,35 +178,39 @@ export class ConditionalActionBuilder {
 
           console.log(`Creating keyword ${i + 1}/${keywordCount}: "${keywordData.name}"`);
           this.progressService.updateStepProgress(
-            stepIndex, 
-            'running', 
-            `Creating keyword ${i + 1}/${keywordCount}: "${keywordData.name}"...`
+            stepIndex,
+            'running',
+            `Creating keyword ${i + 1}/${keywordCount}: "${keywordData.name}"...`,
           );
 
           const result = await ObservableHandler.handle(
-            this.schema.saveNewKeyword(credentials, finalKeywordData)
+            this.schema.saveNewKeyword(credentials, finalKeywordData),
           ).executeAsyncClean();
 
           createdKeywords.push({ keywordId: result.data.id, ...result.data });
         }
 
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'completed', 
-          `Successfully created ${keywordCount} keywords`, 
-          { createdKeywords, count: keywordCount }
+          stepIndex,
+          'completed',
+          `Successfully created ${keywordCount} keywords`,
+          { createdKeywords, count: keywordCount },
         );
-        
+
         console.log('✅ Keywords created:', createdKeywords);
-        return { createdKeywords, documentGroupId: context.documentGroupId, documentTypeId: context.documentTypeId || usedDocumentTypeId };
+        return {
+          createdKeywords,
+          documentGroupId: context.documentGroupId,
+          documentTypeId: context.documentTypeId || usedDocumentTypeId,
+        };
       } catch (error) {
         console.error('❌ Error creating keywords:', error);
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'error', 
-          `Failed to create keywords: ${error.message}`, 
-          null, 
-          error
+          stepIndex,
+          'error',
+          `Failed to create keywords: ${error.message}`,
+          null,
+          error,
         );
         throw error;
       }
@@ -219,23 +224,23 @@ export class ConditionalActionBuilder {
     this.steps.push(async (credentials, context, actionData) => {
       const allKeywordsToAssign = [
         ...actionData.keywordsToAssign,
-        ...(context.createdKeywords || []).map(k => ({
+        ...(context.createdKeywords || []).map((k) => ({
           keywordId: k.keywordId,
           documentTypeId: context.documentTypeId || actionData.keywordsToAssign[0]?.documentTypeId,
-          name: k[`name`]
-        }))
+          name: k[`name`],
+        })),
       ];
-      debugger
+      debugger;
 
       const assignCount = allKeywordsToAssign.length;
 
       try {
         console.log(`🔗 Assigning ${assignCount} keywords...`);
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'running', 
-          `Assigning ${assignCount} keywords...`, 
-          { assignCount }
+          stepIndex,
+          'running',
+          `Assigning ${assignCount} keywords...`,
+          { assignCount },
         );
 
         const assignedSchemas = [];
@@ -244,40 +249,40 @@ export class ConditionalActionBuilder {
           const assignData = allKeywordsToAssign[i];
           const finalAssignData = {
             ...assignData,
-            documentTypeId: context.documentTypeId || assignData.documentTypeId
+            documentTypeId: context.documentTypeId || assignData.documentTypeId,
           };
 
           console.log(`Assigning keyword ${i + 1}/${assignCount}: "${assignData.name}"`);
           this.progressService.updateStepProgress(
-            stepIndex, 
-            'running', 
-            `Assigning keyword ${i + 1}/${assignCount}: "${assignData.name}"...`
+            stepIndex,
+            'running',
+            `Assigning keyword ${i + 1}/${assignCount}: "${assignData.name}"...`,
           );
 
           const result: any = await ObservableHandler.handle(
-            this.schema.saveNewDocumentSchema(credentials, finalAssignData)
+            this.schema.saveNewDocumentSchema(credentials, finalAssignData),
           ).executeAsyncClean();
 
           assignedSchemas.push({ schemaId: (result as any).id, ...result });
         }
 
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'completed', 
-          `Successfully assigned ${assignCount} keywords`, 
-          { assignedSchemas, count: assignCount }
+          stepIndex,
+          'completed',
+          `Successfully assigned ${assignCount} keywords`,
+          { assignedSchemas, count: assignCount },
         );
-        
+
         console.log('✅ Keywords assigned:', assignedSchemas);
         return { assignedSchemas };
       } catch (error) {
         console.error('❌ Error assigning keywords:', error);
         this.progressService.updateStepProgress(
-          stepIndex, 
-          'error', 
-          `Failed to assign keywords: ${error.message}`, 
-          null, 
-          error
+          stepIndex,
+          'error',
+          `Failed to assign keywords: ${error.message}`,
+          null,
+          error,
         );
         throw error;
       }
@@ -289,9 +294,9 @@ export class ConditionalActionBuilder {
    * Ejecuta toda la cadena de acciones
    */
   async execute(
-    credentials: Credentials, 
-    actionData: ActionData, 
-    progressCallback?: ProgressCallback
+    credentials: Credentials,
+    actionData: ActionData,
+    progressCallback?: ProgressCallback,
   ): Promise<ActionContext> {
     this.executingActions.set(true);
     let context: ActionContext = {};
@@ -301,22 +306,22 @@ export class ConditionalActionBuilder {
 
       for (let i = 0; i < this.steps.length; i++) {
         console.log(`🔄 Step ${i + 1}/${this.steps.length}: ${this.stepCodes[i]}`);
-        
+
         // Actualizar progreso con callbacks
         if (progressCallback) {
           const currentStep = this.progressService.getCurrentProgress()?.steps[i];
           if (currentStep) {
             this.progressService.updateStepProgress(
-              i, 
-              currentStep.status, 
-              currentStep.message, 
-              currentStep.data, 
-              currentStep.error, 
-              progressCallback
+              i,
+              currentStep.status,
+              currentStep.message,
+              currentStep.data,
+              currentStep.error,
+              progressCallback,
             );
           }
         }
-        
+
         const result = await this.steps[i](credentials, context, actionData);
         context = { ...context, ...result };
       }

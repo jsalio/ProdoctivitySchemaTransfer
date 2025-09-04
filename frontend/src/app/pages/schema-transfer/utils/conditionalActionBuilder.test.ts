@@ -19,7 +19,7 @@
 //     // Mock services
 //     mockSchemaService = jasmine.createSpyObj('SchemaService', [
 //       'saveNewDocumentGroup',
-//       'saveNewDocumentType', 
+//       'saveNewDocumentType',
 //       'saveNewKeyword',
 //       'saveNewDocumentSchema'
 //     ]);
@@ -46,7 +46,7 @@
 //     );
 
 //     // Mock credentials
-//     mockCredentials = { 
+//     mockCredentials = {
 //         password: 'test-password',
 //         username: 'test-username',
 //         token: 'test-token',
@@ -77,7 +77,7 @@
 //           documentTypeId: undefined // Will be set by context
 //         },
 //         {
-//           name: 'Keyword 2', 
+//           name: 'Keyword 2',
 //           description: 'Test Keyword 2',
 //           documentTypeId: undefined // Will be set by context
 //         }
@@ -136,7 +136,7 @@
 //         // Assert
 //         expect(result.documentGroupId).toBe('group-123');
 //         expect(result.documentTypeId).toBe('type-456');
-        
+
 //         // Verify CDT received the correct groupId
 //         expect(mockSchemaService.saveNewDocumentType).toHaveBeenCalledWith(
 //           mockCredentials,
@@ -296,7 +296,7 @@
 //         expect(mockSchemaService.saveNewDocumentGroup).toHaveBeenCalledTimes(1);
 //         expect(mockSchemaService.saveNewDocumentType).toHaveBeenCalledTimes(1);
 //         expect(mockSchemaService.saveNewKeyword).toHaveBeenCalledTimes(2);
-        
+
 //         const expectedAssignments = mockActionData.keywordsToAssign.length + mockActionData.keywordsToCreate.length;
 //         expect(mockSchemaService.saveNewDocumentSchema).toHaveBeenCalledTimes(expectedAssignments);
 //       });
@@ -327,21 +327,21 @@
 //   });
 
 //   describe('🚨 Error Handling and Edge Cases', () => {
-    
+
 //     it('should handle errors in CDG step without breaking context', async () => {
 //       // Arrange
 //       mockSchemaService.saveNewDocumentGroup.and.returnValue(throwError('Group creation failed'));
 //       spyOn(ObservableHandler, 'handle').and.callFake(() => ({
 //         executeAsyncClean: () => Promise.reject(new Error('Group creation failed'))
 //       }));
-      
+
 //       const actionString = 'CDG_CDT';
 //       builder.buildFromConditions(actionString);
 
 //       // Act & Assert
 //       await expectAsync(builder.execute(mockCredentials, mockActionData))
 //         .toBeRejectedWithError('Group creation failed');
-      
+
 //       expect(mockExecutingActions.set).toHaveBeenCalledWith(false);
 //     });
 
@@ -363,7 +363,7 @@
 //     it('should handle unknown action codes gracefully', async () => {
 //       // Arrange
 //       const actionString = 'CDG_UNKNOWN_CDT';
-      
+
 //       // Act
 //       builder.buildFromConditions(actionString);
 //       const result = await builder.execute(mockCredentials, mockActionData);
@@ -375,7 +375,7 @@
 //   });
 
 //   describe('🔄 Progress Service Integration', () => {
-    
+
 //     it('should call progress service for each step', async () => {
 //       // Arrange
 //       const actionString = 'CDG_CDT_CDK';
@@ -386,7 +386,7 @@
 
 //       // Assert - Progress should be updated for each step (running + completed)
 //       expect(mockProgressService.updateStepProgress).toHaveBeenCalledTimes(6); // 3 steps × 2 calls each (running + completed)
-      
+
 //       // Verify progress calls for each step
 //       expect(mockProgressService.updateStepProgress).toHaveBeenCalledWith(
 //         0, 'running', jasmine.any(String), jasmine.any(Object)
@@ -425,7 +425,7 @@
 //   });
 
 //   describe('📊 Performance and State Management', () => {
-    
+
 //     it('should set executingActions to true during execution and false after', async () => {
 //       // Arrange
 //       const actionString = 'CDG';
@@ -460,7 +460,7 @@
 //     it('should execute steps in correct sequential order', async () => {
 //       // Arrange
 //       const executionOrder: string[] = [];
-      
+
 //       // Override the ObservableHandler to track execution order
 //       spyOn(ObservableHandler, 'handle').and.callFake((observable: any) => ({
 //         executeAsyncClean: async () => {

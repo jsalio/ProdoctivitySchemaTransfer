@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, OnChanges, SimpleChanges, WritableSignal, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnChanges,
+  SimpleChanges,
+  WritableSignal,
+  computed,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 
 import { Credentials } from '../../../types/models/Credentials';
 import { LocalDataService } from '../../../services/ui/local-data.service';
@@ -14,7 +24,7 @@ export type SchemaDocumentType = {
   documentTypeId: string;
   documentTypeName: string;
   targetDocumentType: string; // ✅ Corregido el typo
-}
+};
 
 @Component({
   selector: 'app-document-types-list',
@@ -22,19 +32,19 @@ export type SchemaDocumentType = {
   imports: [],
   templateUrl: './document-types-list.component.html',
   styleUrl: './document-types-list.component.css',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentTypesListComponent implements OnChanges {
-  parentGroup = input<string>("");
-  parentTargetGroup = input<string>("");
+  parentGroup = input<string>('');
+  parentTargetGroup = input<string>('');
 
   documentTypes = signal<DocumentType[]>([]);
   targetDocumentTypes = signal<DocumentType[]>([]);
-  
+
   // ✅ Memoización para mejor performance
   private targetDocumentTypesMap = computed(() => {
     const map = new Map<string, string>();
-    this.targetDocumentTypes().forEach(target => {
+    this.targetDocumentTypes().forEach((target) => {
       map.set(target.documentTypeName, target.documentTypeId);
     });
     return map;
@@ -43,25 +53,28 @@ export class DocumentTypesListComponent implements OnChanges {
   // ✅ Computed optimizado
   documentTypesSchemas = computed(() => {
     const targetMap = this.targetDocumentTypesMap();
-    
-    return this.documentTypes().map(x => ({
-      documentTypeId: x.documentTypeId,
-      documentTypeName: x.documentTypeName,
-      targetDocumentType: targetMap.get(x.documentTypeName) || ""
-    } as SchemaDocumentType));
+
+    return this.documentTypes().map(
+      (x) =>
+        ({
+          documentTypeId: x.documentTypeId,
+          documentTypeName: x.documentTypeName,
+          targetDocumentType: targetMap.get(x.documentTypeName) || '',
+        }) as SchemaDocumentType,
+    );
   });
 
   loadingSource = signal<boolean>(false);
   loadingTarget = signal<boolean>(false);
   selectedDocumentId = signal<string | null>(null); // ✅ Simplificado
-  
+
   onDocumentypeSeleted = output<SchemaDocumentType>();
   errorModalOpen = signal<boolean>(false);
   storeMessageFailured = signal<string>('');
 
   constructor(
-    private readonly localData: LocalDataService, 
-    private readonly schemaService: SchemaService
+    private readonly localData: LocalDataService,
+    private readonly schemaService: SchemaService,
   ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -69,7 +82,7 @@ export class DocumentTypesListComponent implements OnChanges {
     if (changes['parentGroup'] && this.parentGroup()) {
       this.loadSourceDocumentTypes();
     }
-    
+
     if (changes['parentTargetGroup'] && this.parentTargetGroup()) {
       this.loadTargetDocumentTypes();
     }
@@ -77,12 +90,12 @@ export class DocumentTypesListComponent implements OnChanges {
 
   // ✅ Métodos separados para mejor organización
   private loadSourceDocumentTypes(): void {
-    const credentials = this.localData.getValue<Credentials>("Credentials_V6_Cloud");
+    const credentials = this.localData.getValue<Credentials>('Credentials_V6_Cloud');
     if (!credentials) return;
 
     this.documentTypes.set([]);
     this.selectedDocumentId.set(null);
-    
+
     this.executeCall(
       credentials,
       this.parentGroup(),
@@ -92,13 +105,13 @@ export class DocumentTypesListComponent implements OnChanges {
       this.loadingSource,
       () => {
         this.errorModalOpen.set(true);
-        this.storeMessageFailured.set("Productivity Cloud (V6)");
-      }
+        this.storeMessageFailured.set('Productivity Cloud (V6)');
+      },
     );
   }
 
   private loadTargetDocumentTypes(): void {
-    const credentials = this.localData.getValue<Credentials>("Credentials_V5_V5");
+    const credentials = this.localData.getValue<Credentials>('Credentials_V5_V5');
     if (!credentials) return;
 
     this.executeCall(
@@ -110,35 +123,35 @@ export class DocumentTypesListComponent implements OnChanges {
       this.loadingTarget, // ✅ Corregido: usar loadingTarget
       () => {
         this.errorModalOpen.set(true);
-        this.storeMessageFailured.set("Productivity Fluency (V5)");
-      }
+        this.storeMessageFailured.set('Productivity Fluency (V5)');
+      },
     );
   }
 
   checkItem = (event: Event, docId: string): void => {
     event.preventDefault();
     event.stopPropagation();
-    
+
     this.selectedDocumentId.set(docId);
-    
+
     // ✅ Buscar una sola vez
-    const documentType = this.documentTypesSchemas().find(x => x.documentTypeId === docId);
+    const documentType = this.documentTypesSchemas().find((x) => x.documentTypeId === docId);
     if (documentType) {
       this.onDocumentypeSeleted.emit(documentType);
     }
-  }
+  };
 
   // ✅ Método simplificado
   isChecked = (docId: string): boolean => {
     return this.selectedDocumentId() === docId;
-  }
+  };
 
   private executeCall = (
     credentials: Credentials,
     groupId: string,
-    callback: (response: { data: DocumentType[], success: boolean }) => void,
+    callback: (response: { data: DocumentType[]; success: boolean }) => void,
     loadingSignal: WritableSignal<boolean>,
-    errorCallback?: () => void
+    errorCallback?: () => void,
   ): void => {
     ObservableHandler.handle(this.schemaService.getDocumentTypesInGroup(credentials, groupId))
       .onStart(() => loadingSignal.set(true))
@@ -149,5 +162,5 @@ export class DocumentTypesListComponent implements OnChanges {
       })
       .onFinalize(() => loadingSignal.set(false))
       .execute();
-  }
+  };
 }

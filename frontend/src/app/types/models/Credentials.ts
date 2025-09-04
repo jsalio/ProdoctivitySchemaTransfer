@@ -1,10 +1,8 @@
-import { AdditionalInfo } from './AdditionalInfo'
+import { AdditionalInfo } from './AdditionalInfo';
 export type Credentials = {
-    username: string;
-    password: string;
-    serverInformation: AdditionalInfo;
-    store?: string,
-    token?: string
-}
-
-
+  username: string;
+  password: string;
+  serverInformation: AdditionalInfo;
+  store?: string;
+  token?: string;
+};

@@ -8,9 +8,8 @@ describe('WarnComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WarnComponent]
-    })
-    .compileComponents();
+      imports: [WarnComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(WarnComponent);
     component = fixture.componentInstance;
@@ -24,7 +23,7 @@ describe('WarnComponent', () => {
   it('should render the warning icon', () => {
     const svgElement = fixture.debugElement.query(By.css('svg'));
     expect(svgElement).toBeTruthy();
-    
+
     // Check if the SVG has the correct classes
     expect(svgElement.nativeElement.getAttribute('class')).toContain('size-5');
     expect(svgElement.nativeElement.getAttribute('class')).toContain('w-4');

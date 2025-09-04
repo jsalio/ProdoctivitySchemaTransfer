@@ -7,13 +7,13 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './modal.component.html',
-  styleUrl: './modal.component.css'
+  styleUrl: './modal.component.css',
 })
 export class ModalComponent {
   @Input() isOpen: boolean = false;
   @Output() close = new EventEmitter<void>();
-  size=input<'basic'|'medium'|'big'|'custom'>('basic'); 
-  customWidth= input<string>('80%');
+  size = input<'basic' | 'medium' | 'big' | 'custom'>('basic');
+  customWidth = input<string>('80%');
 
   onClose() {
     this.close.emit();

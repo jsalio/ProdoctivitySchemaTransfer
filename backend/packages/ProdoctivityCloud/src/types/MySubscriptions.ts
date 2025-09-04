@@ -1,5 +1,5 @@
-import { Generation } from "./Generation";
-import { Update } from "./Update";
+import { Generation } from './Generation';
+import { Update } from './Update';
 
 /**
  * Represents a user's subscription settings for document generation and updates.
@@ -8,7 +8,7 @@ import { Update } from "./Update";
 export interface MySubscriptions {
   /** Subscription settings related to document generation events */
   generation: Generation;
-  
+
   /** Subscription settings related to document update events */
   update: Update;
 }
