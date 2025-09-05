@@ -6,16 +6,28 @@ import { LocalDataService } from '../../services/ui/local-data.service';
 import { CredentialsComponent } from '../credentials/credentials.component';
 import { ModalComponent } from '../modal/modal.component';
 import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
+import { ToatsComponent } from '../toats/toats.component';
+import { CommonModule } from '@angular/common';
+import { ToastService } from '../../services/ui/toast.service';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterOutlet, ModalComponent, CredentialsComponent, RouterLink],
+  imports: [
+    RouterOutlet,
+    ModalComponent,
+    CredentialsComponent,
+    RouterLink,
+    ToatsComponent,
+    CommonModule,
+  ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
 })
 export class LayoutComponent implements OnInit {
   isCredentialOpen: boolean = false;
+  showToastFlag = signal<boolean>(false);
+  toastmessage = signal<string>(''); //('¡Esto es un mensaje de prueba!');
   connectionStatus = computed(() => {
     if (!this.connectionStatusService.connectedToCloud()) {
       console.log('Navegando');
@@ -31,13 +43,23 @@ export class LayoutComponent implements OnInit {
     private readonly connectionStatusService: CredetialConnectionService,
     private readonly layoutService: LayoutService,
     private readonly router: Router,
+    private readonly toastService: ToastService,
   ) {}
 
   ngOnInit(): void {
     this.layoutService.onLayoutEmit().subscribe(() => {
       this.isCredentialOpen = true;
     });
-    console.log('Conectado is ready:', this.connectionStatusService.connectedToCloud());
+    this.toastService.onNotify().subscribe((data) => {
+      this.toastmessage.set(data.message);
+      this.showToastFlag.set(true);
+
+      setTimeout(() => {
+        this.showToastFlag.set(false);
+        this.toastmessage.set('');
+      }, 3300);
+    });
+    // console.log('Conectado is ready:', this.connectionStatusService.connectedToCloud());
   }
 
   openCredentialsModal = () => {
@@ -67,5 +89,12 @@ export class LayoutComponent implements OnInit {
     // }
 
     // return 'Desconectado'
+  };
+
+  showToast = () => {
+    this.showToastFlag.set(true);
+    setTimeout(() => {
+      this.showToastFlag.set(false);
+    }, 3300);
   };
 }

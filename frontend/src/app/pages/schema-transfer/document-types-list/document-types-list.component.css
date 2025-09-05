@@ -1,0 +1,11 @@
+/* Para Chrome/Edge */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 9999px;
+}
+.scrollbar-thin:hover::-webkit-scrollbar-thumb {
+  background-color: #9ca3af; /* gris sutil al hover */
+}

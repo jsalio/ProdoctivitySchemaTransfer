@@ -1,0 +1,12 @@
+<div
+  *ngIf="isVisible()"
+  class="fixed bottom-4 right-4 max-w-xs w-full bg-yellow-200 text-black p-4 rounded-lg shadow-lg flex items-center justify-between transition-all duration-300 ease-in-out"
+  [ngClass]="{
+    'opacity-100 translate-y-0': isVisible(),
+    'opacity-0 translate-y-4': !isVisible(),
+  }"
+  role="alert"
+>
+  <span>{{ message() }}</span>
+  <button (click)="close()" class="ml-4 text-gray-400 hover:text-white text-xl">&times;</button>
+</div>
