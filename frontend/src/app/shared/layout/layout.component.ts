@@ -1,10 +1,11 @@
-import { Component, effect, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, OnInit, signal } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { ConnectionStatusService } from '../../services/ui/connection-status.service';
+// import { ConnectionStatusService } from '../../services/ui/connection-status.service';
 import { LayoutService } from '../../services/ui/layout.service';
 import { LocalDataService } from '../../services/ui/local-data.service';
 import { CredentialsComponent } from '../credentials/credentials.component';
 import { ModalComponent } from '../modal/modal.component';
+import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 
 @Component({
   selector: 'app-layout',
@@ -15,37 +16,28 @@ import { ModalComponent } from '../modal/modal.component';
 })
 export class LayoutComponent implements OnInit {
   isCredentialOpen: boolean = false;
-  connectionStatus = signal<'Conectado' | 'Desconectado'>('Desconectado');
+  connectionStatus = computed(() => {
+    if (!this.connectionStatusService.connectedToCloud()) {
+      console.log('Navegando');
+      this.router.navigate(['connection-fail']);
+    }
+    return this.connectionStatusService.connectedToCloud() ? 'Conectado' : 'Desconectado';
+  });
 
   /**
    *
    */
   constructor(
-    private readonly storage: LocalDataService,
-    private readonly connectionStatusService: ConnectionStatusService,
+    private readonly connectionStatusService: CredetialConnectionService,
     private readonly layoutService: LayoutService,
     private readonly router: Router,
-  ) {
-    // super();
-    effect(
-      () => {
-        this.connectionStatusService.getStatus$().subscribe((status) => {
-          if (status === 'Desconectado') {
-            this.router.navigate(['connection-fail']);
-          } else {
-            this.router.navigate(['schema-transfer']);
-          }
-          this.connectionStatus.set(status);
-        });
-      },
-      { allowSignalWrites: true },
-    );
-  }
+  ) {}
 
   ngOnInit(): void {
     this.layoutService.onLayoutEmit().subscribe(() => {
       this.isCredentialOpen = true;
     });
+    console.log('Conectado is ready:', this.connectionStatusService.connectedToCloud());
   }
 
   openCredentialsModal = () => {

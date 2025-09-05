@@ -26,19 +26,23 @@ function decodeJWT(token: string): any | null {
  */
 export function isTokenExpired(token: string): boolean | null {
   if (!token || typeof token !== 'string') {
-    return null; // Token inválido
+    return true; // Token inválido
+  }
+
+  if (token === '') {
+    return true;
   }
 
   const payload = decodeJWT(token);
 
   if (!payload) {
-    return null; // No se pudo decodificar el token
+    return true; // No se pudo decodificar el token
   }
 
   // Verificar si el token tiene el campo 'exp' (expiration time)
   if (!payload.exp) {
     console.warn('El token no contiene información de expiración');
-    return null;
+    return true;
   }
 
   // El 'exp' está en segundos, Date.now() está en milisegundos

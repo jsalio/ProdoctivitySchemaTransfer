@@ -17,6 +17,8 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { effect } from '@angular/core';
 import { finalize } from 'rxjs';
 import { isTokenExpired } from '../utils/token-decoder';
+// import { ConnectionStatusService } from '../../services/ui/connection-status.service';
+import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 
 export type Credentials = {
   username: string;
@@ -66,6 +68,7 @@ export class CredentialsComponent {
     private readonly fb: NonNullableFormBuilder,
     private readonly storage: LocalDataService,
     private readonly authService: AuthService,
+    private readonly connectionStatus: CredetialConnectionService,
   ) {
     this.loginForm = this.fb.group({
       username: this.fb.control('', {
@@ -102,6 +105,7 @@ export class CredentialsComponent {
         let storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
         let key = `Credentials_${storeVersion}_${this.store()}`;
         const myLocalCredential = this.storage.getValue<Credentials>(key);
+
         if (myLocalCredential) {
           const form = {
             username: myLocalCredential.username,
@@ -199,7 +203,12 @@ export class CredentialsComponent {
         } else {
           credentials.token = 'Norequired';
         }
-        this.storage.storeValue(key, credentials);
+
+        if (key === 'Credentials_V6_Cloud') {
+          this.connectionStatus.updateCredentials(credentials);
+        } else {
+          this.storage.storeValue(key, credentials);
+        }
       })
       .onError((err) => {
         //console.log(err)

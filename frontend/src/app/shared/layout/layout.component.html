@@ -14,7 +14,7 @@
         <div class="flex items-center space-x-2 cursor-pointer">
           <div class="w-2 h-2 bg-green-500 rounded-full"></div>
           <span (click)="openCredentialsModal()" class="text-gray-600 hidden sm:inline"
-            >Status: {{ getConnectionStatus() }}</span
+            >Status: {{ connectionStatus() }}</span
           >
           <span (click)="openCredentialsModal()" class="text-gray-600 sm:hidden">Conectado</span>
         </div>

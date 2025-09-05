@@ -18,6 +18,6 @@ export const routes: Routes = [
         (c) => c.SchemaTransferComponent,
       ),
   },
-  { path: '', pathMatch: 'full', redirectTo: 'schema-transfe' },
+  { path: '', pathMatch: 'full', redirectTo: 'schema-transfer' },
   { path: '**', redirectTo: 'schema-transfe' },
 ];

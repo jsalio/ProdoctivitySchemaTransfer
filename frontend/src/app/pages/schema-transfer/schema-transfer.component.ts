@@ -26,7 +26,8 @@ import { ProcessingIndicatorComponent } from '../../shared/processing-indicator/
 import { CompleteIndicatorComponent } from '../../shared/complete-indicator/complete-indicator.component';
 import { ErrorIndicatorComponent } from '../../shared/error-indicator/error-indicator.component';
 import { IndicatorComponent } from '../../shared/indicator/indicator.component';
-import { ConnectionStatusService } from '../../services/ui/connection-status.service';
+import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
+// import { ConnectionStatusService } from '../../services/ui/connection-status.service';
 
 export type stepIndicator = 'processing' | 'completed' | 'error';
 
@@ -135,7 +136,7 @@ export class SchemaTransferComponent implements OnInit {
     private readonly localData: LocalDataService,
     private readonly tranferResumeService: TranferResumeService,
     private readonly progressService: ActionProgressService,
-    private readonly connectionStatusService: ConnectionStatusService,
+    private readonly connectionStatusService: CredetialConnectionService,
   ) {
     // super();
     this.actionOrchestrator = new ActionOrchestrator(
@@ -147,9 +148,9 @@ export class SchemaTransferComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.connectionStatusService.getStatus$().subscribe((status) => {
-      console.log(status);
-    });
+    // this.connectionStatusService.getStatus$().subscribe((status) => {
+    //   console.log(status);
+    // });
     const credentialsOfFluency = this.localData.getValue<Credentials>('Credentials_V5_V5');
     if (credentialsOfFluency) {
       this.executeCall(credentialsOfFluency, (response) => {
