@@ -4,30 +4,23 @@ import {
   SchemaDocumentType,
 } from './document-types-list/document-types-list.component';
 import { GroupListComponent, SchemaDocumentGroup } from './group-list/group-list.component';
-
 import { CommonModule } from '@angular/common';
-import { Credentials } from '../../types/models/Credentials';
-import { DataElement } from '../../types/contracts/ISchema';
-import { DocumentTypeSchemaComponent } from './document-type-schema/document-type-schema.component';
-import { LocalDataService } from '../../services/ui/local-data.service';
-import { ObservableHandler } from '../../shared/utils/Obserbable-handler';
-import { SchemaService } from '../../services/backend/schema.service';
-import { DocumetTypeKeyword } from '../../types/models/DocumentTypeKeywordSchema';
-import { ActionOrchestrator } from './utils/ActionBuilder';
-import { ActionProgress } from './utils/ActionProgress';
-import { ActionData } from './utils/ActionData';
-import { ActionContext } from './utils/ActionContext';
-import { ConditionalActionBuilder } from './utils/ConditionalActionBuilder';
-import { TranferResumeService } from '../../services/ui/tranfer-resume.service';
 import { Subscription } from 'rxjs';
-import { ModalComponent } from '../../shared/modal/modal.component';
-import { ActionProgressService } from './utils/ActionProgress.service';
-import { ProcessingIndicatorComponent } from '../../shared/processing-indicator/processing-indicator.component';
-import { CompleteIndicatorComponent } from '../../shared/complete-indicator/complete-indicator.component';
-import { ErrorIndicatorComponent } from '../../shared/error-indicator/error-indicator.component';
+import { SchemaService } from '../../services/backend/schema.service';
+import { LocalDataService } from '../../services/ui/local-data.service';
+import { TranferResumeService } from '../../services/ui/tranfer-resume.service';
 import { IndicatorComponent } from '../../shared/indicator/indicator.component';
-import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
-// import { ConnectionStatusService } from '../../services/ui/connection-status.service';
+import { ModalComponent } from '../../shared/modal/modal.component';
+import { ObservableHandler } from '../../shared/utils/Obserbable-handler';
+import { DataElement } from '../../types/contracts/ISchema';
+import { Credentials } from '../../types/models/Credentials';
+import { DocumetTypeKeyword } from '../../types/models/DocumentTypeKeywordSchema';
+import { DocumentTypeSchemaComponent } from './document-type-schema/document-type-schema.component';
+import { ActionOrchestrator } from './utils/ActionBuilder';
+import { ActionContext } from './utils/ActionContext';
+import { ActionData } from './utils/ActionData';
+import { ActionProgress } from './utils/ActionProgress';
+import { ActionProgressService } from './utils/ActionProgress.service';
 
 export type stepIndicator = 'processing' | 'completed' | 'error';
 
@@ -53,6 +46,7 @@ export class SchemaTransferComponent implements OnInit {
   keywordsSelectedPerDocument = signal<DocumetTypeKeyword[]>([]);
   executingActions = signal<boolean>(false);
   resume = signal<ActionData | null>(null);
+  modalViewMode = signal<'Execute' | 'Preview'>('Execute');
 
   modalProcessOpen = signal<boolean>(false);
 
@@ -136,7 +130,6 @@ export class SchemaTransferComponent implements OnInit {
     private readonly localData: LocalDataService,
     private readonly tranferResumeService: TranferResumeService,
     private readonly progressService: ActionProgressService,
-    private readonly connectionStatusService: CredetialConnectionService,
   ) {
     // super();
     this.actionOrchestrator = new ActionOrchestrator(
@@ -148,28 +141,13 @@ export class SchemaTransferComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // this.connectionStatusService.getStatus$().subscribe((status) => {
-    //   console.log(status);
-    // });
     const credentialsOfFluency = this.localData.getValue<Credentials>('Credentials_V5_V5');
     if (credentialsOfFluency) {
       this.executeCall(credentialsOfFluency, (response) => {
         this.systemTargetDataElements.set(response.data);
       });
       this.progressService.progress$.subscribe((progress) => {
-        // console.log("Report of progress", progress)
-        // if (progress === null) return;
-        // debugger
         this.actionProgress.set(progress);
-        // const status = progress?.steps.find(x => x.stepName == "Create Document Group")?.status
-        // if (status == "completed") {
-        //   this.groupStepIndicator.set("completed")
-        // } else if (status == "error") {
-        //   this.groupStepIndicator.set("error")
-        // } else {
-        //   this.groupStepIndicator.set("processing")
-        // }
-        // this.documentGroupIndicator()
       });
     }
 
@@ -294,6 +272,7 @@ export class SchemaTransferComponent implements OnInit {
   }
 
   applyChanges = async () => {
+    this.modalViewMode.set('Execute');
     this.modalProcessOpen.set(true);
     this.executingActions.set(true);
 
@@ -357,5 +336,15 @@ export class SchemaTransferComponent implements OnInit {
       targetCredentials.serverInformation.server +
         `/Site/ProDoctivity.aspx#/form-designer/${this.selectedDocumentType()?.targetDocumentType}`,
     );
+  };
+
+  openPreviewChanges = () => {
+    this.modalViewMode.set('Preview');
+    this.modalProcessOpen.set(true);
+  };
+
+  closePreviewHandle = () => {
+    this.modalViewMode.set('Execute');
+    this.modalProcessOpen.set(false);
   };
 }
