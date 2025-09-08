@@ -7,11 +7,13 @@ import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
 import { SchemaDocumentGroup } from '../../../types/models/SchemaDocumentGroup';
+import { Filter } from '../utils/FilterDatalist';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-group-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './group-list.component.html',
   styleUrl: './group-list.component.css',
 })
@@ -21,6 +23,7 @@ export class GroupListComponent implements OnInit {
 
   sourceDocumentGroups = signal<DocumentGroup[]>([]);
   targetDocumentGroups = signal<DocumentGroup[]>([]);
+
   SchemaDocumentGroups = computed(() => {
     const findInTarget = (name: string): string | null => {
       const item = this.targetDocumentGroups().find((x) => x.groupName === name);
@@ -30,7 +33,7 @@ export class GroupListComponent implements OnInit {
       return item.groupId;
     };
 
-    return this.sourceDocumentGroups().map(
+    const dataSet = this.sourceDocumentGroups().map(
       (x) =>
         ({
           documentTypesCounter: x.documentTypesCounter,
@@ -39,10 +42,17 @@ export class GroupListComponent implements OnInit {
           targetId: findInTarget(x.groupName),
         }) as SchemaDocumentGroup,
     );
+
+    if (this.filter() !== '') {
+      return Filter(this.filter(), 'groupName', dataSet);
+    }
+
+    return dataSet;
   });
 
   loading = signal<boolean>(true);
   selectedItem = signal<SchemaDocumentGroup | null>(null);
+  filter = signal<string>('');
   selectedDocumetGroup = output<SchemaDocumentGroup | null>();
 
   ngOnInit(): void {

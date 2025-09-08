@@ -16,11 +16,14 @@ import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
 import { DocumentType, SchemaDocumentType } from '../../../types/DocumentType';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Filter } from '../utils/FilterDatalist';
 
 @Component({
   selector: 'app-document-types-list',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './document-types-list.component.html',
   styleUrl: './document-types-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -31,6 +34,7 @@ export class DocumentTypesListComponent implements OnChanges {
 
   parentGroup = input<string>('');
   parentTargetGroup = input<string>('');
+  filter = signal<string>('');
 
   documentTypes = signal<DocumentType[]>([]);
   targetDocumentTypes = signal<DocumentType[]>([]);
@@ -53,7 +57,7 @@ export class DocumentTypesListComponent implements OnChanges {
   documentTypesSchemas = computed(() => {
     const targetMap = this.targetDocumentTypesMap();
 
-    return this.documentTypes().map(
+    const dataSet = this.documentTypes().map(
       (x) =>
         ({
           documentTypeId: x.documentTypeId,
@@ -61,6 +65,12 @@ export class DocumentTypesListComponent implements OnChanges {
           targetDocumentType: targetMap.get(x.documentTypeName) || '',
         }) as SchemaDocumentType,
     );
+
+    if (this.filter() !== '') {
+      return Filter(this.filter(), 'documentTypeName', dataSet);
+    }
+
+    return dataSet;
   });
 
   documentypeSeleted = output<SchemaDocumentType>();

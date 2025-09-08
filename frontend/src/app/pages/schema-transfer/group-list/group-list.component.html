@@ -3,8 +3,10 @@
   <div class="flex items-center space-x-2 mb-4">
     <label for="nombre" class="w-24 text-gray-700 text-right">Grupos</label>
     <input
+      [(ngModel)]="filter"
       id="nombre"
       type="text"
+      placeholder="Buscar grupo"
       class="flex-1 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
     />
   </div>
@@ -34,8 +36,11 @@
           }
         </div>
       }
-      @if (SchemaDocumentGroups().length === 0) {
+      @if (SchemaDocumentGroups().length === 0 && filter() === '') {
         esperando...
+      }
+      @if (SchemaDocumentGroups().length === 0 && filter() !== '') {
+        Sin resultado
       }
     </div>
   </div>

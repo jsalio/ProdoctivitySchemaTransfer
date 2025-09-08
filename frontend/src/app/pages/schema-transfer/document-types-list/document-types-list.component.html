@@ -1,34 +1,42 @@
 <div class="p-4 lg:p-6 flex flex-col h-[calc(100vh-73px)]">
+  <div class="flex items-center mb-4 lg:mb-6 space-x-4">
+    <!-- Título -->
+    <h2 class="text-lg font-medium text-gray-900 flex-1">Documentos</h2>
+
+    <!-- Input de búsqueda -->
+    <input
+      id="searchDoc"
+      type="text"
+      [disabled]="parentGroup() === '' || parentGroup() === null"
+      [(ngModel)]="filter"
+      placeholder="Buscar documento..."
+      class="flex-1 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+
+    <!-- Contador de documentos -->
+    <div class="text-sm text-gray-500 flex-1 text-right">
+      {{ documentTypesSchemas().length }} documentos
+    </div>
+  </div>
   <!-- Mensaje cuando no hay grupo seleccionado -->
   @if (parentGroup() === '' || parentGroup() === null) {
     <div class="flex-1 flex items-center justify-center">
       <span class="text-gray-500 text-lg">Seleccione un grupo primero</span>
     </div>
-  } @else if (documentTypesSchemas().length === 0 && !loadingSource() && !loadingTarget()) {
+  } @else if (
+    documentTypesSchemas().length === 0 && !loadingSource() && !loadingTarget() && filter() === ''
+  ) {
     <!-- Mensaje cuando no hay documentos -->
     <div class="flex-1 flex items-center justify-center">
       <span class="text-gray-500 text-lg">Grupo sin documentos</span>
     </div>
-  } @else {
-    <!-- Header con título, search y contador distribuidos -->
-    <div class="flex items-center mb-4 lg:mb-6 space-x-4">
-      <!-- Título -->
-      <h2 class="text-lg font-medium text-gray-900 flex-1">Documentos</h2>
-
-      <!-- Input de búsqueda -->
-      <input
-        id="searchDoc"
-        type="text"
-        placeholder="Buscar documento..."
-        class="flex-1 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      />
-
-      <!-- Contador de documentos -->
-      <div class="text-sm text-gray-500 flex-1 text-right">
-        {{ documentTypesSchemas().length }} documentos
-      </div>
+  } @else if (
+    documentTypesSchemas().length === 0 && !loadingSource() && !loadingTarget() && filter() !== ''
+  ) {
+    <div class="flex-1 flex items-center justify-center">
+      <span class="text-gray-500 text-lg">Sin resultados</span>
     </div>
-
+  } @else {
     <!-- Lista con scroll sutil -->
     <div
       class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400"
