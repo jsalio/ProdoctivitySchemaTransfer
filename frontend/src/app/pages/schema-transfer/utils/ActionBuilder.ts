@@ -3,7 +3,7 @@ import { WritableSignal } from '@angular/core';
 import { Credentials } from '../../../types/models/Credentials';
 import { DocumetTypeKeyword } from '../../../types/models/DocumentTypeKeywordSchema';
 import { SchemaDocumentGroup } from '../../../types/models/SchemaDocumentGroup';
-import { SchemaDocumentType } from '../../../types/DocumentType';
+import { SchemaDocumentType } from '../../../types/models/DocumentType';
 import { SchemaService } from '../../../services/backend/schema.service';
 import { TranferResumeService } from '../../../services/ui/tranfer-resume.service';
 import { ConditionalActionBuilder } from './ConditionalActionBuilder';

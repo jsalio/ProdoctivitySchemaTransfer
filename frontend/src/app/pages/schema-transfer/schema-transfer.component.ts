@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DocumentTypesListComponent } from './document-types-list/document-types-list.component';
-import { SchemaDocumentType } from '../../types/DocumentType';
+import { SchemaDocumentType } from '../../types/models/DocumentType';
 import { GroupListComponent } from './group-list/group-list.component';
 import { SchemaDocumentGroup } from '../../types/models/SchemaDocumentGroup';
 import { CommonModule } from '@angular/common';
@@ -159,6 +159,7 @@ export class SchemaTransferComponent implements OnInit {
   onSelectDocumentGroup = (group: SchemaDocumentGroup) => {
     this.selectedGroup.set(group);
     this.keywordsSelectedPerDocument.set([]);
+    this.selectedDocumentType.set(null);
     this.resume.set(null);
   };
 

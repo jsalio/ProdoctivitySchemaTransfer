@@ -119,14 +119,12 @@ export class DocumentTypeSchemaComponent implements OnChanges {
         targetKeywordId: getTargetKeywordId(k.name),
       })),
     };
-    // currentSchema.keywords.filter(k => k.isSync).forEach(k => {
-    //   this.order.set(this.order() + 1)
-    // })
 
     return currentSchema;
   });
 
   ngOnChanges(): void {
+    console.log(this.documentTypeID());
     const currentSourceId = this.documentTypeID();
     const currentTargetId = this.targetDocumentTypeId();
 

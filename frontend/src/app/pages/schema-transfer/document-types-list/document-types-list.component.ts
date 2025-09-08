@@ -15,7 +15,7 @@ import { Credentials } from '../../../types/models/Credentials';
 import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
-import { DocumentType, SchemaDocumentType } from '../../../types/DocumentType';
+import { DocumentType, SchemaDocumentType } from '../../../types/models/DocumentType';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Filter } from '../utils/FilterDatalist';
