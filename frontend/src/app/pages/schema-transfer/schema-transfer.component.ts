@@ -152,7 +152,6 @@ export class SchemaTransferComponent implements OnInit {
 
     this.resumeSubscription = this.tranferResumeService.resumeData().subscribe((resume) => {
       this.resume.set(resume);
-      console.log(resume);
     });
   }
 
@@ -166,7 +165,6 @@ export class SchemaTransferComponent implements OnInit {
   onDocumentTypeSelected = (documentType: SchemaDocumentType) => {
     this.selectedDocumentType.set(documentType);
     this.keywordsSelectedPerDocument.set([]);
-    console.log(this.selectedDocumentType());
     this.resume.set(null);
   };
 
