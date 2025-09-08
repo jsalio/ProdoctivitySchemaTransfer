@@ -5,14 +5,14 @@ import { Observable } from 'rxjs';
 import { DocumentType } from '../models/SchemaDocumentType';
 
 // Defines the structure of a DocumentGroup object, representing a group of documents.
-export type DocumentGroup = {
+export interface DocumentGroup {
   /** Unique identifier for the document group. */
   groupId: string;
   /** Name of the document group. */
   groupName: string;
   /** Number of document types within the group. */
   documentTypesCounter: number;
-};
+}
 
 export interface DataElement {
   id: string;
@@ -21,10 +21,10 @@ export interface DataElement {
   required: string;
 }
 
-export type Response<T> = {
+export interface Response<T> {
   success: boolean;
   data: T;
-};
+}
 
 // Interface defining methods for interacting with document-related data via asynchronous operations.
 export interface ISchema {
@@ -35,7 +35,7 @@ export interface ISchema {
    */
   getDocumentGruops: (credetials: Credentials) => Observable<{
     /** Array of document groups. */
-    data: Array<DocumentGroup>;
+    data: DocumentGroup[];
     /** Indicates whether the request was successful. */
     success: boolean;
   }>;
@@ -51,7 +51,7 @@ export interface ISchema {
     groupId: string,
   ) => Observable<{
     /** Array of document types within the specified group. */
-    data: Array<any>;
+    data: DocumentType[];
     /** Indicates whether the request was successful. */
     success: boolean;
   }>;
@@ -67,7 +67,7 @@ export interface ISchema {
     documentTypeId: string,
   ) => Observable<{
     /** Array of schema data for the specified document type. */
-    data: Array<any>;
+    data: unknown;
     /** Indicates whether the request was successful. */
     success: boolean;
   }>;
@@ -79,7 +79,7 @@ export interface ISchema {
    */
   getAllDataElements: (credetials: Credentials) => Observable<{
     /** Array of all data elements. */
-    data: Array<DataElement>;
+    data: DataElement[];
     /** Indicates whether the request was successful. */
     success: boolean;
   }>;
@@ -102,7 +102,7 @@ export interface ISchema {
   saveNewKeyword: (
     credentials: Credentials,
     keywordStruct: { name: string; dataType: string; require: string; label: string },
-  ) => Observable<any>;
+  ) => Observable<Response<DataElement>>;
   saveNewDocumentSchema: (
     credentials: Credentials,
     documentSchemaStruct: {
@@ -110,5 +110,5 @@ export interface ISchema {
       documentTypeId: string;
       keywordId: string;
     },
-  ) => Observable<any>;
+  ) => Observable<Response<unknown>>;
 }

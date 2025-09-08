@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { LayoutService } from '../../services/ui/layout.service';
 import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
@@ -10,14 +10,12 @@ import { CredetialConnectionService } from '../../services/ui/credetial-connecti
   templateUrl: './disconnected.component.html',
   styleUrl: './disconnected.component.css',
 })
-export class DisconnectedComponent implements OnInit {
-  // private conectionStatus = inject(CredetialConnectionService);
+export class DisconnectedComponent {
+  private router = inject(Router);
+  private readonly layoutService = inject(LayoutService);
+  private readonly conectionStatus = inject(CredetialConnectionService);
 
-  constructor(
-    private router: Router,
-    private readonly layoutService: LayoutService,
-    private readonly conectionStatus: CredetialConnectionService,
-  ) {
+  constructor() {
     effect(() => {
       if (this.conectionStatus.connectedToCloud()) {
         console.log('Redirec to normal path');
@@ -29,8 +27,6 @@ export class DisconnectedComponent implements OnInit {
   isConnected = computed(() => {
     return this.conectionStatus.connectedToCloud();
   });
-
-  ngOnInit(): void {}
 
   navigateToLogin() {
     // this.router.navigate(['/login']);

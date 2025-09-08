@@ -9,7 +9,7 @@
     <app-document-types-list
       [parentGroup]="selectedGroup()?.groupId"
       [parentTargetGroup]="selectedGroup()?.targetId"
-      (onDocumentypeSeleted)="onDocumentTypeSelected($event)"
+      (documentypeSeleted)="onDocumentTypeSelected($event)"
     />
   </div>
 
@@ -22,7 +22,7 @@
         [documentTypeID]="selectedDocumentType()?.documentTypeId"
         [targetDocumentTypeId]="selectedDocumentType()?.targetDocumentType"
         [targetSystemDataElements]="systemTargetDataElements()"
-        (onKeySelected)="addKeyToActions($event)"
+        (keySelected)="addKeyToActions($event)"
       />
     </div>
 
@@ -189,13 +189,13 @@
     <h2 class="text-xl font-bold mb-4">Sincronizando...</h2>
     <div class="flex flex-col gap-4">
       <!-- indicador de grupo -->
-      @if (selectedGroup()?.targetId == '' || selectedGroup()?.targetId == null) {
+      @if (selectedGroup()?.targetId === '' || selectedGroup()?.targetId === null) {
         <app-indicator labelText="Grupo" [stepIndicator]="groupStepIndicator()" />
       }
       <!-- indicador de documento -->
       @if (
-        selectedDocumentType()?.targetDocumentType == '' ||
-        selectedDocumentType()?.targetDocumentType == null
+        selectedDocumentType()?.targetDocumentType === '' ||
+        selectedDocumentType()?.targetDocumentType === null
       ) {
         <app-indicator labelText="Documento" [stepIndicator]="documentStepIndicator()" />
       }

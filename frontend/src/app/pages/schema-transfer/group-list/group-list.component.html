@@ -16,6 +16,8 @@
     <div class="p-2 space-y-1">
       @for (item of SchemaDocumentGroups(); track $index) {
         <div
+          tabindex="0"
+          (keydown)="markItemAsSelected(item.groupId)"
           [ngClass]="getItemClass(item.groupName)"
           (click)="markItemAsSelected(item.groupId)"
           class="cursor-pointer flex items-center"

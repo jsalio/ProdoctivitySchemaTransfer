@@ -1,4 +1,4 @@
-.PHONY: backend frontend install all build_backend build_frontend build_all package
+.PHONY: backend frontend install all build_backend build_frontend build_all package test_backend test_frontend test_all test_headless
 
 # ==============================================================================
 # Development Commands
@@ -51,6 +51,33 @@ build_frontend:
 build_all:
 	tmux new-session -d 'make build_backend' \; \
 	split-window -h 'make build_frontend' \; \
+	attach-session
+
+# ==============================================================================
+# Testing Commands
+# ==============================================================================
+
+# test_backend: Runs backend tests
+#   - Executes all backend tests using Bun test runner
+test_backend:
+	cd backend && bun test
+
+# test_frontend: Runs frontend tests
+#   - Executes all frontend tests using npm test (Karma/Jasmine)
+test_frontend:
+	cd frontend && npm test
+
+# test_headless: Runs frontend tests in headless mode
+#   - Executes frontend tests without UI for CI/automated testing
+test_headless:
+	cd frontend && npm run test:headless
+
+# test_all: Runs both backend and frontend tests in parallel using tmux
+#   - Left pane runs backend tests
+#   - Right pane runs frontend tests
+test_all:
+	tmux new-session -d 'make test_backend' \; \
+	split-window -h 'make test_frontend' \; \
 	attach-session
 
 # ==============================================================================

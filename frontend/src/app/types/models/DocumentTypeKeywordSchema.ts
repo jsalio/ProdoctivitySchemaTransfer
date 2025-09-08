@@ -1,7 +1,7 @@
 export interface DocumentTypeKeywordSchema {
   name: string;
   documentTypeId: string;
-  keywords: Array<DocumetTypeKeyword>;
+  keywords: DocumetTypeKeyword[];
 }
 
 export interface DocumetTypeKeyword {

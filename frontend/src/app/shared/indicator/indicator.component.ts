@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { stepIndicator } from '../../pages/schema-transfer/schema-transfer.component';
 import { ProcessingIndicatorComponent } from '../processing-indicator/processing-indicator.component';
 import { ErrorIndicatorComponent } from '../error-indicator/error-indicator.component';

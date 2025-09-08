@@ -1,28 +1,34 @@
+//eslint-disable
 import { DocumentGroup, ISchema, Response } from '../../types/contracts/ISchema';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { SCHEMA_REPOSITORY } from '../../providers';
+import { SCHEMA_REPOSITORY } from '../../types/tokens/SCHEMA_REPOSITORY';
 import { Repository } from '../../types/contracts/repository.interface';
 import { Credentials } from '../../types/models/Credentials';
 import { DataElement, DocumentType } from '../../types/models/SchemaDocumentType';
 
+/**
+ * implemets contracts for  schema api
+ * @implements ISchema
+ * @returns ISchema implementation
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class SchemaService implements ISchema {
-  constructor(@Inject(SCHEMA_REPOSITORY) private repository: Repository<any>) {}
+  private repository = inject<Repository<object>>(SCHEMA_REPOSITORY);
 
   getDocumentGruops(
     credentials: Credentials,
-  ): Observable<{ data: Array<DocumentGroup>; success: boolean }> {
-    return this.repository.post<{ data: Array<DocumentGroup>; success: boolean }>('', credentials);
+  ): Observable<{ data: DocumentGroup[]; success: boolean }> {
+    return this.repository.post<{ data: DocumentGroup[]; success: boolean }>('', credentials);
   }
 
   getDocumentTypesInGroup(
     credentials: Credentials,
     groupId: string,
-  ): Observable<{ data: Array<DocumentType>; success: boolean }> {
-    return this.repository.post<{ data: Array<DocumentType>; success: boolean }>(
+  ): Observable<{ data: DocumentType[]; success: boolean }> {
+    return this.repository.post<{ data: DocumentType[]; success: boolean }>(
       `group/${groupId}`,
       credentials,
     );
@@ -31,8 +37,9 @@ export class SchemaService implements ISchema {
   getDocumentTypeSchema(
     credentials: Credentials,
     documentTypeId: string,
+    // eslint-disable-next-line
   ): Observable<{ data: any; success: boolean }> {
-    return this.repository.post<{ data: any; success: boolean }>(
+    return this.repository.post<{ data: unknown; success: boolean }>(
       `document-type/${documentTypeId}`,
       credentials,
     );
@@ -40,8 +47,8 @@ export class SchemaService implements ISchema {
 
   getAllDataElements(
     credentials: Credentials,
-  ): Observable<{ data: Array<DataElement>; success: boolean }> {
-    return this.repository.post<{ data: Array<DataElement>; success: boolean }>(
+  ): Observable<{ data: DataElement[]; success: boolean }> {
+    return this.repository.post<{ data: DataElement[]; success: boolean }>(
       'data-elements',
       credentials,
     );
@@ -91,7 +98,7 @@ export class SchemaService implements ISchema {
   saveNewDocumentSchema(
     credentials: Credentials,
     documentSchemaStruct: { name: string; documentTypeId: string; keywordId: string },
-  ): Observable<Response<any>> {
+  ): Observable<Response<unknown>> {
     const body = {
       credentials,
       assignDataElementToDocumentRequest: {
@@ -103,6 +110,6 @@ export class SchemaService implements ISchema {
         },
       },
     };
-    return this.repository.post<Response<any>>('assign-data-element', body);
+    return this.repository.post<Response<unknown>>('assign-data-element', body);
   }
 }

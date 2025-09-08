@@ -3,6 +3,7 @@
  * @param token - El JWT token como string
  * @returns El payload decodificado o null si el token es inválido
  */
+// eslint-disable-next-line
 function decodeJWT(token: string): any | null {
   try {
     const parts = token.split('.');
@@ -57,10 +58,12 @@ export function isTokenExpired(token: string): boolean | null {
  * @param token - El JWT token como string
  * @returns Objeto con información del token o null si es inválido
  */
+// eslint-disable-next-line
 export function getTokenInfo(token: string): {
   isExpired: boolean;
   expiresAt: Date;
   timeUntilExpiry: number; // en milisegundos
+  // eslint-disable-next-line
   payload: any;
 } | null {
   const payload = decodeJWT(token);
@@ -87,7 +90,7 @@ export function getTokenInfo(token: string): {
  * @param minutesThreshold - Minutos antes de la expiración para considerar "pronto a expirar"
  * @returns true si el token expirará pronto
  */
-export function isTokenExpiringSoon(token: string, minutesThreshold: number = 5): boolean | null {
+export function isTokenExpiringSoon(token: string, minutesThreshold = 5): boolean | null {
   const tokenInfo = getTokenInfo(token);
 
   if (!tokenInfo) {

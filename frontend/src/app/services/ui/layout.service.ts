@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -7,7 +7,6 @@ import { BehaviorSubject, Subject } from 'rxjs';
 export class LayoutService {
   private layoutModalInteractions = new Subject<void>();
 
-  constructor() {}
 
   openLayoutModal = () => {
     this.layoutModalInteractions.next();

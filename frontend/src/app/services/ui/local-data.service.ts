@@ -9,14 +9,14 @@ export class LocalDataService {
   }
 
   getValue<T>(key: string): T | null {
-    var local = localStorage.getItem(key);
+    const local = localStorage.getItem(key);
     if (!local) {
       return null;
     }
     try {
       const value: T = JSON.parse(local);
       return value;
-    } catch (err) {
+    } catch {
       return null;
     }
   }

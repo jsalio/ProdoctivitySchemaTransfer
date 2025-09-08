@@ -1,6 +1,6 @@
-// base.service.ts
+// eslint-disable
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable, Optional, InjectionToken } from '@angular/core';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 
 export const API_BASE_URL = new InjectionToken<string>('ApiBaseUrl', {
@@ -15,7 +15,9 @@ export abstract class BaseService {
   protected readonly baseUrl: string;
 
   constructor(
+    // eslint-disable-next-line
     protected http: HttpClient,
+    // eslint-disable-next-line
     @Optional() @Inject(API_BASE_URL) baseUrl: string = environment.backendApi,
   ) {
     this.baseUrl = this.normalizeUrl(baseUrl);
@@ -28,7 +30,7 @@ export abstract class BaseService {
   protected buildUrl(
     resource: string,
     subPath?: string,
-    queryParams?: Record<string, any>,
+    queryParams?: Record<string, string>,
   ): string {
     // Combinar el recurso base (por ejemplo, 'schema') con el subpath (por ejemplo, 'group/123')
     const cleanResource = resource.replace(/^\/+|\/+$/g, '');

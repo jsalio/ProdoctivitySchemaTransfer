@@ -3,38 +3,36 @@ import {
   FormGroup,
   FormsModule,
   NonNullableFormBuilder,
-  RequiredValidator,
   ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, input, signal, inject } from '@angular/core';
 
 import { AuthService } from '../../services/backend/auth.service';
 import { LocalDataService } from '../../services/ui/local-data.service';
 import { ObservableHandler } from '../utils/Obserbable-handler';
 import { ReactiveFormsModule } from '@angular/forms';
 import { effect } from '@angular/core';
-import { finalize } from 'rxjs';
 import { isTokenExpired } from '../utils/token-decoder';
 // import { ConnectionStatusService } from '../../services/ui/connection-status.service';
 import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 
-export type Credentials = {
+export interface Credentials {
   username: string;
   password: string;
   serverInformation: AdditionalInfo;
   store?: string;
   token?: string;
-};
+}
 
-export type AdditionalInfo = {
+export interface AdditionalInfo {
   server: string;
   apiKey: string;
   apiSecret: string;
   organization: string;
   dataBase: string;
-};
+}
 
 @Component({
   selector: 'app-credentials',
@@ -44,6 +42,11 @@ export type AdditionalInfo = {
   styleUrl: './credentials.component.css',
 })
 export class CredentialsComponent {
+  private readonly fb = inject(NonNullableFormBuilder);
+  private readonly storage = inject(LocalDataService);
+  private readonly authService = inject(AuthService);
+  private readonly connectionStatus = inject(CredetialConnectionService);
+
   origin = input<'Source' | 'Target'>();
   store = input<'V5' | 'Cloud'>();
   isLoading = signal<boolean>(false);
@@ -62,14 +65,9 @@ export class CredentialsComponent {
   /**
    *
    */
-  loginForm!: any | FormGroup;
+  loginForm!: FormGroup;
 
-  constructor(
-    private readonly fb: NonNullableFormBuilder,
-    private readonly storage: LocalDataService,
-    private readonly authService: AuthService,
-    private readonly connectionStatus: CredetialConnectionService,
-  ) {
+  constructor() {
     this.loginForm = this.fb.group({
       username: this.fb.control('', {
         validators: [Validators.required],
@@ -96,14 +94,14 @@ export class CredentialsComponent {
       ]),
     });
 
-    (this.loginForm as FormGroup).valueChanges.subscribe((changes) => {
+    (this.loginForm as FormGroup).valueChanges.subscribe(() => {
       this.tokenIsProvide.set(false);
     });
 
     effect(
       () => {
-        let storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
-        let key = `Credentials_${storeVersion}_${this.store()}`;
+        const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
+        const key = `Credentials_${storeVersion}_${this.store()}`;
         const myLocalCredential = this.storage.getValue<Credentials>(key);
 
         if (myLocalCredential) {
@@ -180,18 +178,18 @@ export class CredentialsComponent {
       return;
     }
 
-    let storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
-    let key = `Credentials_${storeVersion}_${this.store()}`;
+    const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
+    const key = `Credentials_${storeVersion}_${this.store()}`;
     const credentials: Credentials = {
-      username: this.loginForm.controls.username.value,
-      password: this.loginForm.controls.password.value,
+      username: this.loginForm.controls['username'].value,
+      password: this.loginForm.controls['password'].value,
       store: this.store(),
       serverInformation: {
-        apiKey: this.loginForm.controls.xapikey.value,
-        apiSecret: this.loginForm.controls.xapisecret.value,
-        organization: this.loginForm.controls.organization.value,
-        dataBase: this.loginForm.controls.database.value,
-        server: this.loginForm.controls.server.value,
+        apiKey: this.loginForm.controls['xapikey'].value,
+        apiSecret: this.loginForm.controls['xapisecret'].value,
+        organization: this.loginForm.controls['organization'].value,
+        dataBase: this.loginForm.controls['database'].value,
+        server: this.loginForm.controls['server'].value,
       },
     };
     ObservableHandler.handle(this.authService.login(credentials))
@@ -210,7 +208,7 @@ export class CredentialsComponent {
           this.storage.storeValue(key, credentials);
         }
       })
-      .onError((err) => {
+      .onError(() => {
         //console.log(err)
       })
       .execute();
@@ -227,5 +225,7 @@ export class CredentialsComponent {
     // });
   }
 
-  displayButtonLabelByState = () => {};
+  displayButtonLabelByState = () => {
+    // Implementation can be added here if needed
+  };
 }

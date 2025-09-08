@@ -41,6 +41,8 @@
         <div class="space-y-2 lg:space-y-3">
           @for (item of documentTypesSchemas(); track item.documentTypeId) {
             <div
+              tabindex="0"
+              (keydown)="checkItem($event, item.documentTypeId)"
               class="flex items-center p-3 lg:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
               (click)="checkItem($event, item.documentTypeId)"
             >

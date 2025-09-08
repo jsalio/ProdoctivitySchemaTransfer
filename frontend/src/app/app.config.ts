@@ -3,7 +3,7 @@ import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { HttpInterceptorFn, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { schemaRepositoryProvider } from './providers';
+import { authRepositoryProvider, schemaRepositoryProvider } from './providers';
 import { catchError, throwError } from 'rxjs';
 import { inject } from '@angular/core';
 import { ToastService } from './services/ui/toast.service';
@@ -25,5 +25,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([errorInterceptor])),
     schemaRepositoryProvider,
+    authRepositoryProvider,
   ],
 };

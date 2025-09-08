@@ -1,4 +1,5 @@
 {
-  "backend/**/*.{ts,js}": "prettier --write",
-  "frontend/src/**/*.{ts,html,scss,css}": "prettier --write"
+  "backend/**/*.{ts,js}": ["eslint --fix", "prettier --write"],
+  "frontend/src/**/*.{ts,html}": ["eslint --fix", "prettier --write"],
+  "frontend/src/**/*.{scss,css}": "prettier --write"
 }

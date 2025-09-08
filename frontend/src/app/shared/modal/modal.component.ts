@@ -10,13 +10,13 @@ import { CommonModule } from '@angular/common';
   styleUrl: './modal.component.css',
 })
 export class ModalComponent {
-  @Input() isOpen: boolean = false;
-  @Output() close = new EventEmitter<void>();
+  @Input() isOpen = false;
+  @Output() modalClose = new EventEmitter<void>();
   size = input<'basic' | 'medium' | 'big' | 'custom'>('basic');
   customWidth = input<string>('80%');
 
   onClose() {
-    this.close.emit();
+    this.modalClose.emit();
   }
 
   get modalWidthClasses(): string | string[] {

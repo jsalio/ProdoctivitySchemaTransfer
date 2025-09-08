@@ -5,6 +5,7 @@ import {
   SimpleChanges,
   WritableSignal,
   computed,
+  inject,
   input,
   output,
   signal,
@@ -14,17 +15,7 @@ import { Credentials } from '../../../types/models/Credentials';
 import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
-
-export interface DocumentType {
-  documentTypeId: string;
-  documentTypeName: string;
-}
-
-export type SchemaDocumentType = {
-  documentTypeId: string;
-  documentTypeName: string;
-  targetDocumentType: string; // ✅ Corregido el typo
-};
+import { DocumentType, SchemaDocumentType } from '../../../types/DocumentType';
 
 @Component({
   selector: 'app-document-types-list',
@@ -35,11 +26,19 @@ export type SchemaDocumentType = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocumentTypesListComponent implements OnChanges {
+  private readonly localData = inject(LocalDataService);
+  private readonly schemaService = inject(SchemaService);
+
   parentGroup = input<string>('');
   parentTargetGroup = input<string>('');
 
   documentTypes = signal<DocumentType[]>([]);
   targetDocumentTypes = signal<DocumentType[]>([]);
+  loadingSource = signal<boolean>(false);
+  loadingTarget = signal<boolean>(false);
+  selectedDocumentId = signal<string | null>(null); // ✅ Simplificado
+  errorModalOpen = signal<boolean>(false);
+  storeMessageFailured = signal<string>('');
 
   // ✅ Memoización para mejor performance
   private targetDocumentTypesMap = computed(() => {
@@ -64,18 +63,7 @@ export class DocumentTypesListComponent implements OnChanges {
     );
   });
 
-  loadingSource = signal<boolean>(false);
-  loadingTarget = signal<boolean>(false);
-  selectedDocumentId = signal<string | null>(null); // ✅ Simplificado
-
-  onDocumentypeSeleted = output<SchemaDocumentType>();
-  errorModalOpen = signal<boolean>(false);
-  storeMessageFailured = signal<string>('');
-
-  constructor(
-    private readonly localData: LocalDataService,
-    private readonly schemaService: SchemaService,
-  ) {}
+  documentypeSeleted = output<SchemaDocumentType>();
 
   ngOnChanges(changes: SimpleChanges): void {
     // ✅ Solo ejecutar si los inputs específicos cambiaron
@@ -137,7 +125,7 @@ export class DocumentTypesListComponent implements OnChanges {
     // ✅ Buscar una sola vez
     const documentType = this.documentTypesSchemas().find((x) => x.documentTypeId === docId);
     if (documentType) {
-      this.onDocumentypeSeleted.emit(documentType);
+      this.documentypeSeleted.emit(documentType);
     }
   };
 

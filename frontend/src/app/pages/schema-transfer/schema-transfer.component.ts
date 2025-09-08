@@ -1,9 +1,8 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
-import {
-  DocumentTypesListComponent,
-  SchemaDocumentType,
-} from './document-types-list/document-types-list.component';
-import { GroupListComponent, SchemaDocumentGroup } from './group-list/group-list.component';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { DocumentTypesListComponent } from './document-types-list/document-types-list.component';
+import { SchemaDocumentType } from '../../types/DocumentType';
+import { GroupListComponent } from './group-list/group-list.component';
+import { SchemaDocumentGroup } from '../../types/models/SchemaDocumentGroup';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { SchemaService } from '../../services/backend/schema.service';
@@ -39,6 +38,11 @@ export type stepIndicator = 'processing' | 'completed' | 'error';
   styleUrl: './schema-transfer.component.css',
 })
 export class SchemaTransferComponent implements OnInit {
+  private readonly schema = inject(SchemaService);
+  private readonly localData = inject(LocalDataService);
+  private readonly tranferResumeService = inject(TranferResumeService);
+  private readonly progressService = inject(ActionProgressService);
+
   selectedGroup = signal<SchemaDocumentGroup | null>(null);
   selectedDocumentType = signal<SchemaDocumentType | null>(null);
   loadingDataElements = signal<boolean>(false);
@@ -125,12 +129,7 @@ export class SchemaTransferComponent implements OnInit {
   /**
    *
    */
-  constructor(
-    private readonly schema: SchemaService,
-    private readonly localData: LocalDataService,
-    private readonly tranferResumeService: TranferResumeService,
-    private readonly progressService: ActionProgressService,
-  ) {
+  constructor() {
     // super();
     this.actionOrchestrator = new ActionOrchestrator(
       this.schema,
@@ -172,7 +171,7 @@ export class SchemaTransferComponent implements OnInit {
 
   executeCall = (
     credentials: Credentials,
-    callback: (response: { data: Array<DataElement>; success: boolean }) => void,
+    callback: (response: { data: DataElement[]; success: boolean }) => void,
   ) => {
     ObservableHandler.handle(this.schema.getAllDataElements(credentials))
       .onNext(callback)
@@ -261,7 +260,8 @@ export class SchemaTransferComponent implements OnInit {
   /**
    * Maneja errores en la ejecución de acciones
    */
-  private handleActionError(error: any) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private handleActionError(error: Error) {
     // Mostrar notificación de error, log, etc.
     //console.error('Action execution failed:', error);
   }
@@ -288,23 +288,6 @@ export class SchemaTransferComponent implements OnInit {
       this.selectedGroup()!,
       this.selectedDocumentType()!,
       false,
-      {
-        onStepStart: (step) => {
-          //console.log(`🔄 Starting: ${step.stepName}`);
-        },
-        onStepComplete: (step) => {
-          //console.log(`✅ Completed: ${step.stepName}`);
-        },
-        onStepError: (step) => {
-          //console.log(`❌ Error in: ${step.stepName}`, step.error);
-        },
-        onActionComplete: (progress) => {
-          //console.log(`🏆 All actions completed in ${this.calculateIntervalDiffInSeconds(progress.startTime, progress.endTime)}ms`);
-        },
-        onActionError: (progress) => {
-          //console.log(`💥 Action chain failed`);
-        },
-      },
     );
 
     this.handleActionResults(result);

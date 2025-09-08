@@ -1,8 +1,9 @@
-import { signal, WritableSignal } from '@angular/core';
+// eslint-disable
+import { WritableSignal } from '@angular/core';
 import { Credentials } from '../../../types/models/Credentials';
 import { DocumetTypeKeyword } from '../../../types/models/DocumentTypeKeywordSchema';
-import { SchemaDocumentGroup } from '../group-list/group-list.component';
-import { SchemaDocumentType } from '../document-types-list/document-types-list.component';
+import { SchemaDocumentGroup } from '../../../types/models/SchemaDocumentGroup';
+import { SchemaDocumentType } from '../../../types/DocumentType';
 import { SchemaService } from '../../../services/backend/schema.service';
 import { TranferResumeService } from '../../../services/ui/tranfer-resume.service';
 import { ConditionalActionBuilder } from './ConditionalActionBuilder';
@@ -44,7 +45,7 @@ export class ActionOrchestrator {
     selectedKeywords: DocumetTypeKeyword[],
     selectedGroup: SchemaDocumentGroup,
     selectedDocumentType: SchemaDocumentType,
-    DRY: boolean = false,
+    DRY = false,
     progressCallback?: ProgressCallback,
   ): Promise<ActionContext> {
     try {

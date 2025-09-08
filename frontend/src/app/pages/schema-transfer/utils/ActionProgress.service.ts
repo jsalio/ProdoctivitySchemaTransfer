@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { ActionProgress } from './ActionProgress';
 import { StepProgress } from './StepProgress';
 import { ProgressCallback } from './ProgressCallback';
 import { ActionStringBuilder } from './ActionStringBuilder';
+import { Value } from './ActionContext';
 
 @Injectable({
   providedIn: 'root',
@@ -48,8 +49,8 @@ export class ActionProgressService {
     stepIndex: number,
     status: StepProgress['status'],
     message: string,
-    data?: any,
-    error?: any,
+    data?: Value,
+    error?: Value,
     progressCallback?: ProgressCallback,
   ): void {
     if (!this.currentProgress) {
@@ -112,7 +113,7 @@ export class ActionProgressService {
   /**
    * Marca el progreso como fallido
    */
-  failProgress(error: any): void {
+  failProgress(error: Error): void {
     if (!this.currentProgress) return;
 
     this.currentProgress.status = 'error';

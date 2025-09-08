@@ -5,7 +5,7 @@ import { buildContainer } from './utils/injector';
 import { cors } from '@elysiajs/cors';
 import { swagger } from '@elysiajs/swagger';
 
-const startApp = async () => {
+const startApp = async (): Promise<void> => {
   const container = await buildContainer();
   const app = new Elysia()
     .use(
@@ -32,10 +32,12 @@ const startApp = async () => {
     .get('/', () => ' Welcome Schematransfer API');
 
   app.listen(3000, () => {
+    // eslint-disable-next-line no-console
     console.log('🦊 Elysia server running on http://localhost:3000');
   });
 };
 
 startApp().catch((error) => {
+  // eslint-disable-next-line no-console
   console.error('Error starting the application:', error);
 });

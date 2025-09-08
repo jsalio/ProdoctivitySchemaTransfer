@@ -1,8 +1,7 @@
-import { Component, computed, effect, OnInit, signal } from '@angular/core';
+import { Component, computed, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 // import { ConnectionStatusService } from '../../services/ui/connection-status.service';
 import { LayoutService } from '../../services/ui/layout.service';
-import { LocalDataService } from '../../services/ui/local-data.service';
 import { CredentialsComponent } from '../credentials/credentials.component';
 import { ModalComponent } from '../modal/modal.component';
 import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
@@ -25,7 +24,12 @@ import { ToastService } from '../../services/ui/toast.service';
   styleUrl: './layout.component.css',
 })
 export class LayoutComponent implements OnInit {
-  isCredentialOpen: boolean = false;
+  private readonly connectionStatusService = inject(CredetialConnectionService);
+  private readonly layoutService = inject(LayoutService);
+  private readonly router = inject(Router);
+  private readonly toastService = inject(ToastService);
+
+  isCredentialOpen = false;
   showToastFlag = signal<boolean>(false);
   toastmessage = signal<string>(''); //('¡Esto es un mensaje de prueba!');
   connectionStatus = computed(() => {
@@ -35,16 +39,6 @@ export class LayoutComponent implements OnInit {
     }
     return this.connectionStatusService.connectedToCloud() ? 'Conectado' : 'Desconectado';
   });
-
-  /**
-   *
-   */
-  constructor(
-    private readonly connectionStatusService: CredetialConnectionService,
-    private readonly layoutService: LayoutService,
-    private readonly router: Router,
-    private readonly toastService: ToastService,
-  ) {}
 
   ngOnInit(): void {
     this.layoutService.onLayoutEmit().subscribe(() => {

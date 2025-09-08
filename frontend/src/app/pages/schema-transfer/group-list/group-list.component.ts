@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, output, signal } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { Credentials } from '../../../types/models/Credentials';
@@ -6,13 +6,7 @@ import { DocumentGroup } from '../../../types/contracts/ISchema';
 import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
-
-export type SchemaDocumentGroup = {
-  groupId: string;
-  groupName: string;
-  documentTypesCounter: number;
-  targetId: string | null;
-};
+import { SchemaDocumentGroup } from '../../../types/models/SchemaDocumentGroup';
 
 @Component({
   selector: 'app-group-list',
@@ -22,7 +16,10 @@ export type SchemaDocumentGroup = {
   styleUrl: './group-list.component.css',
 })
 export class GroupListComponent implements OnInit {
-  sourceDocumentGroups = signal<Array<DocumentGroup>>([]);
+  private readonly localData = inject(LocalDataService);
+  private readonly schemaService = inject(SchemaService);
+
+  sourceDocumentGroups = signal<DocumentGroup[]>([]);
   targetDocumentGroups = signal<DocumentGroup[]>([]);
   SchemaDocumentGroups = computed(() => {
     const findInTarget = (name: string): string | null => {
@@ -48,11 +45,6 @@ export class GroupListComponent implements OnInit {
   selectedItem = signal<SchemaDocumentGroup | null>(null);
   selectedDocumetGroup = output<SchemaDocumentGroup | null>();
 
-  constructor(
-    private readonly localData: LocalDataService,
-    private readonly schemaService: SchemaService,
-  ) {}
-
   ngOnInit(): void {
     const credentialOfcloud = this.localData.getValue<Credentials>('Credentials_V6_Cloud');
     if (credentialOfcloud) {
@@ -70,7 +62,7 @@ export class GroupListComponent implements OnInit {
 
   executeCall = (
     credentials: Credentials,
-    callback: (response: { data: Array<DocumentGroup>; success: boolean }) => void,
+    callback: (response: { data: DocumentGroup[]; success: boolean }) => void,
   ) => {
     ObservableHandler.handle(this.schemaService.getDocumentGruops(credentials))
       .onNext(callback)
