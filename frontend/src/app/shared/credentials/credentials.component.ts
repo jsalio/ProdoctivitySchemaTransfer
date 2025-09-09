@@ -17,6 +17,7 @@ import { effect } from '@angular/core';
 import { isTokenExpired } from '../utils/token-decoder';
 // import { ConnectionStatusService } from '../../services/ui/connection-status.service';
 import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
+import { ButtonComponent } from '../button/button.component';
 
 export interface Credentials {
   username: string;
@@ -37,7 +38,7 @@ export interface AdditionalInfo {
 @Component({
   selector: 'app-credentials',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, ButtonComponent],
   templateUrl: './credentials.component.html',
   styleUrl: './credentials.component.css',
 })

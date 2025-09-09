@@ -1,1 +1,9 @@
-<p>button works!</p>
+<button
+  [type]="type"
+  [class]="buttonClasses()"
+  [disabled]="disabled"
+  (click)="onClick($event)"
+  [attr.aria-disabled]="disabled"
+>
+  <ng-content></ng-content>
+</button>

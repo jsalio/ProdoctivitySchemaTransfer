@@ -57,14 +57,9 @@
       [origin]="'Source'"
       [store]="configuration() === 'Cloud' ? 'Cloud' : 'V5'"
     >
-      <span class="p-0.5"></span>
-      <button
-        (click)="closeModal()"
-        type="submit"
-        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-      >
+      <app-button (clicked)="closeModal()">
         <span>Cerrar</span>
-      </button>
+      </app-button>
     </app-credentials>
   </div>
 </app-modal>
@@ -81,12 +76,15 @@
     </p>
   </div>
   <div class="mt-6">
-    <button
+    <app-button type="button" (clicked)="closeTransferModal()" [disabled]="false"
+      >Aceptar</app-button
+    >
+    <!-- <button
       (click)="closeTransferModal()"
       type="button"
       class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors duration-200"
     >
       Aceptar
-    </button>
+    </button> -->
   </div>
 </app-modal>

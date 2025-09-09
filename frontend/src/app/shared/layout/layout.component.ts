@@ -9,6 +9,7 @@ import { ToatsComponent } from '../toats/toats.component';
 import { CommonModule } from '@angular/common';
 import { ToastService } from '../../services/ui/toast.service';
 import { DropdownComponent } from '../dropdown/dropdown.component';
+import { ButtonComponent } from '../button/button.component';
 
 @Component({
   selector: 'app-layout',
@@ -21,6 +22,7 @@ import { DropdownComponent } from '../dropdown/dropdown.component';
     ToatsComponent,
     CommonModule,
     DropdownComponent,
+    ButtonComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
@@ -74,6 +76,7 @@ export class LayoutComponent implements OnInit {
   };
 
   closeCredentialsModal = () => {
+    
     this.isCredentialOpen = false;
   };
 
