@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Fondo circular con gradiente -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1D4ED8;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Círculo de fondo -->
+  <circle cx="32" cy="32" r="28" fill="url(#bg)"/>
+  
+  <!-- Icono de transferencia/sincronización -->
+  <g stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Flecha superior -->
+    <path d="M20 24 L26 18 M26 18 L32 24 M26 18 L26 35"/>
+    <!-- Flecha inferior -->
+    <path d="M44 40 L38 46 M38 46 L32 40 M38 46 L38 29"/>
+  </g>
+  
+  <!-- Puntos de conexión -->
+  <circle cx="26" cy="35" r="2" fill="white"/>
+  <circle cx="38" cy="29" r="2" fill="white"/>
+</svg>
