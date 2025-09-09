@@ -58,7 +58,7 @@ export class CredentialsComponent {
     } else if (this.isLoading()) {
       return 'Validando ....';
     } else {
-      return 'Guardar';
+      return 'Validar';
     }
   });
 

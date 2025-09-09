@@ -8,6 +8,7 @@ import { CredetialConnectionService } from '../../services/ui/credetial-connecti
 import { ToatsComponent } from '../toats/toats.component';
 import { CommonModule } from '@angular/common';
 import { ToastService } from '../../services/ui/toast.service';
+import { DropdownComponent } from '../dropdown/dropdown.component';
 
 @Component({
   selector: 'app-layout',
@@ -19,6 +20,7 @@ import { ToastService } from '../../services/ui/toast.service';
     RouterLink,
     ToatsComponent,
     CommonModule,
+    DropdownComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
@@ -30,8 +32,13 @@ export class LayoutComponent implements OnInit {
   private readonly toastService = inject(ToastService);
 
   isCredentialOpen = false;
+  toastmessage = signal<string>('');
   showToastFlag = signal<boolean>(false);
-  toastmessage = signal<string>(''); //('¡Esto es un mensaje de prueba!');
+  modalOpen = signal<boolean>(false);
+  modalForChangeTransferLine = signal<boolean>(false);
+  configuration = signal<'Cloud' | 'Fluency' | ''>('');
+  transferLine = signal<'CloudToFluency' | 'FlencyToCloud' | ''>('CloudToFluency');
+
   connectionStatus = computed(() => {
     if (!this.connectionStatusService.connectedToCloud()) {
       console.log('Navegando');
@@ -53,7 +60,13 @@ export class LayoutComponent implements OnInit {
         this.toastmessage.set('');
       }, 3300);
     });
-    // console.log('Conectado is ready:', this.connectionStatusService.connectedToCloud());
+    this.layoutService.modalLayoutEmit().subscribe((server) => {
+      this.modalOpen.set(true);
+      this.configuration.set(server);
+    });
+    this.layoutService.modalTransferLineEmit().subscribe(() => {
+      this.modalForChangeTransferLine.set(true);
+    });
   }
 
   openCredentialsModal = () => {
@@ -66,23 +79,6 @@ export class LayoutComponent implements OnInit {
 
   getConnectionStatus = () => {
     return this.connectionStatus();
-
-    // const credentialsCloud = this.storage.getValue<Credentials>("Credentials_V6_Cloud")
-    // const credentialsFluency = this.storage.getValue<Credentials>("Credentials_V5_V5")
-
-    // if (!credentialsCloud && !credentialsFluency){
-    //   return "Desconectado"
-    // }
-
-    // if (credentialsCloud){
-    //   const tokenInvalid = isTokenExpired(credentialsCloud.token)
-    //   if (tokenInvalid){
-    //     return 'Desconectado'
-    //   }
-    //   return 'Conectado'
-    // }
-
-    // return 'Desconectado'
   };
 
   showToast = () => {
@@ -90,5 +86,17 @@ export class LayoutComponent implements OnInit {
     setTimeout(() => {
       this.showToastFlag.set(false);
     }, 3300);
+  };
+
+  closeModal = () => {
+    this.modalOpen.set(false);
+  };
+
+  closeTransferModal = () => {
+    this.modalForChangeTransferLine.set(false);
+  };
+
+  getTextFromTransferLine = () => {
+    return this.transferLine() === 'CloudToFluency' ? '' : '';
   };
 }

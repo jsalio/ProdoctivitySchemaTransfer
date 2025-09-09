@@ -7,28 +7,20 @@
           href="#"
           [routerLink]="'/schema-transfer'"
           class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline cursor-pointer"
-          >Estructura Documental</a
-        >
-        <!-- <a href="#" [routerLink]="'/user-transfer'"
-          class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline">Users</a> -->
+          >Estructura Documental
+        </a>
         <div class="flex items-center space-x-2 cursor-pointer">
           <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-<span
+          <span
             (click)="openCredentialsModal()"
             (keydown.enter)="openCredentialsModal()"
             (keydown.space)="openCredentialsModal()"
             tabindex="0"
             class="text-gray-600 hidden sm:inline"
-            >Status: {{ connectionStatus() }}</span
           >
-<span
-            (click)="openCredentialsModal()"
-            (keydown.enter)="openCredentialsModal()"
-            (keydown.space)="openCredentialsModal()"
-            tabindex="0"
-            class="text-gray-600 sm:hidden"
-            >Conectado</span
-          >
+            Status: {{ connectionStatus() }}
+          </span>
+          <app-dropdown />
         </div>
       </div>
     </div>
@@ -54,5 +46,47 @@
     <div class="w-full md:w-1/2">
       <app-credentials id="target" [origin]="'Target'" [store]="'V5'" />
     </div>
+  </div>
+</app-modal>
+
+<app-modal [isOpen]="modalOpen()" (modalClose)="closeModal()">
+  <h2 class="text-xl font-bold mb-4">Credenciales del sistema {{ configuration() }}</h2>
+  <div>
+    <app-credentials
+      id="source"
+      [origin]="'Source'"
+      [store]="configuration() === 'Cloud' ? 'Cloud' : 'V5'"
+    >
+      <span class="p-0.5"></span>
+      <button
+        (click)="closeModal()"
+        type="submit"
+        class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+      >
+        <span>Cerrar</span>
+      </button>
+    </app-credentials>
+  </div>
+</app-modal>
+
+<app-modal [isOpen]="modalForChangeTransferLine()" (modalClose)="closeTransferModal()">
+  <h2 class="text-xl font-bold mb-4 text-gray-400">Cambiar la sincronizacion</h2>
+  <div class="text-xl mb-1">
+    <p class="text-gray-950">
+      Actualmene la configuracion esta para pasa la estructura documental de
+      <span class="font-bold text-blue-600">ProDoctivity Cloud</span> a
+      <span class="font-bold text-purple-600">Prodoctivity Fluency (V5)</span>. ¿Quieres cambiarlo a
+      <span class="font-bold text-purple-600">ProDoctivity Fluency (V5)</span> a
+      <span class="font-bold text-blue-600">ProDoctivity Cloud</span>?
+    </p>
+  </div>
+  <div class="mt-6">
+    <button
+      (click)="closeTransferModal()"
+      type="button"
+      class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors duration-200"
+    >
+      Aceptar
+    </button>
   </div>
 </app-modal>
