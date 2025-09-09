@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:headless": "ng test --watch=false",
+    "test:headless": "ng test --configuration=headless",
     "format": "prettier --write \"src/**/*.{ts,html,scss,css}\"",
     "lint": "ng lint"
   },
