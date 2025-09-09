@@ -19,14 +19,17 @@ import { DocumentType, SchemaDocumentType } from '../../../types/models/Document
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Filter } from '../utils/FilterDatalist';
+import { FilterInputComponent } from '../../../shared/filter-input/filter-input.component';
+import { FilterAnimation } from '../../../shared/Animation/filter';
 
 @Component({
   selector: 'app-document-types-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FilterInputComponent],
   templateUrl: './document-types-list.component.html',
   styleUrl: './document-types-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [FilterAnimation],
 })
 export class DocumentTypesListComponent implements OnChanges {
   private readonly localData = inject(LocalDataService);
@@ -160,5 +163,9 @@ export class DocumentTypesListComponent implements OnChanges {
       })
       .onFinalize(() => loadingSignal.set(false))
       .execute();
+  };
+
+  onFilter = (value: string) => {
+    this.filter.set(value);
   };
 }

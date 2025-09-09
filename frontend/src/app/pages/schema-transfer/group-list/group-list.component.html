@@ -1,14 +1,16 @@
 <div class="p-4 lg:p-6 flex flex-col h-[calc(100vh-73px)]">
   <!-- Campo de búsqueda -->
-  <div class="flex items-center space-x-2 mb-4">
-    <label for="nombre" class="w-24 text-gray-700 text-right">Grupos</label>
-    <input
+  <div class="flex items-center mb-4 lg:mb-6 space-x-4">
+    <!-- <label for="nombre" class="w-24 text-gray-700 text-right">Grupos</label> -->
+    <h2 class="text-lg font-medium text-gray-700 flex-1">Grupos</h2>
+    <app-filter-input (filterChanged)="onFilter($event)" placeholder="Buscar grupo" />
+    <!-- <input
       [(ngModel)]="filter"
       id="nombre"
       type="text"
       placeholder="Buscar grupo"
       class="flex-1 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    />
+    /> -->
   </div>
 
   <!-- Lista con scroll invisible y sutil al hover -->
@@ -16,13 +18,14 @@
     class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400"
   >
     <div class="p-2 space-y-1">
-      @for (item of SchemaDocumentGroups(); track $index) {
+      @for (item of SchemaDocumentGroups(); track item.groupId; let i = $index) {
         <div
+          [@fadeInOut]
           tabindex="0"
           (keydown)="markItemAsSelected(item.groupId)"
           [ngClass]="getItemClass(item.groupName)"
           (click)="markItemAsSelected(item.groupId)"
-          class="cursor-pointer flex items-center"
+          class="cursor-pointer flex items-center overflow-hidden"
         >
           <div class="w-4 h-4 lg:w-5 lg:h-5 text-amber-500 mr-2 lg:mr-3">📁</div>
           <span class="text-sm font-medium text-gray-900 min-w-0 flex-1">
@@ -37,10 +40,10 @@
         </div>
       }
       @if (SchemaDocumentGroups().length === 0 && filter() === '') {
-        esperando...
+        <div class="p-2 text-gray-500">esperando...</div>
       }
       @if (SchemaDocumentGroups().length === 0 && filter() !== '') {
-        Sin resultado
+        <div class="p-2 text-gray-500">Sin resultado</div>
       }
     </div>
   </div>

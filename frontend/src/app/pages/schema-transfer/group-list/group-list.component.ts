@@ -9,13 +9,16 @@ import { SchemaService } from '../../../services/backend/schema.service';
 import { SchemaDocumentGroup } from '../../../types/models/SchemaDocumentGroup';
 import { Filter } from '../utils/FilterDatalist';
 import { FormsModule } from '@angular/forms';
+import { FilterInputComponent } from '../../../shared/filter-input/filter-input.component';
+import { FilterAnimation } from '../../../shared/Animation/filter';
 
 @Component({
   selector: 'app-group-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FilterInputComponent],
   templateUrl: './group-list.component.html',
   styleUrl: './group-list.component.css',
+  animations: [FilterAnimation],
 })
 export class GroupListComponent implements OnInit {
   private readonly localData = inject(LocalDataService);
@@ -116,5 +119,9 @@ export class GroupListComponent implements OnInit {
       this.itemClasses().get(groupName) ||
       'flex items-center p-2 lg:p-3 hover:bg-gray-50 transition-colors'
     );
+  };
+
+  onFilter = (value: string) => {
+    this.filter.set(value);
   };
 }

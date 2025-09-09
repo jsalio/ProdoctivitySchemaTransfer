@@ -1,5 +1,4 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-
 import { HttpInterceptorFn, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
@@ -7,6 +6,7 @@ import { authRepositoryProvider, schemaRepositoryProvider } from './providers';
 import { catchError, throwError } from 'rxjs';
 import { inject } from '@angular/core';
 import { ToastService } from './services/ui/toast.service';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const toastService = inject(ToastService);
@@ -24,6 +24,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([errorInterceptor])),
+    provideAnimations(),
     schemaRepositoryProvider,
     authRepositoryProvider,
   ],

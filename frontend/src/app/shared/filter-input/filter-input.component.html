@@ -1,0 +1,19 @@
+<div class="relative w-full max-w-sm">
+  <input
+    type="text"
+    class="flex-1 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    [placeholder]="placeholder()"
+    [value]="filterText()"
+    [disabled]="disable()"
+    (input)="onInputChange($event)"
+  />
+
+  <!-- Botón X (solo aparece si hay texto) -->
+  <button
+    *ngIf="filterText()"
+    (click)="clearFilter()"
+    class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+  >
+    ✕
+  </button>
+</div>
