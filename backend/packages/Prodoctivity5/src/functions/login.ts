@@ -1,4 +1,5 @@
 import { Credentials, Result } from '@schematransfer/core';
+import { RequestManager } from '@schematransfer/requestmanager';
 
 /**
  *
@@ -8,44 +9,25 @@ import { Credentials, Result } from '@schematransfer/core';
 export const LoginToProdoctivity = async (
   credential: Credentials,
 ): Promise<Result<string, Error>> => {
-  try {
-    const headers = new Headers();
-    headers.append('x-api-key', credential.serverInformation.apiKey);
-    const basicAuthText = `${credential.username + '@prodoctivity capture'}:${credential.password}`;
-    headers.append('Authorization', `Basic ${btoa(basicAuthText)}`);
+  const manager = new RequestManager({ retries: 3, retryDelay: 1000, timeout: 600000 });
 
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: headers,
-      redirect: 'follow',
-    };
+  const basicAuthText = `${credential.username}@prodoctivity capture:${credential.password}`;
+  const headers: Record<string, string> = {};
+  headers['Authorization'] = `Basic ${btoa(basicAuthText)}`;
+  headers['x-api-key'] = credential.serverInformation.apiKey;
+  manager.addHeaders(headers);
 
-    const response = await fetch(
-      `${credential.serverInformation.server}/site/api/v1/auth/session`,
-      requestOptions,
-    );
-    if (!response.ok) {
-      return {
-        ok: false,
-        error: new Error(`Login failed with status ${response.status}: ${response.statusText}`),
-      };
-    }
+  const result = await manager
+    .build(credential.serverInformation.server, 'POST')
+    .addHeaders(headers)
+    .executeAsync<any>('site/api/v1/auth/session');
 
-    if (response.status >= 200 && response.status <= 299) {
-      return {
-        ok: true,
-        value: 'ok',
-      };
-    }
-
-    return {
-      ok: false,
-      error: new Error('No token received in response'),
-    };
-  } catch (error) {
-    return {
-      ok: false,
-      error: error instanceof Error ? error : new Error('An unknown error occurred while Login'),
-    };
+  if (!result.ok) {
+    return result as Result<string, Error>;
   }
+
+  return {
+    ok: true,
+    value: 'ok',
+  };
 };

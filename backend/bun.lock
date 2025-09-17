@@ -21,10 +21,19 @@
       "version": "0.0.1",
       "dependencies": {
         "@schematransfer/core": "0.0.1",
+        "@schematransfer/requestmanager": "0.0.1",
       },
     },
     "packages/ProdoctivityCloud": {
       "name": "@schematransfer/prodoctivitycloud",
+      "version": "0.0.1",
+      "dependencies": {
+        "@schematransfer/core": "0.0.1",
+        "@schematransfer/requestmanager": "0.0.1",
+      },
+    },
+    "packages/RequestManager": {
+      "name": "@schematransfer/requestmanager",
       "version": "0.0.1",
       "dependencies": {
         "@schematransfer/core": "0.0.1",
@@ -105,6 +114,8 @@
     "@schematransfer/prodoctivity5": ["@schematransfer/prodoctivity5@workspace:packages/Prodoctivity5"],
 
     "@schematransfer/prodoctivitycloud": ["@schematransfer/prodoctivitycloud@workspace:packages/ProdoctivityCloud"],
+
+    "@schematransfer/requestmanager": ["@schematransfer/requestmanager@workspace:packages/RequestManager"],
 
     "@schematransfer/server": ["@schematransfer/server@workspace:packages/server"],
 

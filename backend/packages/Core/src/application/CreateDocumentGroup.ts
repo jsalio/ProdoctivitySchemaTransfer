@@ -1,6 +1,7 @@
 import { AppCodeError } from '../domain/AppCodeError';
 import { CreateDocumentGroupRequest } from '../domain/create-group-request';
 import { DocumentGroup } from '../domain/DocumentGroup';
+import { ValidationError } from '../domain/ValidationError';
 import { LoginValidator } from '../domain/Validations/LoginValidator';
 import { IRequest } from '../ports/IRequest';
 import { IStore } from '../ports/IStore';
@@ -22,13 +23,18 @@ export class CreateDocumentGroup {
   ) {}
 
   /**
-   * Validates the request credentials.
+   * Validates the request credentials and document group data.
    * @returns An array of validation errors, or an empty array if validation passes.
    */
   validate() {
+    let request = this.request.build();
+    let validationErrors: ValidationError<CreateDocumentGroupRequest>[] = [];
     const validations = new LoginValidator(this.request.build().credentials);
     const errors = validations.Validate();
-    return errors;
+    if (request.name === '') {
+      validationErrors.push({ field: 'name', message: 'Invalid name for group' });
+    }
+    return [...validationErrors, ...errors];
   }
 
   /**

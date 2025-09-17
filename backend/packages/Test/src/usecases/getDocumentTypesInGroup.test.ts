@@ -155,7 +155,7 @@ describe('GetDocumentTypesGroups - Edge Cases', () => {
 
     // Should still validate (group ID validation would be in the request validation)
     const errors = getDocumentTypesGroups.validate();
-    expect(errors).toHaveLength(0);
+    expect(errors).toHaveLength(1);
 
     // But the store should receive the empty group ID
     (mockStore.getDocumentTypeInGroup as any).mockResolvedValueOnce({

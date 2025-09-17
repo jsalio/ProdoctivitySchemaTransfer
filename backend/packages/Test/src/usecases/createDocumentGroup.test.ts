@@ -76,6 +76,26 @@ describe('CreateDocumentGroup', () => {
 
       expect(errors.length).toBeGreaterThan(0);
       expect(errors[0].field).toBe('username');
+      expect(errors[1].field).toBe('password');
+    });
+
+    it('should fail when name for new group is empty', () => {
+      const validCredentials = {
+        ...mockCredentials,
+      };
+
+      mockRequest = {
+        build: mock(() => ({
+          credentials: validCredentials,
+          name: '',
+        })),
+      };
+
+      const validator = new CreateDocumentGroup(mockRequest, mockStore);
+      const errors = validator.validate();
+
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors[0].field).toBe('name');
     });
 
     it('should return no errors when credentials are valid', () => {

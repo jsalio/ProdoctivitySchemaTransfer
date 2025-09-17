@@ -1,5 +1,6 @@
 import { AppCodeError } from '../domain/AppCodeError';
 import { AssignDataElementToDocumentRequest } from '../domain/asign-data-element-to-document-request';
+import { AssignDataElementValidator } from '../domain/Validations/AssignDataElementValidator';
 import { LoginValidator } from '../domain/Validations/LoginValidator';
 import { IRequest } from '../ports/IRequest';
 import { IStore } from '../ports/IStore';
@@ -26,9 +27,16 @@ export class AssignDataElement {
    * @returns {ValidationError[]} An array of validation errors, if any
    */
   validate() {
-    const validations = new LoginValidator(this.request.build().credentials);
-    const errors = validations.Validate();
-    return errors;
+    const request = this.request.build();
+
+    const validations_l = new LoginValidator(request.credentials);
+    const errors_c = validations_l.Validate();
+
+    const validattions_r = new AssignDataElementValidator(
+      request.assignDataElementToDocumentRequest,
+    );
+    const error_r = validattions_r.validate();
+    return [...errors_c, ...errors_c];
   }
 
   /**

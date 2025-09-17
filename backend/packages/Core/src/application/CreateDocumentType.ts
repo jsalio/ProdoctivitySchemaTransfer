@@ -1,6 +1,7 @@
 import { AppCodeError } from '../domain/AppCodeError';
 import { CreateDocumentTypeRequest } from '../domain/Create-document-type-request';
 import { DocumentType } from '../domain/DocumentType';
+import { CreateDocumentTypeValidator } from '../domain/Validations/CreateDocumentTypeValidator';
 import { LoginValidator } from '../domain/Validations/LoginValidator';
 import { IRequest } from '../ports/IRequest';
 import { IStore } from '../ports/IStore';
@@ -26,9 +27,12 @@ export class CreateDocumentType {
    * @returns An array of validation errors, or an empty array if validation passes.
    */
   validate() {
-    const validations = new LoginValidator(this.request.build().credentials);
-    const errors = validations.Validate();
-    return errors;
+    let request = this.request.build();
+    const validationsCredentials = new LoginValidator(request.credentials);
+    const errors_c = validationsCredentials.Validate();
+    const validationRequest = new CreateDocumentTypeValidator(request.createDocumentTypeRequest);
+    const errors_r = validationRequest.validate();
+    return [...errors_c, ...errors_r];
   }
 
   /**

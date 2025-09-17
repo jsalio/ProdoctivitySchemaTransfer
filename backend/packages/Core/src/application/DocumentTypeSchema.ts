@@ -6,6 +6,7 @@ import { SchemaDocumentType } from '../domain/SchemaDocumentType';
 import { CoreResult } from '../ports/Result';
 import { AppCodeError } from '../domain/AppCodeError';
 import { GetDocumentTypeSchemaRequest } from '../domain/GetDocumentTypeSchemaRequest';
+import { ValidationError } from '../domain/ValidationError';
 
 /**
  * Handles the retrieval of a document type schema based on the provided credentials and document type ID.
@@ -27,9 +28,14 @@ export class GetDocumentTypeSchema {
    * @returns An array of validation errors, if any
    */
   validate() {
+    let request = this.request.build();
+    let validationErrors: ValidationError<GetDocumentTypeSchemaRequest>[] = [];
     const validations = new LoginValidator(this.request.build().credentials);
     const errors = validations.Validate();
-    return errors;
+    if (request.documentTypeId === '') {
+      validationErrors.push({ field: 'credentials', message: 'Invalid name for group' });
+    }
+    return [...validationErrors, ...errors];
   }
 
   /**

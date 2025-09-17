@@ -15,14 +15,16 @@ export type CreateDocumentTypeRequest = {
   /**
    * Request object for creating a document type.
    */
-  createDocumentTypeRequest: {
-    /**
-     * Name of the document type.
-     */
-    name: string;
-    /**
-     * ID of the document group to which the document type belongs.
-     */
-    documentGroupId: string;
-  };
+  createDocumentTypeRequest: DocumentTypeCreationRequest;
+};
+
+export type DocumentTypeCreationRequest = {
+  /**
+   * Name of the document type.
+   */
+  name: string;
+  /**
+   * ID of the document group to which the document type belongs.
+   */
+  documentGroupId: string;
 };

@@ -11,11 +11,13 @@ import { Credentials } from './Credentials';
  */
 export type AssignDataElementToDocumentRequest = {
   credentials: Credentials;
-  assignDataElementToDocumentRequest: {
-    documentTypeId: string;
-    dataElement: {
-      name: string;
-      order: number;
-    };
+  assignDataElementToDocumentRequest: dataElementAssignationRequest;
+};
+
+export type dataElementAssignationRequest = {
+  documentTypeId: string;
+  dataElement: {
+    name: string;
+    order: number;
   };
 };

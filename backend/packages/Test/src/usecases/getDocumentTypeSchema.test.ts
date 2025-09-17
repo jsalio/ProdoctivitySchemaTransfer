@@ -166,7 +166,7 @@ describe('GetDocumentTypeSchema - Edge Cases', () => {
 
     // Should still validate (document type ID validation would be in the request validation)
     const errors = getDocumentTypeSchema.validate();
-    expect(errors).toHaveLength(0);
+    expect(errors).toHaveLength(1);
 
     // But the store should receive the empty document type ID
     (mockStore.getDocumentTypeSchema as any).mockResolvedValueOnce({
