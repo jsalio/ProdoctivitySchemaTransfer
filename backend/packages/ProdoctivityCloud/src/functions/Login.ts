@@ -1,5 +1,5 @@
 import { CoreResult, Credentials, Result } from '@schematransfer/core';
-import { RequestManager } from 'packages/ProdoctivityCloud/RequestManager';
+import { RequestManager } from '@schematransfer/requestmanager';
 
 /**
  *

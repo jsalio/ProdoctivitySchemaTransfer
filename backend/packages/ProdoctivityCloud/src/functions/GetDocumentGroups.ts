@@ -1,7 +1,6 @@
 import { Credentials, DocumentGroup, Result } from 'packages/Core/src';
 import { CloudDocumentType } from '../types/CloudDocumentType';
-import { RequestManager } from 'packages/ProdoctivityCloud/RequestManager';
-
+import { RequestManager } from '@schematransfer/requestmanager';
 export const GetDocumentGroup = async (
   credential: Credentials,
 ): Promise<Result<Array<DocumentGroup>, Error>> => {

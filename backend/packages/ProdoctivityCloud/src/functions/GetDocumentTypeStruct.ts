@@ -1,6 +1,6 @@
 import { Credentials, Result, SchemaDocumentType } from '@schematransfer/core';
 import { CloudDocumentTypeSchema } from '../types/CloudDocumentTypeSchema';
-import { RequestManager } from 'packages/ProdoctivityCloud/RequestManager';
+import { RequestManager } from '@schematransfer/requestmanager';
 
 export const GetDocumentTypeStruct = async (
   credential: Credentials,
