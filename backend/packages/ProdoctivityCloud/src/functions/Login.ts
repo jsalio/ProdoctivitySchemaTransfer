@@ -1,4 +1,5 @@
 import { CoreResult, Credentials, Result } from '@schematransfer/core';
+import { RequestManager } from 'packages/ProdoctivityCloud/RequestManager';
 
 /**
  *
@@ -14,30 +15,21 @@ export const LoginToProdoctivity = async (
       password: credential.password,
       organizationId: credential.serverInformation.organization,
     };
+    const rm = new RequestManager({ retries: 2, retryDelay: 1000, timeout: 60000 });
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
 
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
+    const result = await rm
+      .build(credential.serverInformation.server, 'POST')
+      .addHeaders(headers)
+      .addBody(request)
+      .executeAsync<{ token?: string }>('api/login');
 
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(request),
-      redirect: 'follow',
-    };
-
-    const response = await fetch(
-      `${credential.serverInformation.server}/api/login`,
-      requestOptions,
-    );
-    if (!response.ok) {
-      return {
-        ok: false,
-        error: new Error(`Login failed with status ${response.status}: ${response.statusText}`),
-      };
+    if (!result.ok) {
+      return result as Result<string, Error>;
     }
 
-    const body = await response.json();
-    if (response.status === 200 && body.token) {
+    const body = result.value;
+    if (body.token) {
       return {
         ok: true,
         value: body.token,

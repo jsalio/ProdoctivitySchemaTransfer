@@ -1,55 +1,43 @@
 import { Credentials, Result, SchemaDocumentType } from '@schematransfer/core';
 import { CloudDocumentTypeSchema } from '../types/CloudDocumentTypeSchema';
+import { RequestManager } from 'packages/ProdoctivityCloud/RequestManager';
 
 export const GetDocumentTypeStruct = async (
   credential: Credentials,
   documentTYpeId: string,
 ): Promise<Result<SchemaDocumentType, Error>> => {
   try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', `Bearer ${credential.token}`);
-    headers.append('x-api-key', credential.serverInformation.apiKey);
-    headers.append('api-secret', credential.serverInformation.apiSecret);
+    const rm = new RequestManager({ retries: 2, retryDelay: 1000, timeout: 60000 });
+    const headers: Record<string, string> = {};
+    headers['Content-Type'] = 'application/json';
+    headers['Authorization'] = `Bearer ${credential.token}`;
+    headers['x-api-key'] = credential.serverInformation.apiKey;
+    headers['api-secret'] = credential.serverInformation.apiSecret;
 
-    const requestOptions: RequestInit = {
-      method: 'GET',
-      headers: headers,
-      //body: JSON.stringify(request),
-      redirect: 'follow',
-    };
+    const result = await rm
+      .build(credential.serverInformation.server, 'GET')
+      .addHeaders(headers)
+      .executeAsync<CloudDocumentTypeSchema>(
+        `api/document-types/${documentTYpeId}?withFormLayout=false`,
+      );
 
-    const response = await fetch(
-      `${credential.serverInformation.server}/api/document-types/${documentTYpeId}?withFormLayout=false`,
-      requestOptions,
-    );
-    if (!response.ok) {
-      //throw new Error(`Login failed with status ${response.status}: ${response.statusText}`);
-      return {
-        ok: false,
-        error: new Error(`Login failed with status ${response.status}: ${response.statusText}`),
-      };
+    if (!result.ok) {
+      return result as Result<SchemaDocumentType, Error>;
     }
 
-    const body: CloudDocumentTypeSchema = await response.json();
-    if (response.status === 200) {
-      return {
-        ok: true,
-        value: {
-          name: body.documentType.name,
-          documentTypeId: body.documentType.documentTypeId,
-          keywords: body.documentType.contextDefinition.fields.map((key) => ({
-            name: key.name,
-            label: key.humanName,
-            dataType: key.properties.dataType,
-            require: key.properties.minOccurs >= 1,
-          })),
-        },
-      };
-    }
+    const body = result.value;
     return {
-      ok: false,
-      error: new Error('Keyword not found'),
+      ok: true,
+      value: {
+        name: body.documentType.name,
+        documentTypeId: body.documentType.documentTypeId,
+        keywords: body.documentType.contextDefinition.fields.map((key) => ({
+          name: key.name,
+          label: key.humanName,
+          dataType: key.properties.dataType,
+          require: key.properties.minOccurs >= 1,
+        })),
+      },
     };
   } catch (error) {
     return {

@@ -1,5 +1,6 @@
 import { Credentials, DocumentGroup, Result } from 'packages/Core/src';
 import { CloudDocumentType } from '../types/CloudDocumentType';
+import { RequestManager } from 'packages/ProdoctivityCloud/RequestManager';
 
 export const GetDocumentGroup = async (
   credential: Credentials,
@@ -83,44 +84,26 @@ export const GetDocumentGroup = async (
       // return documentGroup;
     };
 
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', `Bearer ${credential.token}`);
+    const rm = new RequestManager({ retries: 2, retryDelay: 1000, timeout: 60000 });
+    const headers: Record<string, string> = {};
+    headers['Content-Type'] = 'application/json';
+    headers['Authorization'] = `Bearer ${credential.token}`;
 
-    const requestOptions: RequestInit = {
-      method: 'GET',
-      headers: headers,
-      redirect: 'follow',
-    };
+    const result = await rm
+      .build(credential.serverInformation.server, 'GET')
+      .addHeaders(headers)
+      .executeAsync<{ documentTypes: CloudDocumentType[] }>('api/document-types/all');
 
-    const response = await fetch(
-      `${credential.serverInformation.server}/api/document-types/all`,
-      requestOptions,
-    );
-    if (!response.ok) {
-      return {
-        ok: false,
-        error: new Error(`Login failed with status ${response.status}: ${response.statusText}`),
-      };
+    if (!result.ok) {
+      return result as Result<Array<DocumentGroup>, Error>;
     }
 
-    const body: { documentTypes: CloudDocumentType[] } = await response.json();
-    //console.log("Cloud response :", JSON.stringify(groupData(body.documentTypes)))
-
-    if (response.status === 200) {
-      const response: Result<Array<DocumentGroup>, Error> = {
-        ok: true,
-        value: groupData(body.documentTypes),
-      };
-      // console.log(response)
-      // console.log("Is here")
-      // console.log("Cloud response translation:", JSON.stringify(response))
-      return response;
-    }
-    return {
-      ok: false,
-      error: new Error('No document type returned'),
+    const body = result.value;
+    const responseOk: Result<Array<DocumentGroup>, Error> = {
+      ok: true,
+      value: groupData(body.documentTypes),
     };
+    return responseOk;
   } catch (error) {
     return {
       ok: false,
