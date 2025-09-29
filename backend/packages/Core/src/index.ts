@@ -26,3 +26,5 @@ export * from './ports/IRequest';
 export * from './ports/IStore';
 export * from './ports/Result';
 export * from './domain/Create-document-type-request';
+export * from './ports/IRequestManager';
+export * from './domain/FromPromise';

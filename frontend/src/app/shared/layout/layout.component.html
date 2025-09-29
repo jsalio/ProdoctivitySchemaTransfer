@@ -7,16 +7,20 @@
           href="#"
           [routerLink]="'/schema-transfer'"
           class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline cursor-pointer"
-          >Estructura Documental</a
-        >
-        <!-- <a href="#" [routerLink]="'/user-transfer'"
-          class="text-gray-600 hover:text-gray-900 transition-colors hidden sm:inline">Users</a> -->
+          >Estructura Documental
+        </a>
         <div class="flex items-center space-x-2 cursor-pointer">
           <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-          <span (click)="openCredentialsModal()" class="text-gray-600 hidden sm:inline"
-            >Status: {{ getConnectionStatus() }}</span
+          <span
+            (click)="openCredentialsModal()"
+            (keydown.enter)="openCredentialsModal()"
+            (keydown.space)="openCredentialsModal()"
+            tabindex="0"
+            class="text-gray-600 hidden sm:inline"
           >
-          <span (click)="openCredentialsModal()" class="text-gray-600 sm:hidden">Conectado</span>
+            Status: {{ connectionStatus() }}
+          </span>
+          <app-dropdown />
         </div>
       </div>
     </div>
@@ -26,13 +30,11 @@
 <router-outlet />
 
 <!-- Toast Notification -->
-<div class="fixed bottom-4 right-4 p-4 bg-green-600 text-white rounded-md shadow-lg hidden">
-  Transfer completed successfully!
-</div>
+<app-toats *ngIf="showToastFlag()" [message]="toastmessage()" [duration]="3000" />
 
 <app-modal
   [isOpen]="isCredentialOpen"
-  (close)="closeCredentialsModal()"
+  (modalClose)="closeCredentialsModal()"
   [size]="'medium'"
   [customWidth]="'50%'"
 >
@@ -43,6 +45,63 @@
     </div>
     <div class="w-full md:w-1/2">
       <app-credentials id="target" [origin]="'Target'" [store]="'V5'" />
+    </div>
+  </div>
+</app-modal>
+
+<app-modal [isOpen]="modalOpen()" (modalClose)="closeModal()">
+  <h2 class="text-xl font-bold mb-4">Credenciales del sistema {{ configuration() }}</h2>
+  <div>
+    <app-credentials
+      id="source"
+      [origin]="'Source'"
+      [store]="configuration() === 'Cloud' ? 'Cloud' : 'V5'"
+      (formData)="recieveData($event)"
+    >
+      <span class="inline-flex gap-2">
+        <app-button (clicked)="saveProfile()" [type]="'button'">
+          <span>Guardar perfil</span>
+        </app-button>
+        <app-button (clicked)="closeModal()" [type]="'button'">
+          <span>Cerrar</span>
+        </app-button>
+      </span>
+    </app-credentials>
+  </div>
+</app-modal>
+
+<app-modal [isOpen]="modalForChangeTransferLine()" (modalClose)="closeTransferModal()">
+  <h2 class="text-xl font-bold mb-4 text-gray-400">Cambiar la sincronizacion</h2>
+  <div class="text-xl mb-1">
+    <p class="text-gray-950">
+      Actualmene la configuracion esta para pasa la estructura documental de
+      <span class="font-bold text-blue-600">ProDoctivity Cloud</span> a
+      <span class="font-bold text-purple-600">Prodoctivity Fluency (V5)</span>. ¿Quieres cambiarlo a
+      <span class="font-bold text-purple-600">ProDoctivity Fluency (V5)</span> a
+      <span class="font-bold text-blue-600">ProDoctivity Cloud</span>?
+    </p>
+  </div>
+  <div class="mt-6">
+    <app-button type="button" (clicked)="closeTransferModal()" [disabled]="false"
+      >Aceptar</app-button
+    >
+    <!-- <button
+      (click)="closeTransferModal()"
+      type="button"
+      class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors duration-200"
+    >
+      Aceptar
+    </button> -->
+  </div>
+</app-modal>
+
+<app-modal [isOpen]="profileModalIsOpen()" (modalClose)="closeProfileModal()">
+  <h2 class="text-xl font-bold mb-4">Perfiles de conexion</h2>
+  <div class="flex flex-col gap-4">
+    <!-- <h2 class="text-2xl font-bold text-gray-800 mb-4">Perfiles almacenados</h2> -->
+    <app-profile-manager />
+    <div>
+      <app-button (clicked)="closeProfileModal()">Cerrar</app-button>
     </div>
   </div>
 </app-modal>

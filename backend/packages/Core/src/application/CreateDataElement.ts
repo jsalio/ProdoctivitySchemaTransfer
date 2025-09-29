@@ -1,6 +1,7 @@
 import { AppCodeError } from '../domain/AppCodeError';
 import { CreateDataElementRequest } from '../domain/Create-data-element-request';
 import { DataElement } from '../domain/DataElement';
+import { CreateDataElementValidator } from '../domain/Validations/CreateDataElementValidator';
 import { LoginValidator } from '../domain/Validations/LoginValidator';
 import { IRequest } from '../ports/IRequest';
 import { IStore } from '../ports/IStore';
@@ -26,9 +27,14 @@ export class CreateDataElement {
    * @returns An array of validation errors, or an empty array if validation passes.
    */
   validate() {
-    const validations = new LoginValidator(this.request.build().credentials);
-    const errors = validations.Validate();
-    return errors;
+    const request = this.request.build();
+
+    const validationsCredentials = new LoginValidator(request.credentials);
+    const errors_c = validationsCredentials.Validate();
+
+    const validatorRequest = new CreateDataElementValidator(request.createDataElementRequest);
+    const errors_r = validatorRequest.validate();
+    return [...errors_c, ...errors_r];
   }
 
   /**

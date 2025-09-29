@@ -27,7 +27,7 @@ import { CreateDocumentTypeRequest } from 'packages/Core/src/domain/Create-docum
 import { BaseService } from './BaseService';
 
 type UseCase<T = any> = {
-  validate(): ValidationError<Credentials>[];
+  validate(): ValidationError<any>[];
   execute(): Promise<CoreResult<T, AppCodeError, Error>>;
 };
 
@@ -72,7 +72,7 @@ export class SchemaService extends BaseService {
   async getListOfDocumentGroups(
     credentials: Credentials,
   ): Promise<CoreResult<Array<DocumentGroup>, AppCodeError, Error>> {
-    console.log(this.store.getStoreName());
+    // console.log(this.store.getStoreName());
     const request = this.buildRequest<Credentials>(credentials);
     const useCase = new GetDocumentGroups(request, this.store);
     return this.executeUseCase(useCase);

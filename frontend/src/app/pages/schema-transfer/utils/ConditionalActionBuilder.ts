@@ -1,3 +1,4 @@
+// eslint-disable
 import { ProgressCallback } from './ProgressCallback';
 import { ActionData } from './ActionData';
 import { ActionContext } from './ActionContext';
@@ -10,24 +11,22 @@ import { SchemaService } from '../../../services/backend/schema.service';
  * Constructor de acciones condicionales que ejecuta pasos basados en datos
  */
 export class ConditionalActionBuilder {
-  private steps: Array<
-    (
-      credentials: Credentials,
-      context: ActionContext,
-      actionData: ActionData,
-    ) => Promise<Partial<ActionContext>>
-  > = [];
+  private steps: ((
+    credentials: Credentials,
+    context: ActionContext,
+    actionData: ActionData,
+  ) => Promise<Partial<ActionContext>>)[] = [];
   private stepCodes: string[] = [];
 
   constructor(
     private schema: SchemaService,
-    private executingActions: any,
+    private executingActions: { set: (value: boolean) => void },
     private progressService: ActionProgressService,
   ) {}
 
   static create(
     schema: SchemaService,
-    executingActions: any,
+    executingActions: { set: (value: boolean) => void },
     progressService: ActionProgressService,
   ): ConditionalActionBuilder {
     return new ConditionalActionBuilder(schema, executingActions, progressService);
@@ -230,7 +229,6 @@ export class ConditionalActionBuilder {
           name: k[`name`],
         })),
       ];
-      debugger;
 
       const assignCount = allKeywordsToAssign.length;
 
@@ -259,11 +257,15 @@ export class ConditionalActionBuilder {
             `Assigning keyword ${i + 1}/${assignCount}: "${assignData.name}"...`,
           );
 
-          const result: any = await ObservableHandler.handle(
+          const result = await ObservableHandler.handle(
             this.schema.saveNewDocumentSchema(credentials, finalAssignData),
           ).executeAsyncClean();
 
-          assignedSchemas.push({ schemaId: (result as any).id, ...result });
+          assignedSchemas.push({
+            // eslint-disable-next-line
+            schemaId: (result.data as any)?.id || (result as any).id,
+            ...result,
+          });
         }
 
         this.progressService.updateStepProgress(
@@ -315,8 +317,10 @@ export class ConditionalActionBuilder {
               i,
               currentStep.status,
               currentStep.message,
-              currentStep.data,
-              currentStep.error,
+              // eslint-disable-next-line
+              currentStep.data as any,
+              // eslint-disable-next-line
+              currentStep.error as any,
               progressCallback,
             );
           }

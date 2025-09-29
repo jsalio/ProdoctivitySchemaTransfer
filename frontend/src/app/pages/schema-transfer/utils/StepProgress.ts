@@ -3,8 +3,8 @@ export interface StepProgress {
   stepCode: string;
   status: 'pending' | 'running' | 'completed' | 'error';
   message: string;
-  data?: any;
-  error?: any;
+  data?: unknown;
+  error?: Error | unknown;
   timestamp: Date;
   stepIndex: number;
   totalSteps: number;

@@ -3,7 +3,7 @@ import { KeywordOptions } from '../types/KeywordOptions';
 import { getDataElements } from './getDataElements';
 import { GetDataTypeByString, MiddleWareToProdoctivityDictionary } from './utils/dataType';
 import { getSampleValue } from './utils/getSampleValue';
-import { DataType } from '../types/DataType';
+import { RequestManager } from '@schematransfer/requestmanager';
 
 const DEFAULT_OPTIONS: Required<KeywordOptions> = {
   TopicName: 'General',
@@ -33,101 +33,83 @@ export const createKeyword = async (
       error: new Error('Keyword name cannot be empty'),
     };
   }
-  try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('x-api-key', credential.serverInformation.apiKey);
 
-    const basicAuthText = `${credential.username}@prodoctivity capture:${credential.password}`;
-    headers.append('Authorization', `Basic ${btoa(basicAuthText)}`);
+  const manager = new RequestManager({
+    retries: 3,
+    retryDelay: 1000,
+    timeout: 600000,
+  });
 
-    const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
+  const basicAuthText = `${credential.username}@prodoctivity capture:${credential.password}`;
 
-    const generateName = createKeywordRequest.name.trim(); //+generateShortGuid(); //use for debug
+  const headers: Record<string, string> = {};
+  headers['Content-Type'] = 'application/json';
+  headers['Authorization'] = `Basic ${btoa(basicAuthText)}`;
+  headers['x-api-key'] = credential.serverInformation.apiKey;
+  manager.addHeaders(headers);
 
-    const requestBody = {
-      name: generateName,
-      required: createKeywordRequest.required,
-      question: createKeywordRequest.name.trim(),
-      instructions: createKeywordRequest.name.trim(),
-      Definition: createKeywordRequest.name.trim(),
-      alternativeQuestion: createKeywordRequest.name.trim(),
-      dataType: MiddleWareToProdoctivityDictionary.get(
-        GetDataTypeByString(createKeywordRequest.dataType),
-      )!,
-      sampleValue: getSampleValue(GetDataTypeByString(createKeywordRequest.dataType)),
-      ...mergedOptions,
-    };
+  const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
-    if (requestBody.dataType === 0) {
-      return {
-        ok: false,
-        error: new Error('Data type cannot be None'),
-      };
-    }
+  const generateName = createKeywordRequest.name.trim(); //+generateShortGuid(); //use for debug
 
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(requestBody),
-      redirect: 'follow',
-    };
+  const requestBody = {
+    name: generateName,
+    required: createKeywordRequest.required,
+    question: createKeywordRequest.name.trim(),
+    instructions: createKeywordRequest.name.trim(),
+    Definition: createKeywordRequest.name.trim(),
+    alternativeQuestion: createKeywordRequest.name.trim(),
+    dataType: MiddleWareToProdoctivityDictionary.get(
+      GetDataTypeByString(createKeywordRequest.dataType),
+    )!,
+    sampleValue: getSampleValue(GetDataTypeByString(createKeywordRequest.dataType)),
+    ...mergedOptions,
+  };
 
-    console.clear();
-    // console.log('request on Core:', JSON.stringify(requestBody, null, 2))
-    const response = await fetch(
-      `${credential.serverInformation.server}/site/api/v0.1/dictionary/data-elements`,
-      requestOptions,
-    );
-
-    if (!response.ok) {
-      // console.log('response:', response)
-      let errorMessage = `API request failed with status ${response.status}`;
-      try {
-        const errorBody = await response.json();
-        errorMessage = errorBody.message || errorMessage;
-      } catch (e) {
-        // If we can't parse the error body, use the status text
-        errorMessage = response.statusText || errorMessage;
-      }
-      return {
-        ok: false,
-        error: new Error(errorMessage),
-      };
-    }
-    const listOfDataElements = await getDataElements(credential);
-
-    if (!listOfDataElements.ok) {
-      return {
-        ok: false,
-        error: new Error('Can determinate if data element is created'),
-      };
-    }
-    const dataElement = listOfDataElements.value.values().find((x: any) => x.name === generateName);
-
-    if (!dataElement) {
-      return {
-        ok: false,
-        error: new Error('Data element not found'),
-      };
-    }
-
-    return {
-      ok: true,
-      value: {
-        id: dataElement.id,
-        name: dataElement.name,
-        dataType: dataElement.dataType,
-        required: dataElement.required,
-      },
-    };
-  } catch (error) {
+  if (requestBody.dataType === 0) {
     return {
       ok: false,
-      error:
-        error instanceof Error
-          ? error
-          : new Error('An unknown error occurred while creating the keyword'),
+      error: new Error('Data type cannot be None'),
     };
   }
+
+  console.clear();
+  // console.log('request on Core:', JSON.stringify(requestBody, null, 2))
+  const result = await manager
+    .build(credential.serverInformation.server, 'POST')
+    .addHeaders(headers)
+    .addBody(requestBody)
+    .executeAsync<any>(`site/api/v0.1/dictionary/data-elements`);
+
+  if (!result.ok) {
+    return result;
+  }
+  const listOfDataElements = await getDataElements(credential);
+
+  if (!listOfDataElements.ok) {
+    return {
+      ok: false,
+      error: new Error('Can determinate if data element is created'),
+    };
+  }
+  const dataElement = listOfDataElements.value
+    .values()
+    .find((x: DataElement) => x.name === generateName);
+
+  if (!dataElement) {
+    return {
+      ok: false,
+      error: new Error('Data element not found'),
+    };
+  }
+
+  return {
+    ok: true,
+    value: {
+      id: dataElement.id,
+      name: dataElement.name,
+      dataType: dataElement.dataType,
+      required: dataElement.required,
+    },
+  };
 };

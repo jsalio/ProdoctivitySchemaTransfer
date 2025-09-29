@@ -1,42 +1,72 @@
-<!-- <h2 class="font-semibold text-gray-700 mb-2">Documentos</h2> -->
-<div class="p-4 lg:p-6">
-  <div class="flex items-center justify-between mb-4 lg:mb-6">
-    <h2 class="text-lg font-medium text-gray-900">Documentos</h2>
-    <div class="flex items-center space-x-2 text-sm text-gray-500">
-      <span>{{ documentTypesSchemas().length }} documentos</span>
+<div class="p-4 lg:p-6 flex flex-col h-[calc(100vh-73px)]">
+  <div class="flex items-center mb-4 lg:mb-6 space-x-4">
+    <!-- Título -->
+    <h2 class="text-lg font-medium text-gray-700 flex-1">Documentos</h2>
+    <app-filter-input
+      [disable]="parentGroup() === '' || parentGroup() === null"
+      (filterChanged)="onFilter($event)"
+      placeholder="Buscar tipo"
+    />
+
+    <!-- Contador de documentos -->
+    <div class="text-sm text-gray-500 flex-1 text-right">
+      {{ documentTypesSchemas().length }} documentos
     </div>
   </div>
-  @if (loadingSource() || loadingTarget()) {
-    <div class="flex items-center justify-center p-4">
-      <span class="text-gray-500">Cargando...</span>
+  <!-- Mensaje cuando no hay grupo seleccionado -->
+  @if (parentGroup() === '' || parentGroup() === null) {
+    <div class="flex-1 flex items-center justify-center">
+      <span class="text-gray-500 text-lg">Seleccione un grupo primero</span>
+    </div>
+  } @else if (
+    documentTypesSchemas().length === 0 && !loadingSource() && !loadingTarget() && filter() === ''
+  ) {
+    <!-- Mensaje cuando no hay documentos -->
+    <div class="flex-1 flex items-center justify-center">
+      <span class="text-gray-500 text-lg">Grupo sin documentos</span>
+    </div>
+  } @else if (
+    documentTypesSchemas().length === 0 && !loadingSource() && !loadingTarget() && filter() !== ''
+  ) {
+    <div class="flex-1 flex items-center justify-center">
+      <span class="text-gray-500 text-lg">Sin resultados</span>
     </div>
   } @else {
-    <div class="space-y-2 lg:space-y-3">
-      @for (item of documentTypesSchemas(); track item.documentTypeId) {
-        <div
-          class="flex items-center p-3 lg:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
-          (click)="checkItem($event, item.documentTypeId)"
-        >
-          <input
-            type="checkbox"
-            [checked]="isChecked(item.documentTypeId)"
-            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
-          />
-          <div class="w-5 h-5 lg:w-6 lg:h-6 text-green-600 mx-3 lg:mx-4 flex-shrink-0">📄</div>
-          <span class="text-sm text-gray-900 min-w-0 flex-1">{{ item.documentTypeName }}</span>
-          @if (item.targetDocumentType !== '') {
-            <div class="flex items-center mt-1">
-              <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-              <span class="text-xs text-green-600">Sincronizado</span>
+    <!-- Lista con scroll sutil -->
+    <div
+      class="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400"
+    >
+      @if (loadingSource() || loadingTarget()) {
+        <div class="flex items-center justify-center p-4">
+          <span class="text-gray-500">Cargando...</span>
+        </div>
+      } @else {
+        <div class="space-y-2 lg:space-y-3">
+          @for (item of documentTypesSchemas(); track item.documentTypeId) {
+            <div
+              [@fadeInOut]
+              tabindex="0"
+              (keydown)="checkItem($event, item.documentTypeId)"
+              class="flex items-center p-3 lg:p-4 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
+              (click)="checkItem($event, item.documentTypeId)"
+            >
+              <input
+                type="checkbox"
+                [checked]="isChecked(item.documentTypeId)"
+                class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 flex-shrink-0"
+              />
+              <div class="w-5 h-5 lg:w-6 lg:h-6 text-green-600 mx-3 lg:mx-4 flex-shrink-0">📄</div>
+              <span class="text-sm text-gray-900 min-w-0 flex-1">{{ item.documentTypeName }}</span>
+              @if (item.targetDocumentType !== '') {
+                <div class="flex items-center mt-1">
+                  <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                  <span class="text-xs text-green-600">Sincronizado</span>
+                </div>
+              }
             </div>
           }
         </div>
       }
     </div>
-
-    <!-- ✅ Mensaje cuando no hay documentos -->
-    @if (documentTypesSchemas().length === 0 && !loadingSource() && !loadingTarget()) {
-      <li class="text-center py-4 text-gray-500">No hay documentos disponibles</li>
-    }
   }
 </div>

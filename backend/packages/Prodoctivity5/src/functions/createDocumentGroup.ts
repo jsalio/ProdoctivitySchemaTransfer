@@ -2,6 +2,7 @@ import { Credentials, DocumentGroup, Result } from '@schematransfer/core';
 // import { generateShortGuid } from "./utils/random-guid";
 import { DocumentGroupOptions } from '../types/DocumentGroupOptions';
 import { FluencyDocumentGroupResponse } from '../types/FluencyDocumentGroupResponse';
+import { RequestManager } from '@schematransfer/requestmanager';
 
 const DEFAULT_OPTIONS: Required<DocumentGroupOptions> = {
   defaultWorkflowConfigurationId: 1,
@@ -30,70 +31,41 @@ export const createDocumentGroup = async (
     };
   }
 
-  try {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('x-api-key', credential.serverInformation.apiKey);
+  const manager = new RequestManager({ retries: 3, retryDelay: 1000, timeout: 600000 });
 
-    const basicAuthText = `${credential.username}@prodoctivity capture:${credential.password}`;
-    headers.append('Authorization', `Basic ${btoa(basicAuthText)}`);
+  const basicAuthText = `${credential.username}@prodoctivity capture:${credential.password}`;
+  const headers: Record<string, string> = {};
+  headers['Content-Type'] = 'application/json';
+  headers['Authorization'] = `Basic ${btoa(basicAuthText)}`;
+  headers['x-api-key'] = credential.serverInformation.apiKey;
+  manager.addHeaders(headers);
 
-    const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
+  const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
 
-    const requestBody = {
-      description: name, //+shortGuid,
-      name: name.trim(), //+shortGuid,
-      ...mergedOptions,
-    };
+  const requestBody = {
+    description: name,
+    name: name.trim(),
+    ...mergedOptions,
+  };
 
-    const requestOptions: RequestInit = {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(requestBody),
-      redirect: 'follow',
-    };
-    // console.log("requestOptions:", JSON.stringify(requestOptions, null, 2))
-    const response = await fetch(
-      `${credential.serverInformation.server}/Site/api/v0.1/business-functions`,
-      requestOptions,
-    );
-    // console.log("response:", JSON.stringify(response, null, 2))
+  const result = await manager
+    .build(credential.serverInformation.server, 'POST')
+    .addHeaders(headers)
+    .addBody(requestBody)
+    .executeAsync<FluencyDocumentGroupResponse>('Site/api/v0.1/business-functions');
 
-    if (!response.ok) {
-      // console.log("response not ok")
-      let errorMessage = `API request failed with status ${response.status}`;
-      try {
-        const errorBody = await response.json();
-        errorMessage = errorBody.message || errorMessage;
-      } catch (e) {
-        // If we can't parse the error body, use the status text
-        errorMessage = response.statusText || errorMessage;
-      }
-      return {
-        ok: false,
-        error: new Error(errorMessage),
-      };
-    }
-    // console.log("proceso completado")
-
-    const body: FluencyDocumentGroupResponse = await response.json();
-
-    return {
-      ok: true,
-      value: {
-        documentTypesCounter: 0,
-        groupId: body.id.toString(),
-        groupName: body.name || name,
-      },
-    };
-  } catch (error) {
-    console.log('error:', JSON.stringify(error, null, 2));
-    return {
-      ok: false,
-      error:
-        error instanceof Error
-          ? error
-          : new Error('An unknown error occurred while creating the document group'),
-    };
+  if (!result.ok) {
+    return result;
   }
+
+  const body = result.value;
+
+  return {
+    ok: true,
+    value: {
+      documentTypesCounter: 0,
+      groupId: body.id.toString(),
+      groupName: body.name || name,
+    },
+  };
 };

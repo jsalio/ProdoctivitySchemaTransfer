@@ -1,14 +1,12 @@
 import {
   Component,
   OnChanges,
-  OnDestroy,
-  Signal,
-  SimpleChanges,
   WritableSignal,
   computed,
   input,
   output,
   signal,
+  inject,
 } from '@angular/core';
 
 import { Credentials } from '../../../types/models/Credentials';
@@ -18,7 +16,6 @@ import {
   DocumetTypeKeyword,
 } from '../../../types/models/DocumentTypeKeywordSchema';
 import { LocalDataService } from '../../../services/ui/local-data.service';
-import { ModalComponent } from '../../../shared/modal/modal.component';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaDocumentType } from '../../../types/models/SchemaDocumentType';
 import { SchemaService } from '../../../services/backend/schema.service';
@@ -31,7 +28,10 @@ import { IconographyComponent } from '../../../shared/iconography/iconography.co
   templateUrl: './document-type-schema.component.html',
   styleUrl: './document-type-schema.component.css',
 })
-export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
+export class DocumentTypeSchemaComponent implements OnChanges {
+  private readonly localData = inject(LocalDataService);
+  private readonly schemaService = inject(SchemaService);
+
   documentTypeID = input<string>('');
   targetDocumentTypeId = input<string>('');
   targetSystemDataElements = input<DataElement[]>([]);
@@ -44,7 +44,7 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
   storeMessageFailured = signal<string>('');
   order = signal<number>(0);
 
-  onKeySelected = output<{ isChecked: boolean; keyword: DocumetTypeKeyword; order: number }>();
+  keySelected = output<{ isChecked: boolean; keyword: DocumetTypeKeyword; order: number }>();
 
   // Para trackear los valores anteriores y evitar llamadas duplicadas
   private previousSourceId: string | null = null;
@@ -87,7 +87,7 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
         //console.log('No exits 1')
         return false;
       }
-      let elementInTarget = this.targetSystemDataElements().find(
+      const elementInTarget = this.targetSystemDataElements().find(
         (x) => x.name.toLocaleLowerCase() === keyname.toLocaleLowerCase(),
       );
 
@@ -119,19 +119,12 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
         targetKeywordId: getTargetKeywordId(k.name),
       })),
     };
-    // currentSchema.keywords.filter(k => k.isSync).forEach(k => {
-    //   this.order.set(this.order() + 1)
-    // })
 
     return currentSchema;
   });
 
-  constructor(
-    private readonly localData: LocalDataService,
-    private readonly schemaService: SchemaService,
-  ) {}
-
-  ngOnChanges(changes: SimpleChanges): void {
+  ngOnChanges(): void {
+    console.log(this.documentTypeID());
     const currentSourceId = this.documentTypeID();
     const currentTargetId = this.targetDocumentTypeId();
 
@@ -158,11 +151,6 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
 
     // Cargar esquemas solo si los IDs son válidos
     this.loadSchemasIfValid(currentSourceId, currentTargetId);
-  }
-
-  ngOnDestroy(): void {
-    // Limpiar cualquier subscription pendiente si es necesario
-    // ObservableHandler podría necesitar cleanup aquí
   }
 
   private loadSchemasIfValid(sourceId: string, targetId: string): void {
@@ -259,7 +247,7 @@ export class DocumentTypeSchemaComponent implements OnChanges, OnDestroy {
     //   this.order.set(keyspresentInTarget - 1)
     // }
     // console.log(this.order())
-    this.onKeySelected.emit({ isChecked: isChecked, keyword: keyword, order: keyspresentInTarget });
+    this.keySelected.emit({ isChecked: isChecked, keyword: keyword, order: keyspresentInTarget });
   };
 
   fieldIsTypeImage = (field: DocumetTypeKeyword) => {

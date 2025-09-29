@@ -1,5 +1,6 @@
 import { Credentials, DocumentType, Result } from '@schematransfer/core';
 import { FluencyDocumentType } from '../types/FluencyDocumentType';
+import { RequestManager } from '@schematransfer/requestmanager';
 
 /**
  * Fetches document types from the API and returns those matching the specified business line ID as a Set of DocumentType objects.
@@ -12,80 +13,61 @@ export const getDocumentTypes = async (
   credential: Credentials,
   id: string,
 ): Promise<Result<Array<DocumentType>, Error>> => {
-  try {
-    const headers = new Headers();
-    headers.append('x-api-key', credential.serverInformation.apiKey);
-    const basicAuthText = `${credential.username}@productivity capture:${credential.password}`; // Fixed typo: "prodoctivity" -> "productivity"
-    headers.append('Authorization', `Basic ${btoa(basicAuthText)}`);
+  const manager = new RequestManager({ retries: 3, retryDelay: 1000, timeout: 600000 });
 
-    const requestOptions: RequestInit = {
-      method: 'GET',
-      headers: headers,
-      redirect: 'follow',
-    };
+  const basicAuthText = `${credential.username}@prodoctivity capture:${credential.password}`;
+  const headers: Record<string, string> = {};
+  headers['Authorization'] = `Basic ${btoa(basicAuthText)}`;
+  headers['x-api-key'] = credential.serverInformation.apiKey;
+  manager.addHeaders(headers);
 
-    const response = await fetch(
-      `${credential.serverInformation.server}/site/api/v2/document-types`,
-      requestOptions,
-    );
+  const result = await manager
+    .build(credential.serverInformation.server, 'GET')
+    .addHeaders(headers)
+    .executeAsync<FluencyDocumentType[]>('site/api/v2/document-types');
 
-    // Check if the response status is OK
-    if (!response.ok) {
-      return {
-        ok: false,
-        error: new Error(
-          `API request failed with status ${response.status}: ${response.statusText}`,
-        ),
-      };
-      //throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
-    }
-
-    const body = await response.json();
-
-    // Validate that body is an array
-    if (!Array.isArray(body)) {
-      return {
-        ok: false,
-        error: new Error('Expected an array of FluencyDocumentType objects in the response'),
-      };
-    }
-
-    // Validate that each item in the array has the required properties
-    const isValidResponse = body.every(
-      (item): item is FluencyDocumentType =>
-        item != null &&
-        typeof item === 'object' &&
-        typeof item.id === 'number' &&
-        typeof item.name === 'string' &&
-        item.businessLine != null &&
-        typeof item.businessLine === 'object' &&
-        typeof item.businessLine.id === 'number' &&
-        typeof item.businessLine.name === 'string',
-    );
-
-    if (!isValidResponse) {
-      return {
-        ok: false,
-        error: new Error('Invalid FluencyDocumentType data in response'),
-      };
-    }
-
-    // Filter and map the response to DocumentType objects, then convert to Set
-    const documentTypes = body
-      .filter((x: FluencyDocumentType) => x.businessLine.id.toString() === id)
-      .map(
-        (x: FluencyDocumentType): DocumentType => ({
-          documentTypeId: x.id.toString(),
-          documentTypeName: x.name,
-        }),
-      );
-
-    return {
-      ok: true,
-      value: documentTypes,
-    };
-  } catch (error) {
-    console.error('Error fetching document types:', error);
-    throw error; // Re-throw to allow the caller to handle the error
+  if (!result.ok) {
+    return result as Result<Array<DocumentType>, Error>;
   }
+
+  const body = result.value;
+  if (!Array.isArray(body)) {
+    return {
+      ok: false,
+      error: new Error('Expected an array of FluencyDocumentType objects in the response'),
+    };
+  }
+
+  const isValidResponse = body.every(
+    (item): item is FluencyDocumentType =>
+      item != null &&
+      typeof item === 'object' &&
+      typeof item.id === 'number' &&
+      typeof item.name === 'string' &&
+      item.businessLine != null &&
+      typeof item.businessLine === 'object' &&
+      typeof item.businessLine.id === 'number' &&
+      typeof item.businessLine.name === 'string',
+  );
+
+  if (!isValidResponse) {
+    return {
+      ok: false,
+      error: new Error('Invalid FluencyDocumentType data in response'),
+    };
+  }
+
+  const documentTypes = body
+    .filter((x: FluencyDocumentType) => x.businessLine.id.toString() === id)
+    .map(
+      (x: FluencyDocumentType): DocumentType => ({
+        documentTypeId: x.id.toString(),
+        documentTypeName: x.name,
+      }),
+    );
+
+  return {
+    ok: true,
+    value: documentTypes,
+  };
 };

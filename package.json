@@ -4,6 +4,12 @@
   "scripts": {
     "format:backend": "cd backend && bun run format",
     "format:frontend": "cd frontend && npm run format",
+    "lint:backend": "cd backend && bun run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend:fix": "cd backend && bun run lint:fix",
+    "lint:frontend:fix": "cd frontend && npm run lint -- --fix",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:fix": "npm run lint:backend:fix && npm run lint:frontend:fix",
     "prepare": "husky"
   },
   "dependencies": {

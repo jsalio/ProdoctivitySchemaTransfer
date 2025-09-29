@@ -1,32 +1,35 @@
+//eslint-disable
 import { DocumentGroup, ISchema, Response } from '../../types/contracts/ISchema';
-
-import { BaseService } from './BaseService';
-import { Credentials } from '../../types/models/Credentials';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SCHEMA_REPOSITORY } from '../../types/tokens/SCHEMA_REPOSITORY';
+import { Repository } from '../../types/contracts/repository.interface';
+import { Credentials } from '../../types/models/Credentials';
 import { DataElement, DocumentType } from '../../types/models/SchemaDocumentType';
 
+/**
+ * implemets contracts for  schema api
+ * @implements ISchema
+ * @returns ISchema implementation
+ */
 @Injectable({
   providedIn: 'root',
 })
-export class SchemaService extends BaseService implements ISchema {
-  constructor(private readonly client: HttpClient) {
-    super(client, 'schema');
-  }
+export class SchemaService implements ISchema {
+  private repository = inject<Repository<object>>(SCHEMA_REPOSITORY);
 
   getDocumentGruops(
-    credetials: Credentials,
-  ): Observable<{ data: Array<DocumentGroup>; success: boolean }> {
-    return this.client.post<{ data: Array<DocumentGroup>; success: boolean }>(this.Uri, credetials);
+    credentials: Credentials,
+  ): Observable<{ data: DocumentGroup[]; success: boolean }> {
+    return this.repository.post<{ data: DocumentGroup[]; success: boolean }>('', credentials);
   }
 
   getDocumentTypesInGroup(
     credentials: Credentials,
     groupId: string,
-  ): Observable<{ data: Array<any>; success: boolean }> {
-    return this.client.post<{ data: Array<any>; success: boolean }>(
-      `${this.Uri}/group/${groupId}`,
+  ): Observable<{ data: DocumentType[]; success: boolean }> {
+    return this.repository.post<{ data: DocumentType[]; success: boolean }>(
+      `group/${groupId}`,
       credentials,
     );
   }
@@ -34,17 +37,20 @@ export class SchemaService extends BaseService implements ISchema {
   getDocumentTypeSchema(
     credentials: Credentials,
     documentTypeId: string,
+    // eslint-disable-next-line
   ): Observable<{ data: any; success: boolean }> {
-    return this.client.post<{ data: any; success: boolean }>(
-      `${this.Uri}/document-type/${documentTypeId}`,
+    return this.repository.post<{ data: unknown; success: boolean }>(
+      `document-type/${documentTypeId}`,
       credentials,
     );
   }
 
-  getAllDataElements(credetials: Credentials): Observable<{ data: Array<any>; success: boolean }> {
-    return this.client.post<{ data: Array<DocumentGroup>; success: boolean }>(
-      `${this.Uri}/data-elements`,
-      credetials,
+  getAllDataElements(
+    credentials: Credentials,
+  ): Observable<{ data: DataElement[]; success: boolean }> {
+    return this.repository.post<{ data: DataElement[]; success: boolean }>(
+      'data-elements',
+      credentials,
     );
   }
 
@@ -56,7 +62,7 @@ export class SchemaService extends BaseService implements ISchema {
       credentials,
       name: groupStruct.name,
     };
-    return this.client.post<Response<DocumentGroup>>(`${this.Uri}/create-document-group`, body);
+    return this.repository.post<Response<DocumentGroup>>('create-document-group', body);
   }
 
   saveNewDocumentType(
@@ -70,12 +76,12 @@ export class SchemaService extends BaseService implements ISchema {
         documentGroupId: documentTypeStruct.documentGroupId,
       },
     };
-    return this.client.post<Response<DocumentType>>(`${this.Uri}/create-document-type`, body);
+    return this.repository.post<Response<DocumentType>>('create-document-type', body);
   }
 
   saveNewKeyword(
     credentials: Credentials,
-    keywordStruct: { name: string; dataType: string; require: string },
+    keywordStruct: { name: string; dataType: string; require: string; label: string },
   ): Observable<Response<DataElement>> {
     const body = {
       credentials,
@@ -83,14 +89,16 @@ export class SchemaService extends BaseService implements ISchema {
         name: keywordStruct.name,
         dataType: keywordStruct.dataType,
         isRequired: keywordStruct.require,
+        label: keywordStruct.label,
       },
     };
-    return this.client.post<Response<DataElement>>(`${this.Uri}/create-data-element`, body);
+    return this.repository.post<Response<DataElement>>('create-data-element', body);
   }
+
   saveNewDocumentSchema(
     credentials: Credentials,
     documentSchemaStruct: { name: string; documentTypeId: string; keywordId: string },
-  ): Observable<any> {
+  ): Observable<Response<unknown>> {
     const body = {
       credentials,
       assignDataElementToDocumentRequest: {
@@ -98,22 +106,10 @@ export class SchemaService extends BaseService implements ISchema {
         dataElement: {
           name: documentSchemaStruct.name,
           order: 0,
+          id: documentSchemaStruct.keywordId,
         },
       },
     };
-    debugger;
-    return this.client.post<any>(`${this.Uri}/assign-data-element`, body);
+    return this.repository.post<Response<unknown>>('assign-data-element', body);
   }
-
-  // saveNewDocumentSchema(credentials: Credentials, documentSchemaStruct: { documentTypeId: string; keywordId: number; }) : Observable<any> {
-  //   const body = {
-  //     credentials,
-  //     assignDataElementRequest: {
-  //       documentTypeId: documentSchemaStruct.documentTypeId,
-  //       dataElement: documentSchemaStruct.keywordId
-  //     }
-  //   }
-  //   debugger
-  //   return this.client.post<any>(`${this.Uri}/assign-data-element`, body)
-  // }
 }

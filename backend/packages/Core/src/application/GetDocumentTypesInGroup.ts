@@ -6,6 +6,7 @@ import { LoginValidator } from '../domain/Validations/LoginValidator';
 import { CoreResult } from '../ports/Result';
 import { AppCodeError } from '../domain/AppCodeError';
 import { GetDocumentGroupRequest } from '../domain/GetDocumentGroupRequest';
+import { ValidationError } from '../domain/ValidationError';
 
 /**
  * Handles the retrieval of document types within a specific group.
@@ -27,9 +28,14 @@ export class GetDocumentTypesGroups {
    * @returns An array of validation errors, if any
    */
   validate() {
+    let request = this.request.build();
+    let validationErrors: ValidationError<GetDocumentGroupRequest>[] = [];
     const validations = new LoginValidator(this.request.build().credentials);
     const errors = validations.Validate();
-    return errors;
+    if (request.groupId === '') {
+      validationErrors.push({ field: 'groupId', message: 'Invalid name for group' });
+    }
+    return [...validationErrors, ...errors];
   }
 
   /**

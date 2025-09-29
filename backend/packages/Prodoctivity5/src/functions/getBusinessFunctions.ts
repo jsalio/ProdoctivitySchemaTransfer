@@ -1,5 +1,6 @@
 import { Credentials, DocumentGroup, Result } from '@schematransfer/core';
 import { FluencyDocumentGroup } from '../types/FluencyDocumentGroup';
+import { RequestManager } from '@schematransfer/requestmanager';
 
 /**
  * Fetches business functions from the API and returns them as a Set of DocumentGroup objects.
@@ -10,76 +11,53 @@ import { FluencyDocumentGroup } from '../types/FluencyDocumentGroup';
 export const getBusinessFunctions = async (
   credential: Credentials,
 ): Promise<Result<Array<DocumentGroup>, Error>> => {
-  try {
-    const headers = new Headers();
-    headers.append('x-api-key', credential.serverInformation.apiKey);
-    const basicAuthText = `${credential.username}@prodoctivity capture:${credential.password}`; // Fixed typo: "prodoctivity" -> "productivity"
-    headers.append('Authorization', `Basic ${btoa(basicAuthText)}`);
+  const manager = new RequestManager({ retries: 3, retryDelay: 1000, timeout: 600000 });
 
-    const requestOptions: RequestInit = {
-      method: 'GET',
-      headers: headers,
-      redirect: 'follow',
-    };
+  const basicAuthText = `${credential.username}@prodoctivity capture:${credential.password}`;
+  const headers: Record<string, string> = {};
+  headers['Authorization'] = `Basic ${btoa(basicAuthText)}`;
+  headers['x-api-key'] = credential.serverInformation.apiKey;
+  manager.addHeaders(headers);
 
-    const response = await fetch(
-      `${credential.serverInformation.server}/site/api/v0.1/business-functions`,
-      requestOptions,
-    );
+  const result = await manager
+    .build(credential.serverInformation.server, 'GET')
+    .addHeaders(headers)
+    .executeAsync<FluencyDocumentGroup[]>('site/api/v0.1/business-functions');
 
-    // Check if the response status is OK
-    if (!response.ok) {
-      //throw new Error(`API request failed with status ${response.status}: ${response.statusText}`);
-      return {
-        ok: false,
-        error: new Error(
-          `API request failed with status ${response.status}: ${response.statusText}`,
-        ),
-      };
-    }
-
-    const body = await response.json();
-
-    // Validate that body is an array
-    if (!Array.isArray(body)) {
-      return {
-        ok: false,
-        error: new Error('Expected an array of FluencyDocumentGroup objects in the response'),
-      };
-    }
-
-    // Validate that each item in the array has the required properties
-    const isValidResponse = body.every(
-      (item): item is FluencyDocumentGroup =>
-        item != null &&
-        typeof item === 'object' &&
-        typeof item.id === 'number' &&
-        typeof item.description === 'string',
-    );
-
-    if (!isValidResponse) {
-      return {
-        ok: false,
-        error: new Error('Invalid FluencyDocumentGroup data in response'),
-      };
-      //throw new Error("Invalid FluencyDocumentGroup data in response");
-    }
-
-    // Map the response to DocumentGroup objects and convert to Set
-    const documentGroups = body.map(
-      (x: FluencyDocumentGroup): DocumentGroup => ({
-        groupName: x.description,
-        groupId: x.id.toString(),
-        documentTypesCounter: 0,
-      }),
-    );
-
-    return {
-      ok: true,
-      value: documentGroups,
-    };
-  } catch (error) {
-    console.error('Error fetching business functions:', error);
-    throw error; // Re-throw to allow the caller to handle the error
+  if (!result.ok) {
+    return result as Result<Array<DocumentGroup>, Error>;
   }
+
+  const body = result.value;
+  if (!Array.isArray(body)) {
+    return {
+      ok: false,
+      error: new Error('Expected an array of FluencyDocumentGroup objects in the response'),
+    };
+  }
+
+  const isValidResponse = body.every(
+    (item): item is FluencyDocumentGroup =>
+      item != null && typeof item === 'object' && typeof item.id === 'number' && typeof item.description === 'string',
+  );
+
+  if (!isValidResponse) {
+    return {
+      ok: false,
+      error: new Error('Invalid FluencyDocumentGroup data in response'),
+    };
+  }
+
+  const documentGroups = body.map(
+    (x: FluencyDocumentGroup): DocumentGroup => ({
+      groupName: x.description,
+      groupId: x.id.toString(),
+      documentTypesCounter: 0,
+    }),
+  );
+
+  return {
+    ok: true,
+    value: documentGroups,
+  };
 };

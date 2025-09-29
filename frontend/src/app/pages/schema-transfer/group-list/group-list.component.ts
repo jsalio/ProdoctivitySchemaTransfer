@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, output, signal } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { Credentials } from '../../../types/models/Credentials';
@@ -6,24 +6,27 @@ import { DocumentGroup } from '../../../types/contracts/ISchema';
 import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
-
-export type SchemaDocumentGroup = {
-  groupId: string;
-  groupName: string;
-  documentTypesCounter: number;
-  targetId: string | null;
-};
+import { SchemaDocumentGroup } from '../../../types/models/SchemaDocumentGroup';
+import { Filter } from '../utils/FilterDatalist';
+import { FormsModule } from '@angular/forms';
+import { FilterInputComponent } from '../../../shared/filter-input/filter-input.component';
+import { FilterAnimation } from '../../../shared/Animation/filter';
 
 @Component({
   selector: 'app-group-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule, FilterInputComponent],
   templateUrl: './group-list.component.html',
   styleUrl: './group-list.component.css',
+  animations: [FilterAnimation],
 })
 export class GroupListComponent implements OnInit {
-  sourceDocumentGroups = signal<Array<DocumentGroup>>([]);
+  private readonly localData = inject(LocalDataService);
+  private readonly schemaService = inject(SchemaService);
+
+  sourceDocumentGroups = signal<DocumentGroup[]>([]);
   targetDocumentGroups = signal<DocumentGroup[]>([]);
+
   SchemaDocumentGroups = computed(() => {
     const findInTarget = (name: string): string | null => {
       const item = this.targetDocumentGroups().find((x) => x.groupName === name);
@@ -33,7 +36,7 @@ export class GroupListComponent implements OnInit {
       return item.groupId;
     };
 
-    return this.sourceDocumentGroups().map(
+    const dataSet = this.sourceDocumentGroups().map(
       (x) =>
         ({
           documentTypesCounter: x.documentTypesCounter,
@@ -42,16 +45,18 @@ export class GroupListComponent implements OnInit {
           targetId: findInTarget(x.groupName),
         }) as SchemaDocumentGroup,
     );
+
+    if (this.filter() !== '') {
+      return Filter(this.filter(), 'groupName', dataSet);
+    }
+
+    return dataSet;
   });
 
   loading = signal<boolean>(true);
   selectedItem = signal<SchemaDocumentGroup | null>(null);
+  filter = signal<string>('');
   selectedDocumetGroup = output<SchemaDocumentGroup | null>();
-
-  constructor(
-    private readonly localData: LocalDataService,
-    private readonly schemaService: SchemaService,
-  ) {}
 
   ngOnInit(): void {
     const credentialOfcloud = this.localData.getValue<Credentials>('Credentials_V6_Cloud');
@@ -70,7 +75,7 @@ export class GroupListComponent implements OnInit {
 
   executeCall = (
     credentials: Credentials,
-    callback: (response: { data: Array<DocumentGroup>; success: boolean }) => void,
+    callback: (response: { data: DocumentGroup[]; success: boolean }) => void,
   ) => {
     ObservableHandler.handle(this.schemaService.getDocumentGruops(credentials))
       .onNext(callback)
@@ -114,5 +119,9 @@ export class GroupListComponent implements OnInit {
       this.itemClasses().get(groupName) ||
       'flex items-center p-2 lg:p-3 hover:bg-gray-50 transition-colors'
     );
+  };
+
+  onFilter = (value: string) => {
+    this.filter.set(value);
   };
 }

@@ -1,8 +1,8 @@
 import { AdditionalInfo } from './AdditionalInfo';
-export type Credentials = {
+export interface Credentials {
   username: string;
   password: string;
   serverInformation: AdditionalInfo;
   store?: string;
   token?: string;
-};
+}

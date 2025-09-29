@@ -35,7 +35,7 @@ import { Observable, Subscription, finalize } from 'rxjs';
  */
 export class ObservableHandler<T> {
   private _onNext?: (data: T) => void;
-  private _onError?: (error: any) => void;
+  private _onError?: (error: unknown) => void;
   private _onComplete?: () => void;
   private _onFinalize?: () => void;
   private _onStart?: () => void;
@@ -115,7 +115,7 @@ export class ObservableHandler<T> {
    * });
    * ```
    */
-  onError(callback: (error: any) => void): ObservableHandler<T> {
+  onError(callback: (error: unknown) => void): ObservableHandler<T> {
     this._onError = callback;
     return this;
   }
@@ -185,9 +185,15 @@ export class ObservableHandler<T> {
     this._onStart?.();
 
     return this.observable.pipe(finalize(() => this._onFinalize?.())).subscribe({
-      next: this._onNext || (() => {}),
-      error: this._onError || (() => {}),
-      complete: this._onComplete || (() => {}),
+      next: this._onNext || (() => {
+        // Default empty handler for next
+      }),
+      error: this._onError || (() => {
+        // Default empty handler for error
+      }),
+      complete: this._onComplete || (() => {
+        // Default empty handler for complete
+      }),
     });
   }
 
@@ -227,7 +233,7 @@ export class ObservableHandler<T> {
           this._onNext?.(data);
           resolve(data);
         },
-        error: (error: any) => {
+        error: (error: unknown) => {
           this._onError?.(error);
           reject(error);
         },

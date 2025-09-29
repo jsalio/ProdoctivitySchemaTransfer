@@ -7,8 +7,9 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:headless": "ng test --watch=false",
-    "format": "prettier --write \"src/**/*.{ts,html,scss,css}\""
+    "test:headless": "ng test --configuration=headless",
+    "format": "prettier --write \"src/**/*.{ts,html,scss,css}\"",
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -29,7 +30,9 @@
     "@angular/cli": "^18.2.3",
     "@angular/compiler-cli": "^18.2.0",
     "@types/jasmine": "~5.1.0",
+    "angular-eslint": "20.2.0",
     "autoprefixer": "^10.4.19",
+    "eslint": "^9.33.0",
     "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
@@ -39,6 +42,7 @@
     "postcss": "^8.4.38",
     "prettier": "^3.6.2",
     "tailwindcss": "^3.4.3",
-    "typescript": "~5.5.2"
+    "typescript": "~5.5.2",
+    "typescript-eslint": "8.40.0"
   }
 }

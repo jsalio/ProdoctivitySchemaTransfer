@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, computed, effect, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { LayoutService } from '../../services/ui/layout.service';
+import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 
 @Component({
   selector: 'app-disconnected',
@@ -10,10 +11,22 @@ import { LayoutService } from '../../services/ui/layout.service';
   styleUrl: './disconnected.component.css',
 })
 export class DisconnectedComponent {
-  constructor(
-    private router: Router,
-    private readonly layoutService: LayoutService,
-  ) {}
+  private router = inject(Router);
+  private readonly layoutService = inject(LayoutService);
+  private readonly conectionStatus = inject(CredetialConnectionService);
+
+  constructor() {
+    effect(() => {
+      if (this.conectionStatus.connectedToCloud()) {
+        console.log('Redirec to normal path');
+        this.router.navigate(['/']);
+      }
+    });
+  }
+
+  isConnected = computed(() => {
+    return this.conectionStatus.connectedToCloud();
+  });
 
   navigateToLogin() {
     // this.router.navigate(['/login']);

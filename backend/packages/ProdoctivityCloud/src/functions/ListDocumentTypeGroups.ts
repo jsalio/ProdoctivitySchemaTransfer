@@ -1,6 +1,7 @@
 import { Credentials, DocumentType, Result } from '@schematransfer/core';
 
 import { CloudDocumentType } from '../types/CloudDocumentType';
+import { RequestManager } from '@schematransfer/requestmanager';
 
 export const GetDocumentTypeInGroup = async (
   credential: Credentials,
@@ -11,47 +12,34 @@ export const GetDocumentTypeInGroup = async (
       return documentTypes.filter((document) => document.documentGroupId === documentGroupId);
     };
 
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', `Bearer ${credential.token}`);
-    headers.append('x-api-key', credential.serverInformation.apiKey);
-    headers.append('api-secret', credential.serverInformation.apiSecret);
+    const rm = new RequestManager({ retries: 2, retryDelay: 1000, timeout: 60000 });
+    const headers: Record<string, string> = {};
+    headers['Content-Type'] = 'application/json';
+    headers['Authorization'] = `Bearer ${credential.token}`;
+    headers['x-api-key'] = credential.serverInformation.apiKey;
+    headers['api-secret'] = credential.serverInformation.apiSecret;
 
-    const requestOptions: RequestInit = {
-      method: 'GET',
-      headers: headers,
-      redirect: 'follow',
-    };
+    const result = await rm
+      .build(credential.serverInformation.server, 'GET')
+      .addHeaders(headers)
+      .executeAsync<{ documentTypes: CloudDocumentType[] }>('api/document-types/all');
 
-    const response = await fetch(
-      `${credential.serverInformation.server}/api/document-types/all`,
-      requestOptions,
-    );
-    if (!response.ok) {
-      return {
-        ok: false,
-        error: new Error(`Login failed with status ${response.status}: ${response.statusText}`),
-      };
+    if (!result.ok) {
+      return result as Result<Array<DocumentType>, Error>;
     }
 
-    const body: { documentTypes: CloudDocumentType[] } = await response.json();
+    const body = result.value;
 
-    if (response.status === 200) {
-      return {
-        ok: true,
-        value: Array.from(
-          new Set(
-            filterDocumentTypeByGroupId(body.documentTypes).map((document) => ({
-              documentTypeId: document.documentTypeId,
-              documentTypeName: document.name,
-            })),
-          ),
-        ),
-      };
-    }
     return {
-      ok: false,
-      error: new Error('No document types found in Group'),
+      ok: true,
+      value: Array.from(
+        new Set(
+          filterDocumentTypeByGroupId(body.documentTypes).map((document) => ({
+            documentTypeId: document.documentTypeId,
+            documentTypeName: document.name,
+          })),
+        ),
+      ),
     };
   } catch (error) {
     return {

@@ -16,18 +16,20 @@ export type CreateDataElementRequest = {
   /**
    * The request object for creating a data element.
    */
-  createDataElementRequest: {
-    /**
-     * The name of the data element.
-     */
-    name: string;
-    /**
-     * The data type of the data element.
-     */
-    dataType: string;
-    /**
-     * Whether the data element is required.
-     */
-    isRequired: boolean;
-  };
+  createDataElementRequest: DataElementCreationRequest;
+};
+
+export type DataElementCreationRequest = {
+  /**
+   * The name of the data element.
+   */
+  name: string;
+  /**
+   * The data type of the data element.
+   */
+  dataType: string;
+  /**
+   * Whether the data element is required.
+   */
+  isRequired: boolean;
 };
