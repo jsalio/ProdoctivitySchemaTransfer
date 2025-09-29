@@ -7,7 +7,7 @@ export class BaseService {
     };
   };
 
-  checkValidation = <T>(errors: ValidationError<T>[]): string => {
+  checkValidation = <TRequest, TResponse>(errors: ValidationError<TRequest>[]): string => {
     if (errors.length === 0) {
       return '';
     }

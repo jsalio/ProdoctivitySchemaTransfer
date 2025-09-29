@@ -1,0 +1,22 @@
+<div class="max-h-96 overflow-y-auto">
+  <div class="space-y-4 p-2">
+    @for (item of profiles(); track item.name) {
+      <div class="flex items-center justify-between">
+        <label class="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            [disabled]="true"
+            [checked]="item.default"
+            name="default"
+            class="form-checkbox text-blue-600"
+          />
+          <span>{{ item.name }}</span>
+        </label>
+        <div class="flex space-x-2">
+          <app-button (clicked)="setAsDefault(item.name)" [variant]="'primary'">✓</app-button>
+          <app-button (clicked)="removeRecord(item.name)" [variant]="'error'">✗</app-button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -63,4 +63,9 @@ export class DropdownComponent {
     this.open.set(false);
     this.layoutService.modalTransferLinSubject();
   };
+
+  openProfileList = () => {
+    this.open.set(false);
+    this.layoutService.modalProfileListSubject();
+  };
 }

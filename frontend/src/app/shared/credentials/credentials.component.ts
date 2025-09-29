@@ -7,17 +7,19 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Component, computed, input, signal, inject } from '@angular/core';
+import { Component, computed, input, signal, inject, output } from '@angular/core';
 
 import { AuthService } from '../../services/backend/auth.service';
-import { LocalDataService } from '../../services/ui/local-data.service';
+import { LocalDataService, StorageKey } from '../../services/ui/local-data.service';
 import { ObservableHandler } from '../utils/Obserbable-handler';
 import { ReactiveFormsModule } from '@angular/forms';
 import { effect } from '@angular/core';
 import { isTokenExpired } from '../utils/token-decoder';
-// import { ConnectionStatusService } from '../../services/ui/connection-status.service';
 import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 import { ButtonComponent } from '../button/button.component';
+import { CustomSelectComponent, SelectOption } from '../select/select.component';
+import { LoadingComponent } from '../icons/loading/loading.component';
+import { ModalComponent } from '../modal/modal.component';
 
 export interface Credentials {
   username: string;
@@ -38,7 +40,14 @@ export interface AdditionalInfo {
 @Component({
   selector: 'app-credentials',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, ButtonComponent],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonComponent,
+    CustomSelectComponent,
+    LoadingComponent,
+    ModalComponent,
+  ],
   templateUrl: './credentials.component.html',
   styleUrl: './credentials.component.css',
 })
@@ -52,6 +61,7 @@ export class CredentialsComponent {
   store = input<'V5' | 'Cloud'>();
   isLoading = signal<boolean>(false);
   tokenIsProvide = signal<boolean>(false);
+  formData = output<Credentials>();
 
   readonly buttonLabel = computed(() => {
     if (this.tokenIsProvide() && !this.isLoading()) {
@@ -102,7 +112,7 @@ export class CredentialsComponent {
     effect(
       () => {
         const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
-        const key = `Credentials_${storeVersion}_${this.store()}`;
+        const key = `Credentials_${storeVersion}_${this.store()}` as StorageKey;
         const myLocalCredential = this.storage.getValue<Credentials>(key);
 
         if (myLocalCredential) {
@@ -128,6 +138,7 @@ export class CredentialsComponent {
           (this.loginForm as FormGroup).controls['organization'].setValue('ValueNotRequired');
           (this.loginForm as FormGroup).controls['xapisecret'].setValue('ValueNotRequired');
         }
+        this.formData.emit(myLocalCredential);
       },
       { allowSignalWrites: true },
     );
@@ -175,12 +186,11 @@ export class CredentialsComponent {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       this.isLoading.set(false);
-      //console.log(this.getFirstInvalidField())
       return;
     }
 
     const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
-    const key = `Credentials_${storeVersion}_${this.store()}`;
+    const key = `Credentials_${storeVersion}_${this.store()}` as StorageKey;
     const credentials: Credentials = {
       username: this.loginForm.controls['username'].value,
       password: this.loginForm.controls['password'].value,
@@ -208,22 +218,10 @@ export class CredentialsComponent {
         } else {
           this.storage.storeValue(key, credentials);
         }
+        this.formData.emit(credentials);
       })
-      .onError(() => {
-        //console.log(err)
-      })
+      .onError(() => {})
       .execute();
-    // this.authService.login(credentials)
-    // .pipe(
-    //   finalize(() => this.isLoading.set(false))
-    // ).subscribe((token) => {
-    //   if (this.store() === 'Cloud') {
-    //     credentials.token = token.data.token
-    //   }
-    //   this.isLoading.set(false)
-    //   this.tokenIsProvide.set(true)
-    //   this.storage.storeValue(key, credentials)
-    // });
   }
 
   displayButtonLabelByState = () => {

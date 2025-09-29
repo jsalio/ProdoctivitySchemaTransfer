@@ -51,46 +51,4 @@ export const createDocumentGroup = async (
       documentTypesCounter: 0,
     },
   };
-
-  // const headers = new Headers();
-  // headers.append('Content-Type', 'application/json');
-  // headers.append('Authorization', `Bearer ${credential.token}`);
-  // headers.append('x-api-key', credential.serverInformation.apiKey);
-  // headers.append('api-secret', credential.serverInformation.apiSecret);
-
-  // const requestBody: createDocumentGroupRequest = {
-  //   description: name,
-  //   name: name,
-  //   isContentLibrary: false,
-  // };
-
-  // const requestOptions: RequestInit = {
-  //   method: 'POST',
-  //   headers: headers,
-  //   redirect: 'follow',
-  //   body: JSON.stringify(requestBody),
-  // };
-
-  // const response = await fetch(
-  //   `${credential.serverInformation.server}/api/svc/ecm/document-groups`,
-  //   requestOptions,
-  // );
-
-  // if (response.status < 200 && response.status > 299) {
-  //   return {
-  //     ok: false,
-  //     error: new Error(`Invalid response from server code :[${response.status}]`),
-  //   };
-  // }
-
-  // const body: createDocumentGroupResponse = await response.json();
-
-  // return {
-  //   ok: true,
-  //   value: {
-  //     groupName: name,
-  //     groupId: body.documentGroupId,
-  //     documentTypesCounter: 0,
-  //   },
-  // };
 };

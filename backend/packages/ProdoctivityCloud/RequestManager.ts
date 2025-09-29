@@ -135,7 +135,7 @@ export class RequestManager implements IRequestManager {
           if (errorBody) {
             errorMessage += ` - ${errorBody}`;
           }
-        } catch (e) {
+        } catch {
           // Ignorar errores al leer el body de error
         }
 
@@ -158,7 +158,7 @@ export class RequestManager implements IRequestManager {
       let responseBody: TResponse;
       try {
         responseBody = await response.json();
-      } catch (error) {
+      } catch {
         return {
           ok: false,
           error: new Error('Respuesta del servidor no es JSON válido'),
@@ -222,48 +222,4 @@ export class RequestManager implements IRequestManager {
     this.requestOptions = {};
     return this;
   };
-
-  //   build = (urlBase: string, method: HttpMethod = 'GET') => {
-  //     this.urlBase = urlBase;
-  //     this.method = method;
-  //     this.requestOptions = {
-  //       method: 'POST',
-  //       redirect: 'follow',
-  //     };
-  //   };
-
-  //   addHeader = (key: string, value: string) => {
-  //     this.headers.append(key, value);
-  //   };
-
-  //   addBody = <TBody>(body: TBody) => {
-  //     if (!this.requestOptions) {
-  //       return;
-  //     }
-  //     this.requestOptions.body = JSON.stringify(body);
-  //   };
-
-  //   executeAsync = async <TResponse>(resource: string): Promise<Result<TResponse, Error>> => {
-  //     if (!this.requestOptions) {
-  //       return {
-  //         ok: false,
-  //         error: new Error('Options is undefined'),
-  //       };
-  //     }
-  //     this.requestOptions.headers = this.headers;
-  //     const response = await fetch(`${this.urlBase}/${resource}`, this.requestOptions);
-  //     if (response.status < 200 || response.status >= 300) {
-  //       return {
-  //         ok: false,
-  //         error: new Error('Invalid request from server'),
-  //       };
-  //     }
-
-  //     const responseBody: TResponse = await response.json();
-
-  //     return {
-  //       ok: true,
-  //       value: responseBody,
-  //     };
-  //   };
 }

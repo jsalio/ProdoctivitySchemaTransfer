@@ -8,18 +8,7 @@ export class LayoutService {
   private layoutModalInteractions = new Subject<void>();
   private modalLayout = new Subject<'Cloud' | 'Fluency'>();
   private modalTransferLine = new Subject<void>();
-
-  openLayoutModal = () => {
-    this.layoutModalInteractions.next();
-  };
-
-  openModalLayout = (value: 'Cloud' | 'Fluency') => {
-    this.modalLayout.next(value);
-  };
-
-  modalTransferLinSubject = () => {
-    this.modalTransferLine.next();
-  };
+  private modalProfileList = new Subject<void>();
 
   onLayoutEmit = () => {
     return this.layoutModalInteractions;
@@ -31,5 +20,25 @@ export class LayoutService {
 
   modalTransferLineEmit = () => {
     return this.modalTransferLine;
+  };
+
+  modalProfileListEmit = () => {
+    return this.modalProfileList;
+  };
+
+  modalProfileListSubject = () => {
+    this.modalProfileList.next();
+  };
+
+  openModalLayout = (value: 'Cloud' | 'Fluency') => {
+    this.modalLayout.next(value);
+  };
+
+  modalTransferLinSubject = () => {
+    this.modalTransferLine.next();
+  };
+
+  openLayoutModal = () => {
+    this.layoutModalInteractions.next();
   };
 }

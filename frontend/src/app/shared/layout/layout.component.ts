@@ -10,6 +10,10 @@ import { CommonModule } from '@angular/common';
 import { ToastService } from '../../services/ui/toast.service';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { ButtonComponent } from '../button/button.component';
+import { SelectOption } from '../select/select.component';
+import { Credentials } from '../../types/models/Credentials';
+import { LocalDataService } from '../../services/ui/local-data.service';
+import { ProfileManagerComponent } from '../profile-manager/profile-manager.component';
 
 @Component({
   selector: 'app-layout',
@@ -23,6 +27,7 @@ import { ButtonComponent } from '../button/button.component';
     CommonModule,
     DropdownComponent,
     ButtonComponent,
+    ProfileManagerComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
@@ -40,6 +45,15 @@ export class LayoutComponent implements OnInit {
   modalForChangeTransferLine = signal<boolean>(false);
   configuration = signal<'Cloud' | 'Fluency' | ''>('');
   transferLine = signal<'CloudToFluency' | 'FlencyToCloud' | ''>('CloudToFluency');
+  profileModalIsOpen = signal<boolean>(false);
+  profileCredentials = signal<Credentials | null>(null);
+
+  /**
+   *
+   */
+  constructor(private readonly appStore: LocalDataService) {
+    // super();
+  }
 
   connectionStatus = computed(() => {
     if (!this.connectionStatusService.connectedToCloud()) {
@@ -69,6 +83,9 @@ export class LayoutComponent implements OnInit {
     this.layoutService.modalTransferLineEmit().subscribe(() => {
       this.modalForChangeTransferLine.set(true);
     });
+    this.layoutService.modalProfileListEmit().subscribe(() => {
+      this.profileModalIsOpen.set(true);
+    });
   }
 
   openCredentialsModal = () => {
@@ -76,7 +93,6 @@ export class LayoutComponent implements OnInit {
   };
 
   closeCredentialsModal = () => {
-    
     this.isCredentialOpen = false;
   };
 
@@ -101,5 +117,55 @@ export class LayoutComponent implements OnInit {
 
   getTextFromTransferLine = () => {
     return this.transferLine() === 'CloudToFluency' ? '' : '';
+  };
+
+  selectOptions = signal<SelectOption[]>([
+    { value: 1, label: 'Opción 1' },
+    { value: 2, label: 'Opción 2' },
+    { value: 3, label: 'Opción 3', disabled: true },
+    { value: 4, label: 'Opción 4' },
+  ]);
+
+  selectedValue = signal<string | number>('');
+
+  onValueChange(value: string | number): void {
+    this.selectedValue.set(value);
+    console.log('Nuevo valor seleccionado:', value);
+  }
+
+  closeProfileModal = () => {
+    this.profileModalIsOpen.set(false);
+  };
+
+  recieveData = (data: Credentials) => {
+    this.profileCredentials.set(data);
+    console.log(data);
+  };
+
+  saveProfile = () => {
+    const profile = this.profileCredentials();
+    if (!profile || !profile.username || !profile.store) {
+      throw new Error('Invalid profile data');
+    }
+    if (profile.store === 'Cloud' && !profile.serverInformation?.organization) {
+      throw new Error('Missing organization for Cloud profile');
+    }
+
+    const key = 'Profiles';
+    let profiles = this.appStore.getValue<{ name: string; credential: Credentials }[]>(key) || [];
+    const profileStoreName =
+      profile.store !== 'Cloud'
+        ? `${profile.username}-${profile.store}-${profile.serverInformation.server}`
+        : `${profile.username}-${profile.store}-${profile.serverInformation.organization}`;
+
+    const index = profiles.findIndex((x) => x.name === profileStoreName);
+    if (index !== -1) {
+      profiles.splice(index, 1, { name: profileStoreName, credential: profile });
+    } else {
+      profiles.push({ name: profileStoreName, credential: profile });
+    }
+
+    this.appStore.updateValue(key, profiles);
+    this.profileCredentials.set(null);
   };
 }

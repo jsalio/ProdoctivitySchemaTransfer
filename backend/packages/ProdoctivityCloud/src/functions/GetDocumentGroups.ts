@@ -24,28 +24,28 @@ export const GetDocumentGroup = async (
 
     const groupData = (documentTypes: CloudDocumentType[]): Array<DocumentGroup> => {
       let documentGroup: Set<DocumentGroup> = new Set<DocumentGroup>();
-      console.log('Starting groupData with', documentTypes.length, 'documents');
+      // console.log('Starting groupData with', documentTypes.length, 'documents');
 
       documentTypes.forEach((document, index) => {
-        console.log(`Document ${index}:`, {
-          name: document.name,
-          groupId: document.documentGroupId,
-          groupName: document.documentGroupName,
-        });
+        // console.log(`Document ${index}:`, {
+        //   name: document.name,
+        //   groupId: document.documentGroupId,
+        //   groupName: document.documentGroupName,
+        // });
 
         const updated = updateInSet(
           documentGroup,
           (item) => {
-            console.log('Comparing:', item.groupId, '===', document.documentGroupId);
+            // console.log('Comparing:', item.groupId, '===', document.documentGroupId);
             return item.groupId === document.documentGroupId;
           },
           (item) => {
-            console.log('Updating counter for group:', item.groupId);
+            // console.log('Updating counter for group:', item.groupId);
             item.documentTypesCounter++;
           },
         );
 
-        console.log('Was updated?', updated);
+        // console.log('Was updated?', updated);
 
         if (!updated) {
           const newGroup = {
@@ -53,9 +53,9 @@ export const GetDocumentGroup = async (
             groupName: document.documentGroupName,
             documentTypesCounter: 1,
           };
-          console.log('Adding new group:', newGroup);
+          // console.log('Adding new group:', newGroup);
           documentGroup.add(newGroup);
-          console.log('Set size now:', documentGroup.size);
+          // console.log('Set size now:', documentGroup.size);
         }
       });
 

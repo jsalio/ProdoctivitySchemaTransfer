@@ -29,7 +29,6 @@ module.exports = tseslint.config(eslint.configs.recommended, ...tseslint.configs
     'prefer-const': 'error',
     'no-var': 'error',
     'no-console': 'warn',
-    'unused-imports/no-unused-imports': 'warn',
   },
   ignores: ['dist/', 'node_modules/', '*.js'],
 });

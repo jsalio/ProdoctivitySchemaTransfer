@@ -46,7 +46,7 @@ export class GetDocumentGroups {
         error: result.error,
       };
     }
-    console.log('Core :', JSON.stringify(result.value.values));
+    // console.log('Core :', JSON.stringify(result.value.values));
     return {
       ok: true,
       value: result.value,
