@@ -3,7 +3,10 @@ name="SchemaTransfer"
 version="0.0.1"
 
 [workspace]
-menbers=["packages/*"]
+members=["packages/*"]
+
+[install]
+workspaces = ["packages/*"]
 
 [test]
 coverage = true

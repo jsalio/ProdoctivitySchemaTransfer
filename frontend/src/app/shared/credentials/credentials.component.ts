@@ -40,14 +40,7 @@ export interface AdditionalInfo {
 @Component({
   selector: 'app-credentials',
   standalone: true,
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    ButtonComponent,
-    CustomSelectComponent,
-    LoadingComponent,
-    ModalComponent,
-  ],
+  imports: [FormsModule, ReactiveFormsModule, ButtonComponent],
   templateUrl: './credentials.component.html',
   styleUrl: './credentials.component.css',
 })
