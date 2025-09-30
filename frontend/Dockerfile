@@ -2,7 +2,7 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY backend/package*.json ./
+COPY frontend/package*.json ./
 RUN npm install --legacy-peer-deps && npm install -g serve
 
 COPY . .
