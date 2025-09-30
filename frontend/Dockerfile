@@ -4,7 +4,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copiar archivos de dependencias primero (mejor cache)
-COPY package*.json ./
+COPY frontend/package*.json ./
 
 # Instalar dependencias
 RUN npm install --legacy-peer-deps
