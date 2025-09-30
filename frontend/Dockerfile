@@ -1,48 +1,41 @@
-# Frontend Dockerfile: Angular -> Node.js/Express
-# Build: docker build -t prodoctivity-frontend:latest --build-arg CONFIGURATION=production .
-# Run:   docker run -p 8080:4200 prodoctivity-frontend:latest
+# Etapa 1: Build
+FROM node:20-alpine AS builder
 
-# 1) Install deps
-FROM node:20-alpine AS deps
 WORKDIR /app
 
-# Use only package.json so npm resolves fresh versions (ignore lockfile inside container)
-COPY package.json ./
-RUN apk add --no-cache ca-certificates && update-ca-certificates \
-    && npm config set registry https://registry.npmjs.org/ \
-    && npm config set fetch-retries 5 \
-    && npm config set fetch-retry-maxtimeout 600000 \
-    && npm config set prefer-online true \
-    && npm install --no-audit --no-fund
+# Copiar archivos de dependencias primero (mejor cache)
+COPY package*.json ./
 
-# 2) Build application
-FROM node:20-alpine AS build
-WORKDIR /app
+# Instalar dependencias
+RUN npm install --legacy-peer-deps
 
-COPY --from=deps /app/node_modules ./node_modules
+# Copiar el código fuente
 COPY . .
 
-# Angular configuration: production by default
-ARG CONFIGURATION=production
-ENV NODE_ENV=production
+# Build de producción
+RUN npm run build -- --configuration production
 
-# Build the Angular app
-RUN npm run build -- --configuration=${CONFIGURATION}
+# Etapa 2: Servidor
+FROM node:20-alpine
 
-# 3) Node.js/Express to serve static files
-FROM node:20-alpine AS runtime
 WORKDIR /app
 
-# Copy package.json and install production dependencies
-COPY --from=build /app/package.json ./
-RUN npm install --only=production \
-    && npm install express compression
+# Instalar serve globalmente
+RUN npm install -g serve
 
-# Copy built Angular app
-COPY --from=build /app/dist/sample/ ./dist/sample/
+# Copiar solo los archivos compilados desde el builder
+COPY --from=builder /app/dist/sample/browser ./dist
 
-# Add simple Express server
-COPY server.js ./
+# Crear usuario no-root por seguridad
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 && \
+    chown -R nodejs:nodejs /app
 
+# Cambiar al usuario no-root
+USER nodejs
+
+# Exponer puerto
 EXPOSE 4200
-CMD ["node", "server.js"]
+
+# Comando para servir la aplicación
+CMD ["serve", "-s", "dist", "-l", "4200"]
