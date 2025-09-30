@@ -5,7 +5,7 @@ WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm install --legacy-peer-deps && npm install -g serve
 
-COPY . .
+COPY frontend/ .
 RUN npm run build
 
 # Limpiar dependencias de desarrollo después del build
