@@ -23,19 +23,20 @@ WORKDIR /app
 # Instalar serve globalmente
 RUN npm install -g serve
 
-# Copiar solo los archivos compilados desde el builder
-COPY --from=builder /app/dist/sample/browser ./dist
+CMD ["ls"]
+# # Copiar solo los archivos compilados desde el builder
+# COPY --from=builder /app/dist/sample/browser ./dist
 
-# Crear usuario no-root por seguridad
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
+# # Crear usuario no-root por seguridad
+# RUN addgroup -g 1001 -S nodejs && \
+#     adduser -S nodejs -u 1001 && \
+#     chown -R nodejs:nodejs /app
 
-# Cambiar al usuario no-root
-USER nodejs
+# # Cambiar al usuario no-root
+# USER nodejs
 
-# Exponer puerto
-EXPOSE 4200
+# # Exponer puerto
+# EXPOSE 4200
 
-# Comando para servir la aplicación
-CMD ["serve", "-s", "dist", "-l", "4200"]
+# # Comando para servir la aplicación
+# CMD ["serve", "-s", "dist", "-l", "4200"]
