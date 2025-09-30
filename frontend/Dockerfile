@@ -13,7 +13,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Build de producción
-RUN npm run build:prod
+RUN npm run build
 
 # Etapa 2: Servidor
 FROM node:20-alpine
