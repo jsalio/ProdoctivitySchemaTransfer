@@ -95,11 +95,12 @@
   </div>
 </app-modal>
 
-<app-modal [isOpen]="profileModalIsOpen()" (modalClose)="closeProfileModal()">
+<app-modal [isOpen]="profileModalIsOpen()" (modalClose)="closeProfileModal()" [size]="'big'">
   <h2 class="text-xl font-bold mb-4">Perfiles de conexion</h2>
   <div class="flex flex-col gap-4">
     <!-- <h2 class="text-2xl font-bold text-gray-800 mb-4">Perfiles almacenados</h2> -->
     <app-profile-manager />
+    <!-- <app-data-table [dataSet]="rows" [columns]="cols" /> -->
     <div>
       <app-button (clicked)="closeProfileModal()">Cerrar</app-button>
     </div>

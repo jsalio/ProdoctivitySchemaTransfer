@@ -1,0 +1,60 @@
+<div class="w-full max-w-5xl bg-white p-4 rounded-lg shadow">
+  <div class="mb-4 flex items-center justify-between">
+    <div class="relative w-[72%]">
+      <input
+        [value]="filter()"
+        (input)="filter.set($any($event.target).value)"
+        id="searchInput"
+        type="text"
+        placeholder="Buscar..."
+        class="w-full p-2 pl-8 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <!-- lupa (heroicon) -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-4 h-4 absolute left-2 top-2.5 text-gray-500"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.5 3a7.5 7.5 0 016.15 13.65z"
+        />
+      </svg>
+    </div>
+
+    <div class="text-sm text-gray-600">Registros: {{ filteredRows().length }}</div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="overflow-y-auto max-h-64 no-scrollbar">
+    <table class="min-w-full border-collapse">
+      <thead class="bg-gray-100 sticky top-0 z-10">
+        <tr>
+          <th *ngFor="let col of columns()" class="px-2 py-2 text-left">
+            <button class="flex items-center gap-2" (click)="setSort(col.field)">
+              <span>{{ col.label }}</span>
+              <!-- Iconos -->
+            </button>
+          </th>
+          <th class="px-4 py-2 text-left">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of filteredRows()" class="hover:bg-gray-50">
+          <td *ngFor="let col of columns()" class="px-2 py-2">
+            {{ checkField(r[col.field]) }}
+          </td>
+          <td *ngIf="actionTemplate" class="px-2 py-2">
+            <ng-container
+              *ngTemplateOutlet="actionTemplate; context: { $implicit: r }"
+            ></ng-container>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

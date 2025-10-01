@@ -1,4 +1,4 @@
-<div class="max-h-96 overflow-y-auto">
+<!-- <div class="max-h-96 overflow-y-auto">
   <div class="space-y-4 p-2">
     @for (item of profiles(); track item.name) {
       <div class="flex items-center justify-between">
@@ -19,4 +19,12 @@
       </div>
     }
   </div>
-</div>
+</div> -->
+<app-data-table [columns]="cols" [dataSet]="rows()">
+  <ng-template let-row>
+    <div class="flex space-x-2">
+      <app-button (clicked)="setAsDefault(row.name)" [variant]="'primary'">✓</app-button>
+      <app-button (clicked)="removeRecord(row.name)" [variant]="'error'">✗</app-button>
+    </div>
+  </ng-template>
+</app-data-table>

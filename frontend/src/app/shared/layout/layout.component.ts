@@ -14,6 +14,14 @@ import { SelectOption } from '../select/select.component';
 import { Credentials } from '../../types/models/Credentials';
 import { LocalDataService } from '../../services/ui/local-data.service';
 import { ProfileManagerComponent } from '../profile-manager/profile-manager.component';
+// import { DataTableComponent, RecordRow } from '../data-table/data-table.component';
+
+// export interface Row {
+//   name: string;
+//   title: string;
+//   status: string;
+//   role: string;
+// }
 
 @Component({
   selector: 'app-layout',
@@ -28,11 +36,27 @@ import { ProfileManagerComponent } from '../profile-manager/profile-manager.comp
     DropdownComponent,
     ButtonComponent,
     ProfileManagerComponent,
+    // DataTableComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
 })
 export class LayoutComponent implements OnInit {
+  // //
+  // rows: Row[] = [
+  //   { name: 'John Doe', title: 'Software Engineer', status: 'Active', role: 'Member' },
+  //   { name: 'Jane Smith', title: 'UI/UX Designer', status: 'Active', role: 'Member' },
+  //   { name: 'Carlos Pérez', title: 'Project Manager', status: 'Inactive', role: 'Admin' },
+  // ];
+
+  // cols: RecordRow<Row>[] = [
+  //   { field: 'name', label: 'Name' },
+  //   { field: 'title', label: 'Title' },
+  //   { field: 'status', label: 'Status' },
+  //   { field: 'role', label: 'Role' },
+  // ];
+  // //
+
   private readonly connectionStatusService = inject(CredetialConnectionService);
   private readonly layoutService = inject(LayoutService);
   private readonly router = inject(Router);
@@ -45,7 +69,7 @@ export class LayoutComponent implements OnInit {
   modalForChangeTransferLine = signal<boolean>(false);
   configuration = signal<'Cloud' | 'Fluency' | ''>('');
   transferLine = signal<'CloudToFluency' | 'FlencyToCloud' | ''>('CloudToFluency');
-  profileModalIsOpen = signal<boolean>(false);
+  profileModalIsOpen = signal<boolean>(true);
   profileCredentials = signal<Credentials | null>(null);
 
   /**
@@ -152,7 +176,7 @@ export class LayoutComponent implements OnInit {
     }
 
     const key = 'Profiles';
-    let profiles = this.appStore.getValue<{ name: string; credential: Credentials }[]>(key) || [];
+    const profiles = this.appStore.getValue<{ name: string; credential: Credentials }[]>(key) || [];
     const profileStoreName =
       profile.store !== 'Cloud'
         ? `${profile.username}-${profile.store}-${profile.serverInformation.server}`

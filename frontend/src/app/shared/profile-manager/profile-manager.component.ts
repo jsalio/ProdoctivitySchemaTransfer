@@ -1,18 +1,62 @@
-import { Component, OnInit, signal } from '@angular/core';
+import {
+  // ChangeDetectionStrategy,
+  Component,
+  computed,
+  // effect,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { LocalDataService } from '../../services/ui/local-data.service';
 import { Credentials } from '../../types/models/Credentials';
+import { DataTableComponent, RecordRow } from '../data-table/data-table.component';
+
+export interface Profiles {
+  name: string;
+  accountName: string;
+  store: 'ProDoctivity 5' | 'ProDoctivity Cloud';
+  organization: string;
+  server: string;
+  default: boolean;
+}
 
 @Component({
   selector: 'app-profile-manager',
   standalone: true,
-  imports: [ButtonComponent],
+  imports: [ButtonComponent, DataTableComponent],
   templateUrl: './profile-manager.component.html',
   styleUrl: './profile-manager.component.css',
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileManagerComponent implements OnInit {
   profiles = signal<{ default: boolean; name: string; credential: Credentials }[]>([]);
 
+  rows = computed(() => {
+    const profilesData = this.profiles();
+    console.log('Trigger');
+    if (!profilesData) return [];
+    return profilesData.map(
+      (x): Profiles => ({
+        name: x.name,
+        default: x.default,
+        accountName: x.credential.username,
+        server: x.credential.serverInformation.server,
+        organization:
+          x.credential.serverInformation.organization === ''
+            ? 'Por defecto'
+            : x.credential.serverInformation.organization,
+        store: x.credential.store === 'V5' ? 'ProDoctivity 5' : 'ProDoctivity Cloud',
+      }),
+    );
+  });
+
+  cols: RecordRow<Profiles>[] = [
+    { field: 'default', label: '' },
+    { field: 'store', label: 'Sistema' },
+    { field: 'accountName', label: 'usuario' },
+    { field: 'organization', label: 'Organizacion' },
+    { field: 'server', label: 'Servidor' },
+  ];
   /**
    *
    */
@@ -28,6 +72,7 @@ export class ProfileManagerComponent implements OnInit {
 
   removeRecord = (name: string) => {
     const current = this.profiles();
+    // this.profiles.set([]);
     const target = current.find((x) => x.name == name);
     const records = current.filter((x) => x.name != name);
 
@@ -68,9 +113,7 @@ export class ProfileManagerComponent implements OnInit {
 
     // Flip default for the target store only, and clear others of the same store
     const updated = current.map((p) =>
-      p.credential.store === target.credential.store
-        ? { ...p, default: p.name === name }
-        : p
+      p.credential.store === target.credential.store ? { ...p, default: p.name === name } : p,
     );
 
     this.profiles.set(updated);
