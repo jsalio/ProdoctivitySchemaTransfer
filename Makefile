@@ -1,4 +1,4 @@
-.PHONY: backend frontend install all build_backend build_frontend build_all package test_backend test_frontend test_all test_headless
+.PHONY: backend frontend install all build_backend build_frontend build_all package test_backend test_frontend test_all test_headless docker_backend_build
 
 # ==============================================================================
 # Development Commands
@@ -88,3 +88,11 @@ test_all:
 #   - Executes the build_packages.sh script to create distributable packages
 package:
 	./build_packages.sh
+# ==============================================================================
+# Docker
+# ==============================================================================
+
+# docker_backend_build: Builds the backend Docker image
+#   - Uses backend/Dockerfile and tags the image as my-bun-app
+docker_backend_build:
+	docker build --no-cache -t my-bun-app backend/.

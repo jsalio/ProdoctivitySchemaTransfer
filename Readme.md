@@ -124,6 +124,14 @@ For publish:
     bun run build:exec
     ```
 Note : if required run backend as windows service read [this](/documentations/InstallServiceBackend.MD) guide
+ 
+#### Backend Docker build
+To build the backend Docker image locally:
+
+```bash
+docker build --no-cache -t my-bun-app backend/.
+```
+ 
 ### Frontend
 For publish:
 1. Navigate to frontend folder:

@@ -1,0 +1,14 @@
+# Exclude unnecessary files from Docker build context
+node_modules
+npm-debug.log
+dist
+.git
+.gitignore
+README.md
+.editorconfig
+.vscode
+.idea
+*.md
+.angular
+.cache
+package-lock.json
