@@ -10,13 +10,7 @@ import {
   Signal,
   effect,
 } from '@angular/core';
-
-export interface RecordRow<T> {
-  field: keyof T;
-  label: string;
-  sortingBy?: keyof T | null;
-  asc?: boolean;
-}
+import { RecordRow } from '../../types/models/RecordRow';
 
 @Component({
   selector: 'app-data-table',

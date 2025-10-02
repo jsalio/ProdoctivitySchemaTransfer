@@ -10,16 +10,18 @@ import {
 import { Component, computed, input, signal, inject, output } from '@angular/core';
 
 import { AuthService } from '../../services/backend/auth.service';
-import { LocalDataService, StorageKey } from '../../services/ui/local-data.service';
+// import { LocalDataService, StorageKey } from '../../services/ui/local-data.service';
 import { ObservableHandler } from '../utils/Obserbable-handler';
 import { ReactiveFormsModule } from '@angular/forms';
 import { effect } from '@angular/core';
 import { isTokenExpired } from '../utils/token-decoder';
 import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 import { ButtonComponent } from '../button/button.component';
-import { CustomSelectComponent, SelectOption } from '../select/select.component';
-import { LoadingComponent } from '../icons/loading/loading.component';
-import { ModalComponent } from '../modal/modal.component';
+import { MemStoreService } from '../../services/ui/mem-store.service';
+import { StorageKey } from '../../types/models/StorageKey';
+// import { CustomSelectComponent, SelectOption } from '../select/select.component';
+// import { LoadingComponent } from '../icons/loading/loading.component';
+// import { ModalComponent } from '../modal/modal.component';
 
 export interface Credentials {
   username: string;
@@ -46,7 +48,7 @@ export interface AdditionalInfo {
 })
 export class CredentialsComponent {
   private readonly fb = inject(NonNullableFormBuilder);
-  private readonly storage = inject(LocalDataService);
+  private readonly storage = inject(MemStoreService);
   private readonly authService = inject(AuthService);
   private readonly connectionStatus = inject(CredetialConnectionService);
 
@@ -213,7 +215,9 @@ export class CredentialsComponent {
         }
         this.formData.emit(credentials);
       })
-      .onError(() => {})
+      .onError(() => {
+        console.log();
+      })
       .execute();
   }
 

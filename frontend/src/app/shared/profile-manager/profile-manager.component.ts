@@ -1,17 +1,10 @@
-import { Component, computed, inject, OnInit, WritableSignal } from '@angular/core';
+import { Component, computed, inject, WritableSignal } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { MemStoreService } from '../../services/ui/mem-store.service';
-import { Credentials } from '../../types/models/Credentials';
-import { DataTableComponent, RecordRow } from '../data-table/data-table.component';
-
-export interface Profiles {
-  name: string;
-  accountName: string;
-  store: 'ProDoctivity 5' | 'ProDoctivity Cloud';
-  organization: string;
-  server: string;
-  default: boolean;
-}
+import { DataTableComponent } from '../data-table/data-table.component';
+import { ProfileTableCols } from '../../types/models/constants';
+import { Profiles } from '../../types/models/Profiles';
+import { ConnectionProfile } from '../../types/models/ConnectionProfile';
 
 @Component({
   selector: 'app-profile-manager',
@@ -20,10 +13,10 @@ export interface Profiles {
   templateUrl: './profile-manager.component.html',
   styleUrl: './profile-manager.component.css',
 })
-export class ProfileManagerComponent implements OnInit {
-  profiles: WritableSignal<{ default: boolean; name: string; credential: Credentials }[]>;
-
+export class ProfileManagerComponent {
   private mem = inject(MemStoreService);
+
+  profiles: WritableSignal<ConnectionProfile[]>;
 
   rows = computed(() => {
     const profilesData = this.profiles();
@@ -44,24 +37,13 @@ export class ProfileManagerComponent implements OnInit {
     );
   });
 
-  cols: RecordRow<Profiles>[] = [
-    { field: 'default', label: '' },
-    { field: 'store', label: 'Sistema' },
-    { field: 'accountName', label: 'usuario' },
-    { field: 'organization', label: 'Organizacion' },
-    { field: 'server', label: 'Servidor' },
-  ];
+  cols = ProfileTableCols;
 
   /**
    *
    */
   constructor() {
-    this.profiles =
-      this.mem.signalOf<{ default: boolean; name: string; credential: Credentials }[]>('Profiles');
-  }
-
-  ngOnInit(): void {
-    console.log('profile');
+    this.profiles = this.mem.signalOf<ConnectionProfile[]>('Profiles');
   }
 
   removeRecord = (name: string) => {

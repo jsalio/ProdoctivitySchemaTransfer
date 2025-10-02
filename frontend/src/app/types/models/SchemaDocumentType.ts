@@ -1,10 +1,20 @@
+/**
+ * Schema definition for a document type including its keyword metadata.
+ */
 export interface SchemaDocumentType {
+  /** Human-readable name of the document type */
   name: string;
+  /** Unique identifier of the document type */
   documentTypeId: string;
+  /** Collection of keyword definitions for this document type */
   keywords: {
+    /** Internal name of the keyword */
     name: string;
+    /** Display label of the keyword */
     label: string;
+    /** Data type (e.g., string, number, date) */
     dataType: string;
+    /** Whether the keyword is required */
     require: boolean;
   }[];
 }

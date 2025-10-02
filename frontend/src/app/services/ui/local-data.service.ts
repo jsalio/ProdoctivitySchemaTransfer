@@ -1,7 +1,11 @@
 import { Injectable } from '@angular/core';
+import { StorageKey } from '../../types/models/StorageKey';
 
-export type StorageKey = 'Profiles' | string;
+// export type StorageKey = 'Profiles' | string;
 
+/**
+ * @deprecated [This service as replaced for MemStore]
+ */
 @Injectable({
   providedIn: 'root',
 })

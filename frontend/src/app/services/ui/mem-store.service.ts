@@ -1,14 +1,7 @@
 import { computed, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { Credentials } from '../../types/models/Credentials';
-
-export type StorageKey = 'Profiles' | 'Credentials_V5_V5' | 'Credentials_V6_Cloud' | string;
-
-export interface StorageKeyTypes {
-  Profiles: { name: string; credential: Credentials }[]; // Reemplaza 'any' con el tipo real de Profiles
-  Credentials_V5_V5: Credentials; // Reemplaza 'any' con el tipo real de Credentials_V5_V5
-  Credentials_V6_Cloud: Credentials; // Reemplaza 'any' con el tipo real de Credentials_V6_Cloud
-  [key: string]: unknown; // Para otras claves genéricas
-}
+import { StorageKeyTypes } from '../../types/models/StorageKeyTypes';
+import { StorageKey } from '../../types/models/StorageKey';
+// import { StorageKey } from './local-data.service';
 
 @Injectable({
   providedIn: 'root',
