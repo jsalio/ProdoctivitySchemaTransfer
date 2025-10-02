@@ -1,13 +1,6 @@
-import {
-  // ChangeDetectionStrategy,
-  Component,
-  computed,
-  // effect,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { Component, computed, inject, OnInit, WritableSignal } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
-import { LocalDataService } from '../../services/ui/local-data.service';
+import { MemStoreService } from '../../services/ui/mem-store.service';
 import { Credentials } from '../../types/models/Credentials';
 import { DataTableComponent, RecordRow } from '../data-table/data-table.component';
 
@@ -26,14 +19,15 @@ export interface Profiles {
   imports: [ButtonComponent, DataTableComponent],
   templateUrl: './profile-manager.component.html',
   styleUrl: './profile-manager.component.css',
-  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProfileManagerComponent implements OnInit {
-  profiles = signal<{ default: boolean; name: string; credential: Credentials }[]>([]);
+  profiles: WritableSignal<{ default: boolean; name: string; credential: Credentials }[]>;
+
+  private mem = inject(MemStoreService);
 
   rows = computed(() => {
     const profilesData = this.profiles();
-    console.log('Trigger');
+    console.log('Trigger', profilesData);
     if (!profilesData) return [];
     return profilesData.map(
       (x): Profiles => ({
@@ -57,29 +51,28 @@ export class ProfileManagerComponent implements OnInit {
     { field: 'organization', label: 'Organizacion' },
     { field: 'server', label: 'Servidor' },
   ];
+
   /**
    *
    */
-  constructor(private readonly appStore: LocalDataService) {}
+  constructor() {
+    this.profiles =
+      this.mem.signalOf<{ default: boolean; name: string; credential: Credentials }[]>('Profiles');
+  }
 
   ngOnInit(): void {
-    const profiles =
-      this.appStore.getValue<{ default: boolean; name: string; credential: Credentials }[]>(
-        'Profiles',
-      );
-    this.profiles.set(profiles);
+    console.log('profile');
   }
 
   removeRecord = (name: string) => {
     const current = this.profiles();
-    // this.profiles.set([]);
     const target = current.find((x) => x.name == name);
     const records = current.filter((x) => x.name != name);
 
     // If the record doesn't exist, no-op except keep store in sync
     if (!target) {
       this.profiles.set(records);
-      this.appStore.updateValue('Profiles', records);
+      this.mem.updateValue('Profiles', records);
       return;
     }
 
@@ -101,7 +94,7 @@ export class ProfileManagerComponent implements OnInit {
       }
     }
 
-    this.appStore.updateValue('Profiles', records);
+    this.mem.updateValue('Profiles', records);
   };
 
   setAsDefault = (name: string) => {
@@ -117,15 +110,15 @@ export class ProfileManagerComponent implements OnInit {
     );
 
     this.profiles.set(updated);
-    this.appStore.updateValue('Profiles', updated);
+    this.mem.updateValue('Profiles', updated);
 
     if (target.credential.store === 'V5') {
-      this.appStore.updateValue('Credentials_V5_V5', target.credential);
+      this.mem.updateValue('Credentials_V5_V5', target.credential);
       return;
     }
 
     if (target.credential.store === 'Cloud') {
-      this.appStore.updateValue('Credentials_V6_Cloud', target.credential);
+      this.mem.updateValue('Credentials_V6_Cloud', target.credential);
       return;
     }
   };

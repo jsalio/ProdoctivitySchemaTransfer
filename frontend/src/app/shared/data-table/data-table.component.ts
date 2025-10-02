@@ -5,12 +5,11 @@ import {
   computed,
   ChangeDetectionStrategy,
   input,
-  OnInit,
   ContentChild,
   TemplateRef,
+  Signal,
+  effect,
 } from '@angular/core';
-
-export type Key<T, E = string> = { ok: true; value: T } | { ok: false; error: E };
 
 export interface RecordRow<T> {
   field: keyof T;
@@ -27,8 +26,8 @@ export interface RecordRow<T> {
   styleUrl: './data-table.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DataTableComponent<T extends object> implements OnInit {
-  dataSet = input<T[]>([]);
+export class DataTableComponent<T extends object> {
+  dataSet = input<Signal<T[]> | T[]>([]);
   columns = input<RecordRow<T>[]>([]);
 
   private dataSignal = signal<T[]>([]);
@@ -37,8 +36,19 @@ export class DataTableComponent<T extends object> implements OnInit {
 
   @ContentChild(TemplateRef) actionTemplate?: TemplateRef<unknown>;
 
-  ngOnInit(): void {
-    this.dataSignal.set(this.dataSet());
+  constructor() {
+    // Usamos un effect para sincronizar dataSignal con dataSet
+    effect(
+      () => {
+        const data = this.dataSet();
+        if (typeof data === 'function') {
+          this.dataSignal.set(data());
+        } else {
+          this.dataSignal.set(data);
+        }
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   filteredRows = computed(() => {
