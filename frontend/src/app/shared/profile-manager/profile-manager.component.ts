@@ -5,6 +5,7 @@ import { DataTableComponent } from '../data-table/data-table.component';
 import { ProfileTableCols } from '../../types/models/constants';
 import { Profiles } from '../../types/models/Profiles';
 import { ConnectionProfile } from '../../types/models/ConnectionProfile';
+import { ToastService } from '../../services/ui/toast.service';
 
 @Component({
   selector: 'app-profile-manager',
@@ -15,6 +16,7 @@ import { ConnectionProfile } from '../../types/models/ConnectionProfile';
 })
 export class ProfileManagerComponent {
   private mem = inject(MemStoreService);
+  private toast = inject(ToastService);
 
   profiles: WritableSignal<ConnectionProfile[]>;
 
@@ -77,6 +79,7 @@ export class ProfileManagerComponent {
     }
 
     this.mem.updateValue('Profiles', records);
+    this.showNotification(`Perfil de borrado`);
   };
 
   setAsDefault = (name: string) => {
@@ -96,12 +99,18 @@ export class ProfileManagerComponent {
 
     if (target.credential.store === 'V5') {
       this.mem.updateValue('Credentials_V5_V5', target.credential);
+      this.showNotification('Perfil por defecto de V5 establecido');
       return;
     }
 
     if (target.credential.store === 'Cloud') {
       this.mem.updateValue('Credentials_V6_Cloud', target.credential);
+      this.showNotification('Perfil por defecto de Cloud establecido');
       return;
     }
+  };
+
+  showNotification = (message: string) => {
+    this.toast.emitNotification({ message: message, duration: 2000 });
   };
 }

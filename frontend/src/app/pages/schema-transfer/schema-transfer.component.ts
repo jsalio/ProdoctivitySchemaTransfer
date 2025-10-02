@@ -1,20 +1,20 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { DocumentTypesListComponent } from './document-types-list/document-types-list.component';
-import { SchemaDocumentType } from '../../types/models/DocumentType';
-import { GroupListComponent } from './group-list/group-list.component';
-import { SchemaDocumentGroup } from '../../types/models/SchemaDocumentGroup';
 import { CommonModule } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SchemaService } from '../../services/backend/schema.service';
-import { LocalDataService } from '../../services/ui/local-data.service';
+import { MemStoreService } from '../../services/ui/mem-store.service';
 import { TranferResumeService } from '../../services/ui/tranfer-resume.service';
 import { IndicatorComponent } from '../../shared/indicator/indicator.component';
 import { ModalComponent } from '../../shared/modal/modal.component';
 import { ObservableHandler } from '../../shared/utils/Obserbable-handler';
 import { DataElement } from '../../types/contracts/ISchema';
 import { Credentials } from '../../types/models/Credentials';
+import { SchemaDocumentType } from '../../types/models/DocumentType';
 import { DocumetTypeKeyword } from '../../types/models/DocumentTypeKeywordSchema';
+import { SchemaDocumentGroup } from '../../types/models/SchemaDocumentGroup';
 import { DocumentTypeSchemaComponent } from './document-type-schema/document-type-schema.component';
+import { DocumentTypesListComponent } from './document-types-list/document-types-list.component';
+import { GroupListComponent } from './group-list/group-list.component';
 import { ActionOrchestrator } from './utils/ActionBuilder';
 import { ActionContext } from './utils/ActionContext';
 import { ActionData } from './utils/ActionData';
@@ -39,7 +39,7 @@ export type stepIndicator = 'processing' | 'completed' | 'error';
 })
 export class SchemaTransferComponent implements OnInit {
   private readonly schema = inject(SchemaService);
-  private readonly localData = inject(LocalDataService);
+  private readonly localData = inject(MemStoreService);
   private readonly tranferResumeService = inject(TranferResumeService);
   private readonly progressService = inject(ActionProgressService);
 

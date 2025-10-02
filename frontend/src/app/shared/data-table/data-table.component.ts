@@ -9,7 +9,9 @@ import {
   TemplateRef,
   Signal,
   effect,
+  TrackByFunction,
 } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { RecordRow } from '../../types/models/RecordRow';
 
 @Component({
@@ -19,6 +21,17 @@ import { RecordRow } from '../../types/models/RecordRow';
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('row', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(4px)' }),
+        animate('160ms ease-out', style({ opacity: 1, transform: 'none' })),
+      ]),
+      transition(':leave', [
+        animate('140ms ease-in', style({ opacity: 0, transform: 'translateY(-4px)' })),
+      ]),
+    ]),
+  ],
 })
 export class DataTableComponent<T extends object> {
   dataSet = input<Signal<T[]> | T[]>([]);
@@ -67,6 +80,10 @@ export class DataTableComponent<T extends object> {
 
     return rows;
   });
+
+  // Default trackBy to minimize DOM re-renders during filtering/sorting
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  trackByRow: TrackByFunction<T> = (index: number, _item: T) => index;
 
   setSort(col: keyof T) {
     const current = this.sort();

@@ -7,7 +7,17 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Component, computed, input, signal, inject, output } from '@angular/core';
+import {
+  Component,
+  computed,
+  input,
+  signal,
+  inject,
+  output,
+  WritableSignal,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 
 import { AuthService } from '../../services/backend/auth.service';
 // import { LocalDataService, StorageKey } from '../../services/ui/local-data.service';
@@ -19,9 +29,6 @@ import { CredetialConnectionService } from '../../services/ui/credetial-connecti
 import { ButtonComponent } from '../button/button.component';
 import { MemStoreService } from '../../services/ui/mem-store.service';
 import { StorageKey } from '../../types/models/StorageKey';
-// import { CustomSelectComponent, SelectOption } from '../select/select.component';
-// import { LoadingComponent } from '../icons/loading/loading.component';
-// import { ModalComponent } from '../modal/modal.component';
 
 export interface Credentials {
   username: string;
@@ -46,7 +53,7 @@ export interface AdditionalInfo {
   templateUrl: './credentials.component.html',
   styleUrl: './credentials.component.css',
 })
-export class CredentialsComponent {
+export class CredentialsComponent implements OnChanges {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly storage = inject(MemStoreService);
   private readonly authService = inject(AuthService);
@@ -57,6 +64,7 @@ export class CredentialsComponent {
   isLoading = signal<boolean>(false);
   tokenIsProvide = signal<boolean>(false);
   formData = output<Credentials>();
+  localCredential: WritableSignal<Credentials>;
 
   readonly buttonLabel = computed(() => {
     if (this.tokenIsProvide() && !this.isLoading()) {
@@ -68,12 +76,29 @@ export class CredentialsComponent {
     }
   });
 
+  readonly credentials = computed(() => {
+    const current = this.localCredential();
+    console.log('Current :', current);
+    return {};
+  });
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
+    const key = `Credentials_${storeVersion}_${this.store()}` as StorageKey;
+    this.localCredential = this.storage.signalOf<Credentials>(key);
+    console.log(key, changes);
+  }
+
   /**
    *
    */
   loginForm!: FormGroup;
 
   constructor() {
+    const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
+    const key = `Credentials_${storeVersion}_${this.store()}` as StorageKey;
+    this.localCredential = this.storage.signalOf<Credentials>(key);
+
     this.loginForm = this.fb.group({
       username: this.fb.control('', {
         validators: [Validators.required],
@@ -123,7 +148,6 @@ export class CredentialsComponent {
           this.loginForm.setValue(form);
           const isExpired = isTokenExpired(myLocalCredential.token);
           if (isExpired) {
-            // alert('Token guardado expirado')
             this.tokenIsProvide.set(false);
           } else {
             this.tokenIsProvide.set(true);

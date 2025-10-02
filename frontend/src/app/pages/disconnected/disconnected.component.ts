@@ -29,7 +29,6 @@ export class DisconnectedComponent {
   });
 
   navigateToLogin() {
-    // this.router.navigate(['/login']);
     this.layoutService.openLayoutModal();
   }
 }

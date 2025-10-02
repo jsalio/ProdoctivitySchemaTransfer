@@ -1,6 +1,5 @@
 import { Component, computed, OnInit, signal, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-// import { ConnectionStatusService } from '../../services/ui/connection-status.service';
 import { LayoutService } from '../../services/ui/layout.service';
 import { CredentialsComponent } from '../credentials/credentials.component';
 import { ModalComponent } from '../modal/modal.component';
@@ -10,18 +9,9 @@ import { CommonModule } from '@angular/common';
 import { ToastService } from '../../services/ui/toast.service';
 import { DropdownComponent } from '../dropdown/dropdown.component';
 import { ButtonComponent } from '../button/button.component';
-import { SelectOption } from '../select/select.component';
 import { Credentials } from '../../types/models/Credentials';
-import { LocalDataService } from '../../services/ui/local-data.service';
 import { ProfileManagerComponent } from '../profile-manager/profile-manager.component';
-// import { DataTableComponent, RecordRow } from '../data-table/data-table.component';
-
-// export interface Row {
-//   name: string;
-//   title: string;
-//   status: string;
-//   role: string;
-// }
+import { MemStoreService } from '../../services/ui/mem-store.service';
 
 @Component({
   selector: 'app-layout',
@@ -36,27 +26,11 @@ import { ProfileManagerComponent } from '../profile-manager/profile-manager.comp
     DropdownComponent,
     ButtonComponent,
     ProfileManagerComponent,
-    // DataTableComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
 })
 export class LayoutComponent implements OnInit {
-  // //
-  // rows: Row[] = [
-  //   { name: 'John Doe', title: 'Software Engineer', status: 'Active', role: 'Member' },
-  //   { name: 'Jane Smith', title: 'UI/UX Designer', status: 'Active', role: 'Member' },
-  //   { name: 'Carlos Pérez', title: 'Project Manager', status: 'Inactive', role: 'Admin' },
-  // ];
-
-  // cols: RecordRow<Row>[] = [
-  //   { field: 'name', label: 'Name' },
-  //   { field: 'title', label: 'Title' },
-  //   { field: 'status', label: 'Status' },
-  //   { field: 'role', label: 'Role' },
-  // ];
-  // //
-
   private readonly connectionStatusService = inject(CredetialConnectionService);
   private readonly layoutService = inject(LayoutService);
   private readonly router = inject(Router);
@@ -69,13 +43,15 @@ export class LayoutComponent implements OnInit {
   modalForChangeTransferLine = signal<boolean>(false);
   configuration = signal<'Cloud' | 'Fluency' | ''>('');
   transferLine = signal<'CloudToFluency' | 'FlencyToCloud' | ''>('CloudToFluency');
-  profileModalIsOpen = signal<boolean>(true);
+  profileModalIsOpen = signal<boolean>(false);
   profileCredentials = signal<Credentials | null>(null);
+
+  private appStore = inject(MemStoreService);
 
   /**
    *
    */
-  constructor(private readonly appStore: LocalDataService) {
+  constructor() {
     // super();
   }
 
@@ -143,13 +119,6 @@ export class LayoutComponent implements OnInit {
     return this.transferLine() === 'CloudToFluency' ? '' : '';
   };
 
-  selectOptions = signal<SelectOption[]>([
-    { value: 1, label: 'Opción 1' },
-    { value: 2, label: 'Opción 2' },
-    { value: 3, label: 'Opción 3', disabled: true },
-    { value: 4, label: 'Opción 4' },
-  ]);
-
   selectedValue = signal<string | number>('');
 
   onValueChange(value: string | number): void {
@@ -191,5 +160,6 @@ export class LayoutComponent implements OnInit {
 
     this.appStore.updateValue(key, profiles);
     this.profileCredentials.set(null);
+    this.toastService.emitNotification({ message: 'Perfil almacenado', duration: 3000 });
   };
 }

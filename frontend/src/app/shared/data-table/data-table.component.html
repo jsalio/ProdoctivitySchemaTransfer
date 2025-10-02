@@ -44,7 +44,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let r of filteredRows()" class="hover:bg-gray-50">
+        <tr *ngFor="let r of filteredRows(); trackBy: trackByRow" [@row] class="hover:bg-gray-50">
           <td *ngFor="let col of columns()" class="px-2 py-2">
             {{ checkField(r[col.field]) }}
           </td>

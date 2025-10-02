@@ -15,11 +15,11 @@ import {
   DocumentTypeKeywordSchema,
   DocumetTypeKeyword,
 } from '../../../types/models/DocumentTypeKeywordSchema';
-import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaDocumentType } from '../../../types/models/SchemaDocumentType';
 import { SchemaService } from '../../../services/backend/schema.service';
 import { IconographyComponent } from '../../../shared/iconography/iconography.component';
+import { MemStoreService } from '../../../services/ui/mem-store.service';
 
 @Component({
   selector: 'app-document-type-schema',
@@ -29,7 +29,7 @@ import { IconographyComponent } from '../../../shared/iconography/iconography.co
   styleUrl: './document-type-schema.component.css',
 })
 export class DocumentTypeSchemaComponent implements OnChanges {
-  private readonly localData = inject(LocalDataService);
+  private readonly localData = inject(MemStoreService);
   private readonly schemaService = inject(SchemaService);
 
   documentTypeID = input<string>('');
