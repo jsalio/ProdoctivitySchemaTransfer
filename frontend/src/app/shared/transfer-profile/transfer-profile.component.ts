@@ -30,6 +30,9 @@ export class TransferProfileComponent {
 
   optionsSource = computed(() => {
     const credentials = this.profiles();
+    if (!credentials || credentials.length === 0) {
+      return undefined;
+    }
     return credentials
       .filter((x) => x.credential.store === 'Cloud')
       .map((x) => ({
@@ -40,6 +43,9 @@ export class TransferProfileComponent {
 
   optionsTarget = computed(() => {
     const credentials = this.profiles();
+    if (!credentials || credentials.length === 0) {
+      return undefined;
+    }
     return credentials
       .filter((x) => x.credential.store !== 'Cloud')
       .map((x) => ({
