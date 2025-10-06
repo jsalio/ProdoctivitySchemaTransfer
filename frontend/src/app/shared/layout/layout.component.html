@@ -34,6 +34,7 @@
 
 @if (isCredentialOpen) {
   <app-modal
+    id="migration-conecction-profile"
     [isOpen]="isCredentialOpen"
     (modalClose)="closeCredentialsModal()"
     [size]="'medium'"
@@ -52,7 +53,7 @@
 }
 
 @if (modalOpen()) {
-  <app-modal [isOpen]="modalOpen()" (modalClose)="closeModal()">
+  <app-modal id="credential-users" [isOpen]="modalOpen()" (modalClose)="closeModal()">
     <h2 class="text-xl font-bold mb-4">Credenciales del sistema {{ configuration() }}</h2>
     <div>
       <app-credentials
@@ -74,7 +75,11 @@
   </app-modal>
 }
 
-<app-modal [isOpen]="modalForChangeTransferLine()" (modalClose)="closeTransferModal()">
+<app-modal
+  id="sources-change"
+  [isOpen]="modalForChangeTransferLine()"
+  (modalClose)="closeTransferModal()"
+>
   <h2 class="text-xl font-bold mb-4 text-gray-400">Cambiar la sincronizacion</h2>
   <div class="text-xl mb-1">
     <p class="text-gray-950">
@@ -92,13 +97,37 @@
   </div>
 </app-modal>
 
-<app-modal [isOpen]="profileModalIsOpen()" (modalClose)="closeProfileModal()" [size]="'big'">
-  <h2 class="text-xl font-bold mb-4">Perfiles de conexion</h2>
-  <div class="flex flex-col gap-4">
-    <!-- <h2 class="text-2xl font-bold text-gray-800 mb-4">Perfiles almacenados</h2> -->
-    <app-profile-manager />
-    <div>
-      <app-button (clicked)="closeProfileModal()">Cerrar</app-button>
+@if (profileModalIsOpen()) {
+  <app-modal
+    id="profile-manager"
+    [isOpen]="profileModalIsOpen()"
+    (modalClose)="closeProfileModal()"
+    [size]="'big'"
+  >
+    <h2 class="text-xl font-bold mb-4">Perfiles de conexion</h2>
+    <div class="flex flex-col gap-4">
+      <!-- <h2 class="text-2xl font-bold text-gray-800 mb-4">Perfiles almacenados</h2> -->
+      <app-profile-manager />
+      <div>
+        <app-button (clicked)="closeProfileModal()">Cerrar</app-button>
+      </div>
     </div>
-  </div>
-</app-modal>
+  </app-modal>
+}
+
+@if (migrationProfileModal()) {
+  <app-modal
+    id="migration-profile"
+    [isOpen]="migrationProfileModal()"
+    [size]="'big'"
+    (modalClose)="connectionProfileModalHandleClose()"
+  >
+    <h2 class="text-xl font-bold mb-4">Perfiles de migracion</h2>
+    <div class="flex flex-col gap-4">
+      <app-transfer-profile />
+      <div>
+        <app-button (clicked)="connectionProfileModalHandleClose()">Cerrar</app-button>
+      </div>
+    </div>
+  </app-modal>
+}

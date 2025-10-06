@@ -24,7 +24,7 @@ export class ModalComponent {
       case 'medium':
         return 'max-w-3xl';
       case 'big':
-        return 'max-w-5xl w-[80%]';
+        return 'max-w-7xl w-[80%]';
       case 'custom':
         return ''; // clases se manejan inline con [ngStyle]
       default:

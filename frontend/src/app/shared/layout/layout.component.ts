@@ -12,6 +12,7 @@ import { ButtonComponent } from '../button/button.component';
 import { Credentials } from '../../types/models/Credentials';
 import { ProfileManagerComponent } from '../profile-manager/profile-manager.component';
 import { MemStoreService } from '../../services/ui/mem-store.service';
+import { TransferProfileComponent } from '../transfer-profile/transfer-profile.component';
 
 @Component({
   selector: 'app-layout',
@@ -26,6 +27,7 @@ import { MemStoreService } from '../../services/ui/mem-store.service';
     DropdownComponent,
     ButtonComponent,
     ProfileManagerComponent,
+    TransferProfileComponent,
   ],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css',
@@ -45,6 +47,7 @@ export class LayoutComponent implements OnInit {
   transferLine = signal<'CloudToFluency' | 'FlencyToCloud' | ''>('CloudToFluency');
   profileModalIsOpen = signal<boolean>(false);
   profileCredentials = signal<Credentials | null>(null);
+  migrationProfileModal = signal<boolean>(false);
 
   private appStore = inject(MemStoreService);
 
@@ -57,7 +60,6 @@ export class LayoutComponent implements OnInit {
 
   connectionStatus = computed(() => {
     if (!this.connectionStatusService.connectedToCloud()) {
-      console.log('Navegando');
       this.router.navigate(['connection-fail']);
     }
     return this.connectionStatusService.connectedToCloud() ? 'Conectado' : 'Desconectado';
@@ -85,6 +87,9 @@ export class LayoutComponent implements OnInit {
     });
     this.layoutService.modalProfileListEmit().subscribe(() => {
       this.profileModalIsOpen.set(true);
+    });
+    this.layoutService.modalTransferProfileEmit().subscribe(() => {
+      this.migrationProfileModal.set(true);
     });
   }
 
@@ -161,5 +166,9 @@ export class LayoutComponent implements OnInit {
     this.appStore.updateValue(key, profiles);
     this.profileCredentials.set(null);
     this.toastService.emitNotification({ message: 'Perfil almacenado', duration: 3000 });
+  };
+
+  connectionProfileModalHandleClose = () => {
+    this.migrationProfileModal.set(!this.migrationProfileModal());
   };
 }

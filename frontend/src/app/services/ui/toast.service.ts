@@ -6,6 +6,8 @@ export interface Toast {
   duration: number;
 }
 
+export const defaultTimeDisplay = 1000;
+
 @Injectable({
   providedIn: 'root',
 })

@@ -29,6 +29,7 @@ import { CredetialConnectionService } from '../../services/ui/credetial-connecti
 import { ButtonComponent } from '../button/button.component';
 import { MemStoreService } from '../../services/ui/mem-store.service';
 import { StorageKey } from '../../types/models/StorageKey';
+import { ToastService, defaultTimeDisplay } from '../../services/ui/toast.service';
 
 export interface Credentials {
   username: string;
@@ -58,6 +59,7 @@ export class CredentialsComponent implements OnChanges {
   private readonly storage = inject(MemStoreService);
   private readonly authService = inject(AuthService);
   private readonly connectionStatus = inject(CredetialConnectionService);
+  private readonly toast = inject(ToastService);
 
   origin = input<'Source' | 'Target'>();
   store = input<'V5' | 'Cloud'>();
@@ -238,14 +240,19 @@ export class CredentialsComponent implements OnChanges {
           this.storage.storeValue(key, credentials);
         }
         this.formData.emit(credentials);
+        this.showToastMessage(`Credenciales de ${this.store()} validadas correctamente`);
       })
       .onError(() => {
-        console.log();
+        this.showToastMessage('Error al validar credenciales');
       })
       .execute();
   }
 
   displayButtonLabelByState = () => {
     // Implementation can be added here if needed
+  };
+
+  showToastMessage = (message: string) => {
+    this.toast.emitNotification({ message: message, duration: defaultTimeDisplay });
   };
 }

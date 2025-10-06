@@ -1,7 +1,9 @@
+<!-- eslint-disable @angular-eslint/template/interactive-supports-focus -->
 <div class="relative inline-block text-left">
   <!-- Botón -->
   <div class="p-1 hover:bg-gray-100 rounded">
     <button
+      title="x"
       (click)="toggleDropdown()"
       class="inline-flex items-center justify-center p-2 text-gray-700 focus:outline-none transition-colors duration-150"
     >
@@ -36,24 +38,45 @@
       <div class="py-1">
         <a
           (click)="openTranferLine()"
+          (keypress)="openTranferLine()"
+          (keydown)="openTranferLine()"
+          (keyup)="openTranferLine()"
           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
           >Migracion</a
         >
         <a
           (click)="openModalForCredentialCloud()"
+          (keypress)="openModalForCredentialCloud()"
+          (keydown)="openModalForCredentialCloud()"
+          (keyup)="openModalForCredentialCloud()"
           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
           >Conexion a Cloud</a
         >
         <a
           (click)="openModalForCredentialFluency()"
+          (keypress)="openModalForCredentialFluency()"
+          (keydown)="openModalForCredentialFluency()"
+          (keyup)="openModalForCredentialFluency()"
           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
           >Conexion de Fluency</a
         >
         <a
           (click)="openProfileList()"
+          (keypress)="openProfileList()"
+          (keydown)="openProfileList()"
+          (keyup)="openProfileList()"
           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-          >Perfiles</a
+          >Perfiles de usuarios</a
         >
+        <a
+          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
+          (click)="openMigrationProfile()"
+          (keypress)="openMigrationProfile()"
+          (keydown)="openMigrationProfile()"
+          (keyup)="openMigrationProfile()"
+        >
+          Perfiles de migracion
+        </a>
       </div>
     </div>
   }
