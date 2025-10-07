@@ -30,6 +30,7 @@ import { ButtonComponent } from '../button/button.component';
 import { MemStoreService } from '../../services/ui/mem-store.service';
 import { StorageKey } from '../../types/models/StorageKey';
 import { ToastService, defaultTimeDisplay } from '../../services/ui/toast.service';
+import { CredentialsService } from './service/credentials.service';
 
 export interface Credentials {
   username: string;
@@ -60,6 +61,7 @@ export class CredentialsComponent implements OnChanges {
   private readonly authService = inject(AuthService);
   private readonly connectionStatus = inject(CredetialConnectionService);
   private readonly toast = inject(ToastService);
+  private readonly credentialsService = inject(CredentialsService);
 
   origin = input<'Source' | 'Target'>();
   store = input<'V5' | 'Cloud'>();
@@ -210,8 +212,7 @@ export class CredentialsComponent implements OnChanges {
       return;
     }
 
-    const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
-    const key = `Credentials_${storeVersion}_${this.store()}` as StorageKey;
+    const key = this.credentialsService.computeKey(this.store());
     const credentials: Credentials = {
       username: this.loginForm.controls['username'].value,
       password: this.loginForm.controls['password'].value,
@@ -224,7 +225,7 @@ export class CredentialsComponent implements OnChanges {
         server: this.loginForm.controls['server'].value,
       },
     };
-    ObservableHandler.handle(this.authService.login(credentials))
+    ObservableHandler.handle(this.credentialsService.login(credentials))
       .onStart(() => this.isLoading.set(true))
       .onComplete(() => this.isLoading.set(false))
       .onNext((value) => {
@@ -234,16 +235,14 @@ export class CredentialsComponent implements OnChanges {
           credentials.token = 'Norequired';
         }
 
-        if (key === 'Credentials_V6_Cloud') {
-          this.connectionStatus.updateCredentials(credentials);
-        } else {
-          this.storage.storeValue(key, credentials);
-        }
+        this.credentialsService.persistCredentials(key, this.store(), credentials);
         this.formData.emit(credentials);
-        this.showToastMessage(`Credenciales de ${this.store()} validadas correctamente`);
+        this.credentialsService.showToast(
+          `Credenciales de ${this.store()} validadas correctamente`,
+        );
       })
       .onError(() => {
-        this.showToastMessage('Error al validar credenciales');
+        this.credentialsService.showToast('Error al validar credenciales');
       })
       .execute();
   }
