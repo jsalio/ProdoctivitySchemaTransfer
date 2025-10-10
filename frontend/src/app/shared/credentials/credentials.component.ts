@@ -19,13 +19,10 @@ import {
   SimpleChanges,
 } from '@angular/core';
 
-import { AuthService } from '../../services/backend/auth.service';
-// import { LocalDataService, StorageKey } from '../../services/ui/local-data.service';
 import { ObservableHandler } from '../utils/Obserbable-handler';
 import { ReactiveFormsModule } from '@angular/forms';
 import { effect } from '@angular/core';
 import { isTokenExpired } from '../utils/token-decoder';
-import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 import { ButtonComponent } from '../button/button.component';
 import { MemStoreService } from '../../services/ui/mem-store.service';
 import { StorageKey } from '../../types/models/StorageKey';
@@ -58,8 +55,6 @@ export interface AdditionalInfo {
 export class CredentialsComponent implements OnChanges {
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly storage = inject(MemStoreService);
-  private readonly authService = inject(AuthService);
-  private readonly connectionStatus = inject(CredetialConnectionService);
   private readonly toast = inject(ToastService);
   private readonly credentialsService = inject(CredentialsService);
 
