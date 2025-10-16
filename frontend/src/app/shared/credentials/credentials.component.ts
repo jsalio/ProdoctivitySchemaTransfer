@@ -17,6 +17,7 @@ import { effect } from '@angular/core';
 import { isTokenExpired } from '../utils/token-decoder';
 import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 import { ButtonComponent } from '../button/button.component';
+import { ToastService } from '../../services/ui/toast.service';
 
 export interface Credentials {
   username: string;
@@ -46,6 +47,7 @@ export class CredentialsComponent {
   private readonly storage = inject(LocalDataService);
   private readonly authService = inject(AuthService);
   private readonly connectionStatus = inject(CredetialConnectionService);
+  private readonly toast = inject(ToastService);
 
   origin = input<'Source' | 'Target'>();
   store = input<'V5' | 'Cloud'>();
