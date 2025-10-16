@@ -6,6 +6,8 @@ export interface Toast {
   duration: number;
 }
 
+export const defaultTimeDisplay = 1000;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,18 +21,4 @@ export class ToastService {
   onNotify = () => {
     return this.toastNotification;
   };
-  // private toasts = new BehaviorSubject<Toast[]>([]);
-  // toasts$ = this.toasts.asObservable();
-
-  // show(message: string, duration: number = 3000): void {
-  //   const toast: Toast = { message, duration };
-  //   this.toasts.next([...this.toasts.value, toast]);
-  //   setTimeout(() => {
-  //     this.remove(toast);
-  //   }, duration);
-  // }
-
-  // remove(toast: Toast): void {
-  //   this.toasts.next(this.toasts.value.filter((t) => t !== toast));
-  // }
 }

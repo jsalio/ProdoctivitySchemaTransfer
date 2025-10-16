@@ -32,45 +32,54 @@
 <!-- Toast Notification -->
 <app-toats *ngIf="showToastFlag()" [message]="toastmessage()" [duration]="3000" />
 
+@if (isCredentialOpen) {
+  <app-modal
+    id="migration-conecction-profile"
+    [isOpen]="isCredentialOpen"
+    (modalClose)="closeCredentialsModal()"
+    [size]="'medium'"
+    [customWidth]="'50%'"
+  >
+    <h2 class="text-xl font-bold mb-4">Credenciales del sistema</h2>
+    <div class="flex flex-col md:flex-row gap-4">
+      <div class="w-full md:w-1/2">
+        <app-credentials id="source" [origin]="'Source'" [store]="'Cloud'" />
+      </div>
+      <div class="w-full md:w-1/2">
+        <app-credentials id="target" [origin]="'Target'" [store]="'V5'" />
+      </div>
+    </div>
+  </app-modal>
+}
+
+@if (modalOpen()) {
+  <app-modal id="credential-users" [isOpen]="modalOpen()" (modalClose)="closeModal()">
+    <h2 class="text-xl font-bold mb-4">Credenciales del sistema {{ configuration() }}</h2>
+    <div>
+      <app-credentials
+        id="source"
+        [origin]="'Source'"
+        [store]="configuration() === 'Cloud' ? 'Cloud' : 'V5'"
+        (formData)="recieveData($event)"
+      >
+        <span class="inline-flex gap-2">
+          <app-button (clicked)="saveProfile()" [type]="'button'">
+            <span>Guardar perfil</span>
+          </app-button>
+          <app-button (clicked)="closeModal()" [type]="'button'">
+            <span>Cerrar</span>
+          </app-button>
+        </span>
+      </app-credentials>
+    </div>
+  </app-modal>
+}
+
 <app-modal
-  [isOpen]="isCredentialOpen"
-  (modalClose)="closeCredentialsModal()"
-  [size]="'medium'"
-  [customWidth]="'50%'"
+  id="sources-change"
+  [isOpen]="modalForChangeTransferLine()"
+  (modalClose)="closeTransferModal()"
 >
-  <h2 class="text-xl font-bold mb-4">Credenciales del sistema</h2>
-  <div class="flex flex-col md:flex-row gap-4">
-    <div class="w-full md:w-1/2">
-      <app-credentials id="source" [origin]="'Source'" [store]="'Cloud'" />
-    </div>
-    <div class="w-full md:w-1/2">
-      <app-credentials id="target" [origin]="'Target'" [store]="'V5'" />
-    </div>
-  </div>
-</app-modal>
-
-<app-modal [isOpen]="modalOpen()" (modalClose)="closeModal()">
-  <h2 class="text-xl font-bold mb-4">Credenciales del sistema {{ configuration() }}</h2>
-  <div>
-    <app-credentials
-      id="source"
-      [origin]="'Source'"
-      [store]="configuration() === 'Cloud' ? 'Cloud' : 'V5'"
-      (formData)="recieveData($event)"
-    >
-      <span class="inline-flex gap-2">
-        <app-button (clicked)="saveProfile()" [type]="'button'">
-          <span>Guardar perfil</span>
-        </app-button>
-        <app-button (clicked)="closeModal()" [type]="'button'">
-          <span>Cerrar</span>
-        </app-button>
-      </span>
-    </app-credentials>
-  </div>
-</app-modal>
-
-<app-modal [isOpen]="modalForChangeTransferLine()" (modalClose)="closeTransferModal()">
   <h2 class="text-xl font-bold mb-4 text-gray-400">Cambiar la sincronizacion</h2>
   <div class="text-xl mb-1">
     <p class="text-gray-950">
@@ -85,23 +94,40 @@
     <app-button type="button" (clicked)="closeTransferModal()" [disabled]="false"
       >Aceptar</app-button
     >
-    <!-- <button
-      (click)="closeTransferModal()"
-      type="button"
-      class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors duration-200"
-    >
-      Aceptar
-    </button> -->
   </div>
 </app-modal>
 
-<app-modal [isOpen]="profileModalIsOpen()" (modalClose)="closeProfileModal()">
-  <h2 class="text-xl font-bold mb-4">Perfiles de conexion</h2>
-  <div class="flex flex-col gap-4">
-    <!-- <h2 class="text-2xl font-bold text-gray-800 mb-4">Perfiles almacenados</h2> -->
-    <app-profile-manager />
-    <div>
-      <app-button (clicked)="closeProfileModal()">Cerrar</app-button>
+@if (profileModalIsOpen()) {
+  <app-modal
+    id="profile-manager"
+    [isOpen]="profileModalIsOpen()"
+    (modalClose)="closeProfileModal()"
+    [size]="'big'"
+  >
+    <h2 class="text-xl font-bold mb-4">Perfiles de conexion</h2>
+    <div class="flex flex-col gap-4">
+      <!-- <h2 class="text-2xl font-bold text-gray-800 mb-4">Perfiles almacenados</h2> -->
+      <app-profile-manager />
+      <div>
+        <app-button (clicked)="closeProfileModal()">Cerrar</app-button>
+      </div>
     </div>
-  </div>
-</app-modal>
+  </app-modal>
+}
+
+@if (migrationProfileModal()) {
+  <app-modal
+    id="migration-profile"
+    [isOpen]="migrationProfileModal()"
+    [size]="'big'"
+    (modalClose)="connectionProfileModalHandleClose()"
+  >
+    <h2 class="text-xl font-bold mb-4">Perfiles de migracion</h2>
+    <div class="flex flex-col gap-4">
+      <app-transfer-profile />
+      <div>
+        <app-button (clicked)="connectionProfileModalHandleClose()">Cerrar</app-button>
+      </div>
+    </div>
+  </app-modal>
+}

@@ -51,21 +51,27 @@ export class DropdownComponent {
   }
 
   openModalForCredentialCloud = () => {
+    this.open.set(!this.open());
     this.layoutService.openModalLayout('Cloud');
   };
 
   openModalForCredentialFluency = () => {
-    this.open.set(false);
+    this.open.set(!this.open());
     this.layoutService.openModalLayout('Fluency');
   };
 
   openTranferLine = () => {
-    this.open.set(false);
+    this.open.set(!this.open());
     this.layoutService.modalTransferLinSubject();
   };
 
   openProfileList = () => {
-    this.open.set(false);
+    this.open.set(!this.open());
     this.layoutService.modalProfileListSubject();
+  };
+
+  openMigrationProfile = () => {
+    this.open.set(!this.open());
+    this.layoutService.modalTransferProfileSubject();
   };
 }

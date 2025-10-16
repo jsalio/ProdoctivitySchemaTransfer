@@ -12,7 +12,6 @@ import {
 } from '@angular/core';
 
 import { Credentials } from '../../../types/models/Credentials';
-import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
 import { DocumentType, SchemaDocumentType } from '../../../types/models/DocumentType';
@@ -21,6 +20,7 @@ import { FormsModule } from '@angular/forms';
 import { Filter } from '../utils/FilterDatalist';
 import { FilterInputComponent } from '../../../shared/filter-input/filter-input.component';
 import { FilterAnimation } from '../../../shared/Animation/filter';
+import { MemStoreService } from '../../../services/ui/mem-store.service';
 
 @Component({
   selector: 'app-document-types-list',
@@ -32,7 +32,7 @@ import { FilterAnimation } from '../../../shared/Animation/filter';
   animations: [FilterAnimation],
 })
 export class DocumentTypesListComponent implements OnChanges {
-  private readonly localData = inject(LocalDataService);
+  private readonly localData = inject(MemStoreService);
   private readonly schemaService = inject(SchemaService);
 
   parentGroup = input<string>('');

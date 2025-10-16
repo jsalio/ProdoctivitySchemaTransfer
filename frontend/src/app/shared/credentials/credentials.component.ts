@@ -7,19 +7,27 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Component, computed, input, signal, inject, output } from '@angular/core';
+import {
+  Component,
+  computed,
+  input,
+  signal,
+  inject,
+  output,
+  WritableSignal,
+  OnChanges,
+  SimpleChanges,
+} from '@angular/core';
 
-import { AuthService } from '../../services/backend/auth.service';
-import { LocalDataService, StorageKey } from '../../services/ui/local-data.service';
 import { ObservableHandler } from '../utils/Obserbable-handler';
 import { ReactiveFormsModule } from '@angular/forms';
 import { effect } from '@angular/core';
 import { isTokenExpired } from '../utils/token-decoder';
-import { CredetialConnectionService } from '../../services/ui/credetial-connection.service';
 import { ButtonComponent } from '../button/button.component';
-import { CustomSelectComponent, SelectOption } from '../select/select.component';
-import { LoadingComponent } from '../icons/loading/loading.component';
-import { ModalComponent } from '../modal/modal.component';
+import { MemStoreService } from '../../services/ui/mem-store.service';
+import { StorageKey } from '../../types/models/StorageKey';
+import { ToastService, defaultTimeDisplay } from '../../services/ui/toast.service';
+import { CredentialsService } from './service/credentials.service';
 
 export interface Credentials {
   username: string;
@@ -44,17 +52,18 @@ export interface AdditionalInfo {
   templateUrl: './credentials.component.html',
   styleUrl: './credentials.component.css',
 })
-export class CredentialsComponent {
+export class CredentialsComponent implements OnChanges {
   private readonly fb = inject(NonNullableFormBuilder);
-  private readonly storage = inject(LocalDataService);
-  private readonly authService = inject(AuthService);
-  private readonly connectionStatus = inject(CredetialConnectionService);
+  private readonly storage = inject(MemStoreService);
+  private readonly toast = inject(ToastService);
+  private readonly credentialsService = inject(CredentialsService);
 
   origin = input<'Source' | 'Target'>();
   store = input<'V5' | 'Cloud'>();
   isLoading = signal<boolean>(false);
   tokenIsProvide = signal<boolean>(false);
   formData = output<Credentials>();
+  localCredential: WritableSignal<Credentials>;
 
   readonly buttonLabel = computed(() => {
     if (this.tokenIsProvide() && !this.isLoading()) {
@@ -66,12 +75,29 @@ export class CredentialsComponent {
     }
   });
 
+  readonly credentials = computed(() => {
+    const current = this.localCredential();
+    console.log('Current :', current);
+    return {};
+  });
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
+    const key = `Credentials_${storeVersion}_${this.store()}` as StorageKey;
+    this.localCredential = this.storage.signalOf<Credentials>(key);
+    console.log(key, changes);
+  }
+
   /**
    *
    */
   loginForm!: FormGroup;
 
   constructor() {
+    const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
+    const key = `Credentials_${storeVersion}_${this.store()}` as StorageKey;
+    this.localCredential = this.storage.signalOf<Credentials>(key);
+
     this.loginForm = this.fb.group({
       username: this.fb.control('', {
         validators: [Validators.required],
@@ -121,7 +147,6 @@ export class CredentialsComponent {
           this.loginForm.setValue(form);
           const isExpired = isTokenExpired(myLocalCredential.token);
           if (isExpired) {
-            // alert('Token guardado expirado')
             this.tokenIsProvide.set(false);
           } else {
             this.tokenIsProvide.set(true);
@@ -167,8 +192,13 @@ export class CredentialsComponent {
         /^(https?:\/\/)?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(:[0-9]{1,5})?(\/[^\s]*)?$/i;
       const localhostPattern = /^(https?:\/\/)?localhost(:[0-9]{1,5})?(\/[^\s]*)?$/i;
 
+      const localDomainPattern = /^(https?:\/\/)?[a-zA-Z0-9-]+(:[0-9]{1,5})?(\/[^\s]*)?$/i;
+
       const isValid =
-        domainPattern.test(value) || ipPattern.test(value) || localhostPattern.test(value);
+        domainPattern.test(value) ||
+        ipPattern.test(value) ||
+        localhostPattern.test(value) ||
+        localDomainPattern.test(value);
 
       return isValid ? null : { invalidUrl: { value: control.value } };
     };
@@ -179,11 +209,11 @@ export class CredentialsComponent {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       this.isLoading.set(false);
+      this.toast.emitNotification({ message: 'Formulario invalido', duration: 1000 });
       return;
     }
 
-    const storeVersion = this.store() === 'Cloud' ? 'V6' : 'V5';
-    const key = `Credentials_${storeVersion}_${this.store()}` as StorageKey;
+    const key = this.credentialsService.computeKey(this.store());
     const credentials: Credentials = {
       username: this.loginForm.controls['username'].value,
       password: this.loginForm.controls['password'].value,
@@ -196,7 +226,7 @@ export class CredentialsComponent {
         server: this.loginForm.controls['server'].value,
       },
     };
-    ObservableHandler.handle(this.authService.login(credentials))
+    ObservableHandler.handle(this.credentialsService.login(credentials))
       .onStart(() => this.isLoading.set(true))
       .onComplete(() => this.isLoading.set(false))
       .onNext((value) => {
@@ -206,18 +236,23 @@ export class CredentialsComponent {
           credentials.token = 'Norequired';
         }
 
-        if (key === 'Credentials_V6_Cloud') {
-          this.connectionStatus.updateCredentials(credentials);
-        } else {
-          this.storage.storeValue(key, credentials);
-        }
+        this.credentialsService.persistCredentials(key, this.store(), credentials);
         this.formData.emit(credentials);
+        this.credentialsService.showToast(
+          `Credenciales de ${this.store()} validadas correctamente`,
+        );
       })
-      .onError(() => {})
+      .onError(() => {
+        this.credentialsService.showToast('Error al validar credenciales');
+      })
       .execute();
   }
 
   displayButtonLabelByState = () => {
     // Implementation can be added here if needed
+  };
+
+  showToastMessage = (message: string) => {
+    this.toast.emitNotification({ message: message, duration: defaultTimeDisplay });
   };
 }

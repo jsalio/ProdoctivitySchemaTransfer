@@ -1,0 +1,7 @@
+:host ::ng-deep .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+:host ::ng-deep .no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

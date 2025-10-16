@@ -3,7 +3,6 @@ import { Component, OnInit, computed, inject, output, signal } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { Credentials } from '../../../types/models/Credentials';
 import { DocumentGroup } from '../../../types/contracts/ISchema';
-import { LocalDataService } from '../../../services/ui/local-data.service';
 import { ObservableHandler } from '../../../shared/utils/Obserbable-handler';
 import { SchemaService } from '../../../services/backend/schema.service';
 import { SchemaDocumentGroup } from '../../../types/models/SchemaDocumentGroup';
@@ -11,6 +10,7 @@ import { Filter } from '../utils/FilterDatalist';
 import { FormsModule } from '@angular/forms';
 import { FilterInputComponent } from '../../../shared/filter-input/filter-input.component';
 import { FilterAnimation } from '../../../shared/Animation/filter';
+import { MemStoreService } from '../../../services/ui/mem-store.service';
 
 @Component({
   selector: 'app-group-list',
@@ -21,7 +21,7 @@ import { FilterAnimation } from '../../../shared/Animation/filter';
   animations: [FilterAnimation],
 })
 export class GroupListComponent implements OnInit {
-  private readonly localData = inject(LocalDataService);
+  private readonly localData = inject(MemStoreService);
   private readonly schemaService = inject(SchemaService);
 
   sourceDocumentGroups = signal<DocumentGroup[]>([]);
