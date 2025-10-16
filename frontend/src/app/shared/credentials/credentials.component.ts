@@ -164,8 +164,13 @@ export class CredentialsComponent {
         /^(https?:\/\/)?(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(:[0-9]{1,5})?(\/[^\s]*)?$/i;
       const localhostPattern = /^(https?:\/\/)?localhost(:[0-9]{1,5})?(\/[^\s]*)?$/i;
 
+      const localDomainPattern = /^(https?:\/\/)?[a-zA-Z0-9-]+(:[0-9]{1,5})?(\/[^\s]*)?$/i;
+
       const isValid =
-        domainPattern.test(value) || ipPattern.test(value) || localhostPattern.test(value);
+        domainPattern.test(value) ||
+        ipPattern.test(value) ||
+        localhostPattern.test(value) ||
+        localDomainPattern.test(value);
 
       return isValid ? null : { invalidUrl: { value: control.value } };
     };
@@ -176,6 +181,7 @@ export class CredentialsComponent {
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       this.isLoading.set(false);
+      this.toast.emitNotification({ message: 'Formulario invalido', duration: 1000 });
       return;
     }
 
