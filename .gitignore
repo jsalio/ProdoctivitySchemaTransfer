@@ -23,6 +23,7 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 *.windsurf
+GEMINI.md
 
 # Visual Studio Code
 .vscode/*
